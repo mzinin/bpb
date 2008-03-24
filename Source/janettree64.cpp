@@ -1,5 +1,4 @@
 #include "janettree64.h"
-#include <algorithm>
 
 bool Compare_Triple(Triple64* a, Triple64* b)
 {
@@ -37,7 +36,8 @@ void JanetTree64::Iterator::clear()
 {
   while (nextDeg())
   {
-    JanetTree64::Iterator((*i)->mNextVar).clear();
+    if ((*i)->mNextVar)
+      JanetTree64::Iterator((*i)->mNextVar).clear();
     del();
   }
   del();
@@ -49,7 +49,7 @@ JanetTree64::~JanetTree64()
   delete mRoot;
 }
 
-Triple64* JanetTree64::find(const Monom64& m) const
+/*Triple64* JanetTree64::find(const Monom64& m) const
 {
   Triple64* trpl = NULL;
 
@@ -63,6 +63,39 @@ Triple64* JanetTree64::find(const Monom64& m) const
         j.step_deg();
 
       if (j.degree() > m[var])
+        break;
+      else if (j.isNextVar())
+      {
+        d -= m[var];
+        if (d == 0)
+          break;
+        var++;
+        j.step_var();
+      }
+      else
+      {
+        trpl = j.trpl();
+        break;
+      }
+    } while(true);
+  }
+  return trpl;
+}*/
+
+Triple64* JanetTree64::find(const Monom64& m) const
+{
+  Triple64* trpl = NULL;
+
+  if (mRoot)
+  {
+    ConstIterator j(mRoot);
+    unsigned d = m.degree();
+    int var = 0;
+    do {
+      while(j.degree() != m[var] && j.isNextDeg())
+        j.step_deg();
+
+      if (j.degree() != m[var])
         break;
       else if (j.isNextVar())
       {
@@ -203,29 +236,16 @@ void JanetTree64::insert(Triple64* trpl)
 
 void JanetTree64::update(Triple64 *trpl, list<Triple64*> &set)
 {
-  list<Triple64*> add_to_set;
-  list<Triple64*>::iterator mid, add_end, add_begin;
-  bitset<64> nonmulti = trpl->poly->Pnmv();
+  	bitset<64> nonmulti = trpl->poly->Pnmv();
 
-  for (register int var = 0; var< trpl->poly->lm().dimIndepend(); var++)
-    if (nonmulti.test(var))
-      {
-        Poly64* tmp = new Poly64(*trpl->poly);
-        tmp->mult(var);
-        if (!tmp->isZero())
-          add_to_set.push_back(new Triple64(tmp, trpl->anc, trpl, true));
-      }
-
-  if (!add_to_set.empty())
-  {
-    mid = set.end(); add_end = add_to_set.end(); add_begin = add_to_set.begin();
-    add_to_set.sort(Compare_Triple);
-    do{
-      add_end--;
-      mid = set.insert(mid, *add_end);
-    } while (add_end!=add_begin);
-    inplace_merge(set.begin(), mid, set.end(), Compare_Triple);
-  }
+  	for (register int var = 0; var< trpl->poly->lm().dimIndepend(); var++)
+    		if (nonmulti.test(var))
+      		{
+        		Poly64* tmp = new Poly64(*trpl->poly);
+        		tmp->mult(var);
+        		if (!tmp->isZero())
+	  			set.push_back(new Triple64(tmp, trpl->anc, trpl, true));
+      		}
 }
 
 void JanetTree64::clear()

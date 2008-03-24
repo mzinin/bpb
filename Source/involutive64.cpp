@@ -4,7 +4,11 @@
 
 using namespace std;
 
-int crit=0;
+//#define MK_STAT
+
+#ifdef MK_STAT
+long int c1=0, c2=0, c3=0, c4=0;
+#endif
 
 void showlm(list<Triple64*> set, const char *msg)
 {
@@ -24,8 +28,15 @@ bool GBasis64::Criteria1(Triple64 &p, Triple64 &g)
   Monom64 tmp = p.anc;
   tmp.mult1(g.anc);
 
-  if ( !p.anc.gcd(g.anc) && p.poly->lm()==tmp)
+  if ( p.poly->lm()==tmp && !p.anc.gcd(g.anc))
+#ifdef MK_STAT
+  {
+    c1++;
+#endif
     return true;
+#ifdef MK_STAT
+  }
+#endif
   else
     return false;
 }
@@ -35,17 +46,23 @@ bool GBasis64::Criteria2(Triple64 &p, Triple64 &g)
   Monom64 tmp = p.anc;
   tmp.mult1(g.anc);
 
-  if ( !p.anc.gcd(g.anc) && p.poly->lm().divisibilityTrue(tmp) )
-  //if ( !p.anc.gcd(g.anc) && p.poly->lm().divisibility(tmp) )
+  if ( p.poly->lm().divisibilityTrue(tmp) )
+#ifdef MK_STAT
+  {
+    c2++;
+#endif
     return true;
+#ifdef MK_STAT
+  }
+#endif
   else
     return false;
 }
 
 bool GBasis64::Criteria3(Triple64 &p, Triple64 &g)
 {
-  Monom64  m = p.anc, mp = p.anc, mg = g.anc;
-  m.mult1(g.anc);
+  Monom64  m = p.poly->lm(), mp, mg; m.mult1(g.poly->lm());
+  //Monom64  m = p.anc, mp, mg; m.mult1(g.anc);
 
   list<Triple64*>::const_iterator ctit(tSet.begin());
   while(ctit!=tSet.end())
@@ -53,8 +70,14 @@ bool GBasis64::Criteria3(Triple64 &p, Triple64 &g)
     mp = p.anc; mp.mult1((**ctit).poly->lm());
     mg = g.anc; mg.mult1((**ctit).poly->lm());
     if( m.divisibilityTrue(mp) && m.divisibilityTrue(mg) )
-    //if( !p.anc.gcd((**ctit).poly->lm()) && m.divisibilityTrue(mp) && !g.anc.gcd((**ctit).poly->lm()) && m.divisibilityTrue(mg) )
+#ifdef MK_STAT
+    {
+      c3++;
+#endif
       return true;
+#ifdef MK_STAT
+    }
+#endif
     ctit++;
   }
 
@@ -82,7 +105,14 @@ bool GBasis64::Criteria4(Triple64 &p, Triple64 &g)
           tmp2.prolong(i);
           if (tmp2==p.poly->lm())
             if (tmp2.divisibilityTrue(tmp1))
+#ifdef MK_STAT
+            {
+              c4++;
+#endif
               return true;
+#ifdef MK_STAT
+             }
+#endif
         }
       ctit++;
     }
@@ -97,16 +127,17 @@ Poly64* GBasis64::NormalForm(Triple64 &p)
   q = new Poly64();
   h = new Poly64(*p.poly);
 
-/*  inv_div = jTree.find(h->lm());
+  inv_div = jTree.find(h->lm());
   if (p.prolong && inv_div)
   {
-    bool c = Criteria1(p, *inv_div) || Criteria2(p, *inv_div) || Criteria3(p, *inv_div) || Criteria4(p, *inv_div);
+    //bool c = Criteria1(p, *inv_div) || Criteria2(p, *inv_div) || Criteria3(p, *inv_div) || Criteria4(p, *inv_div);
+    bool c = Criteria3(p, *inv_div);// || Criteria2(p, *inv_div);
     if (c)
     {
       delete h;
       return q;
     }
-  } */
+  }
 
   while (!h->isZero())
   {
@@ -282,6 +313,7 @@ void GBasis64::InvolutiveBasisI()
       tit = tSet.begin();
       while (tit!=tSet.end())
         if ((*tit)->poly->lm().divisibilityTrue(h->lm()))
+        //if ((*tit)->poly->lm().divisibilityPommaret(h->lm()))
         {
           qit = qSet.begin();
           Monom64 tlm = (**tit).poly->lm();
@@ -292,17 +324,24 @@ void GBasis64::InvolutiveBasisI()
             }
             else
               qit++;
-          add_to_qSet.push_back(*tit);
+	  add_to_qSet.push_back(*tit);
           jTree.del(*tit);
           tit = tSet.erase(tit);
         }
         else
           tit++;
 
+      tSet.push_back(new Triple64(h,h->lm(),NULL,false));
+
+      tit = tSet.end();
+      tit--;
+      jTree.insert(*tit);
+      jTree.update(*tit, add_to_qSet);
+
       if (!add_to_qSet.empty())
       {
-        mid = qSet.end(); add_end = add_to_qSet.end(); add_begin = add_to_qSet.begin();
 	add_to_qSet.sort(Compare_Triple);
+        mid = qSet.end(); add_end = add_to_qSet.end(); add_begin = add_to_qSet.begin();
         do{
           add_end--;
           mid = qSet.insert(mid, *add_end);
@@ -310,13 +349,6 @@ void GBasis64::InvolutiveBasisI()
         inplace_merge(qSet.begin(), mid, qSet.end(), Compare_Triple);
         add_to_qSet.clear();
       }
-
-      tSet.push_back(new Triple64(h,h->lm(),NULL,false));
-
-      tit = tSet.end();
-      tit--;
-      jTree.insert(*tit);
-      jTree.update(*tit, qSet);
     }
     else
       delete h;
@@ -341,7 +373,7 @@ GBasis64::GBasis64(list<Poly64*> set): gBasis(), qSet(), tSet(), jTree()
     {
       i2=gBasis.insert(i2, new Poly64(**i1));
       (**i2).mult(i);
-    } */
+    }*/
     ++i1;
   }
 
@@ -367,6 +399,15 @@ GBasis64::GBasis64(list<Poly64*> set): gBasis(), qSet(), tSet(), jTree()
   tSet.clear();
 
   ReduceSet();
+
+#ifdef MK_STAT
+  long int all_c = c1 + c2 + c3 + c4;
+  cout<<"All criteria: "<<all_c<<endl;
+  cout<<"Criterion 1: "<<c1<<" ("<<(double(c1)/all_c)*100<<"%)"<<endl;
+  cout<<"Criterion 2: "<<c2<<" ("<<(double(c2)/all_c)*100<<"%)"<<endl;
+  cout<<"Criterion 3: "<<c3<<" ("<<(double(c3)/all_c)*100<<"%)"<<endl;
+  cout<<"Criterion 4: "<<c4<<" ("<<(double(c4)/all_c)*100<<"%)"<<endl<<endl;
+#endif
 }
 
 Poly64* GBasis64::operator[](int num)
@@ -388,4 +429,49 @@ std::ostream& operator<<(std::ostream& out, GBasis64& GBasis)
     out<<'['<<i<<"] = "<<*GBasis[i]<<'\n';
 
   return out;
+}
+
+
+Triple64* GBasis64::find_Pdiv(const Monom64& m)
+{
+	Triple64* trpl = NULL;
+	list<Triple64*>::iterator tit(tSet.begin());
+	while (tit != tSet.end())
+	{
+		if (m.divisibilityPommaret((**tit).poly->lm()))
+		{
+			trpl = *tit;
+			break;
+		}
+		tit++;
+	}
+	return trpl;
+}
+
+void GBasis64::updateQ(Triple64 *trpl)
+{
+  list<Triple64*> add_to_qSet;
+  list<Triple64*>::iterator mid, add_end, add_begin;
+  bitset<64> nonmulti = trpl->poly->Pnmv();
+
+  for (register int var = 0; var< trpl->poly->lm().dimIndepend(); var++)
+    if (nonmulti.test(var))
+      {
+        Poly64* tmp = new Poly64(*trpl->poly);
+        tmp->mult(var);
+        if (!tmp->isZero())
+          add_to_qSet.push_back(new Triple64(tmp, trpl->anc, trpl, true));
+	  //qSet.push_back(new Triple64(tmp, trpl->anc, trpl, true));
+      }
+
+  if (!add_to_qSet.empty())
+  {
+    add_to_qSet.sort(Compare_Triple);
+    mid = qSet.end(); add_end = add_to_qSet.end(); add_begin = add_to_qSet.begin();
+    do{
+      add_end--;
+      mid = qSet.insert(mid, *add_end);
+    } while (add_end!=add_begin);
+    inplace_merge(qSet.begin(), mid, qSet.end(), Compare_Triple);
+  }
 }

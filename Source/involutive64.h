@@ -29,4 +29,7 @@ public:
   Poly64* NormalForm(Triple64 &p);
 
   friend std::ostream& operator<<(std::ostream& out, GBasis64& GBasis);
+
+  Triple64* find_Pdiv(const Monom64& m);
+  void updateQ(Triple64* trpl);
 };
