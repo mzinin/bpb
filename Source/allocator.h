@@ -24,38 +24,40 @@
 #include "util.h"
 
 
-class Allocator {
-  enum {memoryPageSize = 4096};
+class Allocator
+{
+  	enum {memoryPageSize = 16384};
 
-  const size_t mTSize;
-  const size_t mPageSize;
-  void**       mFree;
-  static int   sMaxMemory;
+  	const size_t mTSize;
+  	const size_t mPageSize;
+  	void**       mFree;
+  	static int   sMaxMemory;
 
-  void getMem();
+  	void getMem();
 
 public:
-  static int maxMemory() { return sMaxMemory*memoryPageSize; }
+  	static int maxMemory() { return sMaxMemory*memoryPageSize; }
 
-  Allocator(const size_t n);
-  ~Allocator() { clear(); }
+  	Allocator(const size_t n);
+  	~Allocator() { clear(); }
 
-  inline void* allocate()
-  {
-    if (mFree == NULL)
-      getMem();
-    IASSERT(mFree != NULL);
-    void* ptr = (void*)mFree;
-    mFree = (void**)(*mFree);
-    return ptr;
-  }
-  inline void deallocate(void* ptr)
-  {
-    *((void***)ptr) = mFree;
-    mFree = (void**)ptr;
-  }
+  	inline void* allocate()
+  	{
+    		if (mFree == NULL)
+      			getMem();
+    		IASSERT(mFree != NULL);
+    		void* ptr = (void*)mFree;
+    		mFree = (void**)(*mFree);
+    		return ptr;
+  	}
 
-  void clear() {}
+  	inline void deallocate(void* ptr)
+  	{
+    		*((void***)ptr) = mFree;
+    		mFree = (void**)ptr;
+  	}
+
+  	void clear() {}
 };
 
 #endif // ALLOCATOR_H

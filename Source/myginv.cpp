@@ -52,12 +52,11 @@ int main(int argc, char *argv[])
   switch (bytes)
   {
     case 0:
-      init64(argv[1]);
+      return init64(argv[1]);
       break;
     case 1:
       //init128(argv[1]);
       break;
   }
 
-  return EXIT_SUCCESS;
 }

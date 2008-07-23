@@ -20,22 +20,21 @@
 
 #include "allocator.h"
 
-
 void Allocator::getMem()
 {
-  ++sMaxMemory;
-  void **beg = (void**)imalloc(memoryPageSize),
-       **end = beg + mTSize*(mPageSize-1),
-       **tmp;
-  IASSERT(beg != NULL);
-  *((void***)end) = mFree;
-  mFree = (void**)beg;
-  do
-  {
-    tmp = beg + mTSize;
-    *((void***)beg) = tmp;
-    beg = tmp;
-  } while(beg < end);
+  	++sMaxMemory;
+  	void **beg = (void**)imalloc(memoryPageSize),
+       	     **end = beg + mTSize*(mPageSize-1),
+             **tmp;
+  	IASSERT(beg != NULL);
+  	*((void***)end) = mFree;
+  	mFree = (void**)beg;
+  	do
+  	{
+    		tmp = beg + mTSize;
+    		*((void***)beg) = tmp;
+    		beg = tmp;
+  	} while(beg < end);
 }
 
 Allocator::Allocator(const size_t n):
