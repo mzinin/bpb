@@ -314,24 +314,86 @@ void Poly64::reduction(const Poly64 &a)
     }
 }
 
+void Poly64::Preduction(const Poly64 &a)
+{
+  	Monom64 *m2 = new Monom64();
+  	Poly64 *p;
+
+  	ConstIterator j(mHead);
+  	while (j)
+    		if (j->divisibilityPommaret(a.lm()))
+    		{
+      			m2->divide(*j, a.lm());
+      			p = new Poly64(a);
+      			p->mult(*m2);
+      			add_no_copy(*p);
+      			delete p;
+      			j.mConstIt=mHead;
+    		}
+    		else
+      			break;
+
+  	if (isZero())
+    		return;
+  	ConstIterator i(j);
+  	i++;
+
+  	while (i)
+    		if (i->divisibilityPommaret(a.lm()))
+    		{
+      			m2->divide1(*i, a.lm());
+      			p = new Poly64(a);
+      			p->mult(*m2);
+      			add_no_copy(*p);
+      			delete p;
+      			i = j;
+      			i++;
+    		}
+    		else
+    		{
+      			i++;
+      			j++;
+    		}
+}
+
 void Poly64::head_reduction(const Poly64 &a)
 {
-  Monom64 *m2 = new Monom64();
-  Poly64 *p;
+  	Monom64 *m2 = new Monom64();
+  	Poly64 *p;
 
-  ConstIterator j(mHead);
-  while (j)
-    if (j->divisibility(a.lm()))
-    {
-      m2->divide(*j, a.lm());
-      p = new Poly64(a);
-      p->mult(*m2);
-      add_no_copy(*p);
-      delete p;
-      j.mConstIt = mHead;
-    }
-    else
-      break;
+  	ConstIterator j(mHead);
+  	while (j)
+    		if (j->divisibility(a.lm()))
+    		{
+      			m2->divide(*j, a.lm());
+      			p = new Poly64(a);
+      			p->mult(*m2);
+      			add_no_copy(*p);
+      			delete p;
+      			j.mConstIt = mHead;
+    		}
+    		else
+      			break;
+}
+
+void Poly64::Phead_reduction(const Poly64 &a)
+{
+  	Monom64 *m2 = new Monom64();
+  	Poly64 *p;
+
+  	ConstIterator j(mHead);
+  	while (j)
+    		if (j->divisibilityPommaret(a.lm()))
+    		{
+      			m2->divide(*j, a.lm());
+      			p = new Poly64(a);
+      			p->mult(*m2);
+      			add_no_copy(*p);
+      			delete p;
+      			j.mConstIt = mHead;
+    		}
+    		else
+      			break;
 }
 
 std::ostream& operator<<(std::ostream& out, const Poly64& a)

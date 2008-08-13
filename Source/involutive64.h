@@ -11,15 +11,11 @@ protected:
   	TSET tSet;
 	QSET qSet;
 
-  	bool Criteria1(Triple64 *p, Triple64 *g);
-  	bool Criteria2(Triple64 *p, Triple64 *g);
-  	bool Criteria3(Triple64 *p, Triple64 *g);
-  	bool Criteria4(Triple64 *p, Triple64 *g);
-
   	Poly64* findR(Poly64 *p, list<Poly64*> &Q);
   	Poly64* Reduce(Poly64 *p, list<Poly64*> &Q);
-  	void ReduceSet();
-  	void InvolutiveBasis();
+  	void AutoReduce();
+
+ 	void InvolutiveBasis();
 
 public:
   	GBasis64();
@@ -28,7 +24,7 @@ public:
 
   	Poly64* operator[](int num);
   	int length();
-  	Poly64* NormalForm(Triple64 *p);
+  	//Triple64* NormalForm(Triple64 *p);
 
   	friend std::ostream& operator<<(std::ostream& out, GBasis64& GBasis);
 };

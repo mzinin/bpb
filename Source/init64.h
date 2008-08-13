@@ -1,134 +1,152 @@
 #include <iostream>
 #include <fstream>
-#include <sstream>
 #include "timer.h"
 #include "involutive64.h"
 
 using namespace std;
 
-int init64(char* fileName)
+void init64(char* filename)
 {
-	ifstream fileInputStream(fileName);
-	Timer timer;
+  ifstream fin(filename);
+  Timer timer;
 
-	//-----чтение переменных
-	char c = '0';
-	std::string tmpString;
-	while (c!=';' && !fileInputStream.eof())
-	{
-  		fileInputStream >> c;
-		if (c==',' || c==';')
-        	{
-			Monom64::mIndepend->add(tmpString.c_str());
-			tmpString.clear();
-		}
-		else
-        	{
-			tmpString += c;
-		}
-  	}
-  	//-----конец чтения переменных
-
-	Monom64::Init();
-	Poly64 poly;
-	list<Poly64*> polyList, answerList;
-	list<Poly64*>::iterator iterPolyList(polyList.begin()), iterAnswerList(answerList.begin());
-
-	stringstream* tmpStream = new stringstream();
-
-	c = '0';
-	//-----чтение начального набора
-	while (c!=';' && !fileInputStream.eof())
-	{
-		fileInputStream >> c;
-		if (c==',' || c==';')
-		{
-			*tmpStream << tmpString << endl;
-			tmpString.clear();
-		}
-		else
-		{
-			tmpString += c;
-		}
-	}
-
-	while (!tmpStream->eof())
-	{
-		*tmpStream >> poly;
-		iterPolyList = polyList.insert(iterPolyList, new Poly64(poly));
-	}
-	delete tmpStream;
-	//-----конец чтения начального набора
-
-	tmpStream = new stringstream();
-
-	c = '0';
-	//-----чтение ответа
-	while (c!=';' && !fileInputStream.eof())
-	{
-		fileInputStream >> c;
-		if (c==',' || c==';')
-		{
-			*tmpStream << tmpString << endl;
-			tmpString.clear();
-		}
-		else
-		{
-			tmpString += c;
-		}
-	}
-
-	while (!tmpStream->eof())
-	{
-		*tmpStream >> poly;
-		iterAnswerList = answerList.insert(iterAnswerList, new Poly64(poly));
-	}
-	delete tmpStream;
-	//-----конец чтения ответа
-	fileInputStream.close();
-
-	timer.start();
-	GBasis64 basisGroebner(polyList);
-	timer.stop();
-	cout << basisGroebner << endl;
-	cout << timer << endl;
-
-	bool isCorrect = true, Found;
-	//-----проверка
-	if (basisGroebner.length() != answerList.size())
-	{
-		isCorrect = false;
+  //-----чтение переменных
+  int i=0;
+  char s[524288],c='0';
+  while ( c!=';' )
+  {
+  	fin>>c;
+	if (c==',' || c==';')
+        {
+		Monom64::mIndepend->add(s);
+		s[0]='\0';
+		i=0;
 	}
 	else
-	{
-		iterAnswerList = answerList.begin();
-		while (iterAnswerList != answerList.end())
-		{
-			Found = false;
-			for (int i=0; i<basisGroebner.length(); i++)
-			{
-				if (*basisGroebner[i] == **iterAnswerList)
-				{
-					Found = true;
-					break;
-				}
-			}
-			if (!Found)
-			{
-				isCorrect = false;
-				cout << "The mistake is here " << **iterAnswerList << endl;
-				break;
-			}
-			iterAnswerList++;
-		}
+        {
+		s[i]=c;
+		i++;
+		s[i]='\0';
 	}
-  	cout << endl;
-  	//-----конец проверки
+  }
+  //-----конец чтения переменных
+  Monom64::Init();
 
-	if (isCorrect)
-		cout << "The answer is CORRECT" << endl;
-	else
-		cout << "The answer is WRONG" << endl;
+  Poly64 poly;
+  list<Poly64*> pl, answer;
+  list<Poly64*>::iterator it(pl.begin()), an_it(answer.begin());
 
-	return EXIT_SUCCESS;
+  i=0;
+  s[0]='\0';
+  c='0';
+
+  ifstream tmp_in,tmp_in2;
+  ofstream tmp_out;
+  //-----чтение начального набора
+  while (c!=';')
+  {
+    fin>>c;
+    if (c==',' || c==';')
+    {
+      s[i]='\n';
+      i++;
+      s[i]='\0';
+    }
+    else
+    {
+      s[i]=c;
+      i++;
+      s[i]='\0';
+    }
+  }
+  tmp_out.open("tmp1");
+  tmp_out<<s;
+  tmp_out.close();
+
+  tmp_in.open("tmp1");
+  while (!tmp_in.eof())
+  {
+    tmp_in >> poly;
+    it = pl.insert(it, new Poly64(poly));
+  }
+  tmp_in.close();
+  //-----конец чтения начального набора
+
+  i=0;
+  s[0]='\0';
+  c='0';
+
+  //-----чтение ответа
+  while (c!=';')
+  {
+    fin >> c;
+    if (c==',' || c==';')
+    {
+      s[i]='\n';
+      i++;
+      s[i]='\0';
+    }
+    else
+    {
+      s[i]=c;
+      i++;
+      s[i]='\0';
+    }
+  }
+  tmp_out.open("tmp2");
+  tmp_out<<s;
+  tmp_out.close();
+
+  tmp_in2.open("tmp2");
+  while (!tmp_in2.eof())
+  {
+    tmp_in2 >> poly;
+    an_it = answer.insert(an_it, new Poly64(poly));
+  }
+  tmp_in2.close();
+  //-----конец чтения ответа
+  fin.close();
+
+  timer.start();
+  GBasis64 bg(pl);
+  timer.stop();
+  //cout<<bg<<endl;
+  cout<<timer<<endl;
+
+  bool Is_Correct = true,Found;
+  //-----проверка
+  if (bg.length()!=answer.size())
+    Is_Correct = false;
+  else
+  {
+    an_it = answer.begin();
+    while (an_it!=answer.end())
+    {
+      Found = false;
+      for (i=0; i<bg.length(); i++)
+      {
+        if (*bg[i]==**an_it)
+        {
+          Found = true;
+	  break;
+        }
+      }
+      if (!Found)
+      {
+        Is_Correct = false;
+	cout<<"The mistake is here "<<**an_it<<endl;
+        break;
+      }
+      an_it++;
+    }
+  }
+  cout<<endl;
+
+  //-----конец проверки
+  if (Is_Correct)
+    cout<<"The answer is CORRECT"<<endl;
+  else
+    cout<<"The answer is WRONG"<<endl;
+
+  return;
 }

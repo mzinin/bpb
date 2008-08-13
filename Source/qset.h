@@ -7,9 +7,10 @@
 
 class QSET
 {
-public:
 	list<Triple64*> trpl_list;
-	//list<Poly64*> poly_buffer;
+
+  	Triple64* PfindR(Triple64 *t, list<Triple64*> &Q);
+  	Triple64* PReduce(Triple64 *t, list<Triple64*> &Q);
 
 public:
 	QSET();
@@ -17,13 +18,14 @@ public:
 	~QSET();
 
 	void insert(list<Poly64*> &add_list);
-	void insert(list<Triple64*> &add_list);
-	void update(Triple64* new_trpl, list<Triple64*> &set);
+	void insert(Triple64* new_trpl) { trpl_list.push_back(new_trpl); }
 	Triple64* get();
 
 	bool empty() { return trpl_list.empty(); }
-	size_t size() { return trpl_list.size(); };
-	void delete_Descendant(Triple64* ancestor);
+	size_t size() { return trpl_list.size(); }
+	Triple64* back() { return trpl_list.back(); }
+
+	void PAutoReduce();
 };
 
 #endif // QSET_H

@@ -10,124 +10,15 @@ using namespace std;
 long int c1=0, c2=0, c3=0, c4=0;
 #endif
 
-bool GBasis64::Criteria1(Triple64 *p, Triple64 *g)
-{
-  	Monom64 tmp = p->getAncLm();
-  	tmp.mult1(g->getAncLm());
-
-  	if ( p->getPolyLm()==tmp && !p->getAncLm().gcd(g->getAncLm()) )
-#ifdef MK_STAT
-  	{
-    		c1++;
-#endif
-    		return true;
-#ifdef MK_STAT
-  	}
-#endif
-  	else
-    		return false;
-}
-
-bool GBasis64::Criteria2(Triple64 *p, Triple64 *g)
-{
-  	Monom64 tmp = p->getAncLm();
-  	tmp.mult1(g->getAncLm());
-
-  	if ( p->getPolyLm().divisibilityTrue(tmp) && !p->getAncLm().gcd(g->getAncLm()) )
-#ifdef MK_STAT
-  	{
-    		c2++;
-#endif
-    		return true;
-#ifdef MK_STAT
-  	}
-#endif
-  	else
-    		return false;
-}
-
-bool GBasis64::Criteria3(Triple64 *p, Triple64 *g)
-{
-  	Monom64  m = p->getPolyLm(), mp, mg;
-	m.mult1(g->getPolyLm());
-  	//Monom64  m = p->getAncLm(), mp, mg;
-	//m.mult1(g->getAncLm());
-
-  	TSET::const_iterator ctit(tSet.begin());
-  	while( ctit != tSet.end() )
-  	{
-    		mp = p->getAncLm(); mp.mult1((**ctit).getPolyLm());
-    		mg = g->getAncLm(); mg.mult1((**ctit).getPolyLm());
-    		if( m.divisibilityTrue(mp) && m.divisibilityTrue(mg) )
-#ifdef MK_STAT
-    		{
-      			c3++;
-#endif
-      			return true;
-#ifdef MK_STAT
-    		}
-#endif
-    		ctit++;
-  	}
-
-  	return false;
-}
-
-bool GBasis64::Criteria4(Triple64 *p, Triple64 *g)
-{
-  	TSET::const_iterator ctit(tSet.begin());
-  	int dim = p->getAncLm().dimIndepend();
-  	bitset<64> nm;
-
-  	while ( p->getWanc() != *ctit && ctit!=tSet.end() )
-    		if ((**ctit).getPoly()->degree() != p->getPoly()->degree()-1)
-      			ctit++;
-    		else
-    		{
-      			Monom64 tmp1 = p->getAncLm();
-      			tmp1.mult((**ctit).getAncLm());
-      			nm = (**ctit).getPoly()->Pnmv();
-      			for (int i=0; i<dim; i++)
-        			if (nm.test(i))
-        			{
-          				Monom64 tmp2 = (**ctit).getPolyLm();
-          				tmp2.prolong(i);
-          				if ( tmp2 == p->getPolyLm() )
-            					if (tmp2.divisibilityTrue(tmp1))
-#ifdef MK_STAT
-            					{
-              						c4++;
-#endif
-              						return true;
-#ifdef MK_STAT
-             					}
-#endif
-        			}
-      			ctit++;
-    		}
-
-  	return false;
-}
-
-Poly64* GBasis64::NormalForm(Triple64 *p)
+/*
+Triple64* GBasis64::NormalForm(Triple64 *p)
 {
   	Poly64 *h,*q;
   	Triple64  *inv_div;
   	q = new Poly64();
 	h = new Poly64(*p->getPoly());
-/*
+
   	inv_div = tSet.find(h->lm());
-  	if (p->isCriteriaAppliable() && inv_div)
-  	{
-    		//bool c = Criteria1(p, inv_div) || Criteria2(p, inv_div) || Criteria3(p, inv_div) || Criteria4(p, inv_div);
-    		bool c = Criteria3(p, inv_div) || Criteria4(p, inv_div);
-    		if (c)
-    		{
-      			delete h;
-      			return q;
-    		}
-  	}
-*/
   	while (!h->isZero())
   	{
 		inv_div = tSet.find(h->lm());
@@ -147,8 +38,13 @@ Poly64* GBasis64::NormalForm(Triple64 *p)
   	}
 
   	delete h;
-  	return q;
+  	//return q;
+	if (q->lm() == p->getPolyLm())
+		return new Triple64(q, p->getNmp());
+	else
+		return new Triple64(q);
 }
+*/
 
 Poly64* GBasis64::findR(Poly64 *p, list<Poly64*> &Q)
 {
@@ -194,7 +90,7 @@ Poly64* GBasis64::Reduce(Poly64 *p, list<Poly64*> &Q)
   	return q;
 }
 
-void GBasis64::ReduceSet()
+void GBasis64::AutoReduce()
 {
   	list<Poly64*> R, P, Q;
   	list<Poly64*>::iterator ir(R.begin()), ip(P.begin()), iq(Q.begin());
@@ -283,76 +179,17 @@ void GBasis64::ReduceSet()
 
 void GBasis64::InvolutiveBasis()
 {
-static long counter = 0;
-  	TSET::iterator tit(tSet.begin());
-  	Poly64* h;
+  	Triple64* h;
 	Triple64* current_trpl;
-  	bool lm_changed;
 
-  	while (!qSet.empty())
-  	{
-/*
-std::cout << counter++ << " ==========================================================================" << std::endl;
-std::cout << "qSet: "; int i = 0;
-for (list<Triple64*>::const_iterator it = qSet.trpl_list.begin(); it != qSet.trpl_list.end(); ++it)
-{
-    std::cout << "\t\t[" << i++ << "] " << *(**it).getPoly() << std::endl;
-}
-std::cout << std::endl << "tSet: "; i = 0;
-for (TSET::const_iterator it = tSet.begin(); it != tSet.end(); ++it)
-{
-    std::cout << "\t\t[" << i++ << "] " << *(**it).getPoly() << std::endl;
-}
-*/
-		current_trpl = qSet.get();
+	do
+	{
+		tSet.update(qSet);
+		if (qSet.empty()) break;
+		tSet.insert(qSet);
+		tSet.PAutoReduce();
+	} while (true);
 
-//std::cout << std::endl << "Calculate NF of: " << *current_trpl->getPoly() << std::endl;
-
-    		h = NormalForm(current_trpl);
-
-//std::cout << "         Result: " << *h << std::endl << std::endl;
-
-		if (!h->isZero() && h->lm()==current_trpl->getPolyLm())
-      			lm_changed = false;
-    		else
-      			lm_changed = true;
-
-		bitset<64> n = current_trpl->getNmp();
-    		const Triple64* qanc = current_trpl->getAnc();
-		if ( qanc == current_trpl ) qanc = NULL;
-
-		delete current_trpl;
-
-    		if ( !h->isZero() )
-    		{
-      			list<Triple64*> add_to_qSet;
-
-      			tit = tSet.begin();
-      			while ( tit != tSet.end() )
-			{
-        			if ( (*tit)->getPolyLm().divisibilityTrue(h->lm()) )
-        			{
-					qSet.delete_Descendant(*tit);
-	  				add_to_qSet.push_back(*tit);
-          				tit = tSet.erase(tit);
-        			}
-        			else
-				{
-          				tit++;
-				}
-			}
-
-      			if ( lm_changed )
-        			tSet.push_back(new Triple64(h, NULL, NULL, 0, -1));
-      			else
-        			tSet.push_back(new Triple64(h, qanc, NULL, n, -1));
-
-			qSet.update(tSet.back(), add_to_qSet);
-			qSet.insert(add_to_qSet);
-    		}
-    		else
-      			delete h;
-  	}
 }
 
 GBasis64::GBasis64(): gBasis(), qSet(), tSet() {}
@@ -376,9 +213,9 @@ GBasis64::GBasis64(list<Poly64*> set): gBasis(), qSet(), tSet()
 */
     		++i1;
   	}
-//  	ReduceSet();
+  	AutoReduce();
 
-	qSet.insert(gBasis);
+	tSet.insert(gBasis);
   	gBasis.clear();
 
   	InvolutiveBasis();
@@ -391,7 +228,9 @@ GBasis64::GBasis64(list<Poly64*> set): gBasis(), qSet(), tSet()
   	}
   	tSet.clear();
 
-  	ReduceSet();
+  	AutoReduce();
+
+	//cout<<*this<<endl;
 
 #ifdef MK_STAT
   	long int all_c = c1 + c2 + c3 + c4;
