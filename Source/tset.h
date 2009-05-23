@@ -1,45 +1,71 @@
 #ifndef TSET_H
 #define TSET_H
 
+#include "janettree.h"
 #include <list>
 #include <algorithm>
-#include "janettree64.h"
-#include "qset.h"
 
 class TSET
 {
-	list<Triple64*> trpl_list;
-	//JanetTree64 jTree;
-
-  	Triple64* PfindR(Triple64 *t, list<Triple64*> &Q);
-  	Triple64* PReduce(Triple64 *t, list<Triple64*> &Q);
+    list<Triple*> tripleList;
+    JanetTree jTree;
 
 public:
-	TSET();
-	~TSET();
+    typedef list<Triple*>::iterator tsIterator;
+    typedef list<Triple*>::const_iterator tsConstIterator;
 
-	//Triple64* find(const Monom64& m) const { return jTree.find(m); };
+    TSET();
+    ~TSET();
 
-	typedef list<Triple64*>::iterator iterator;
-	typedef list<Triple64*>::const_iterator const_iterator;
+    Triple* find(const Monom& m) const;
 
-	iterator begin() { return trpl_list.begin(); };
-	const_iterator begin() const { return trpl_list.begin(); };
-	iterator end() { return trpl_list.end(); };
-	const_iterator end() const { return trpl_list.end(); };
+    tsIterator begin();
+    tsConstIterator begin() const;
+    tsIterator end();
+    tsConstIterator end() const;
 
-	void clear();
-	iterator erase(iterator it);
-	void push_back(Triple64* new_trpl);
-	size_t size() const { return trpl_list.size(); };
+    void clear();
+    tsIterator erase(tsIterator it);
+    void push_back(Triple* newTriple);
+    std::size_t size() const;
 
-	Triple64* const back() const { return trpl_list.back(); };
-	void PAutoReduce();
-
-	void insert(list<Poly64*> &add_list);
-	void insert(list<Triple64*> &add_list);
-	void insert(QSET &qSet);
-	void update(QSET &qSet);
+    Triple* const back() const;
 };
+
+
+inline Triple* TSET::find(const Monom& m) const
+{
+    return jTree.find(m);
+}
+
+inline TSET::tsIterator TSET::begin()
+{
+    return tripleList.begin();
+}
+
+inline TSET::tsConstIterator TSET::begin() const
+{
+    return tripleList.begin();
+}
+
+inline TSET::tsIterator TSET::end()
+{
+    return tripleList.end();
+}
+
+inline TSET::tsConstIterator TSET::end() const
+{
+    return tripleList.end();
+}
+
+inline std::size_t TSET::size() const
+{
+    return tripleList.size();
+}
+
+inline Triple* const TSET::back() const
+{
+    return tripleList.back();
+}
 
 #endif // TSET_H

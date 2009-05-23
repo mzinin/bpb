@@ -25,31 +25,31 @@
 #include <iomanip>
 #include <sys/times.h>
 
-class Timer {
-  static double mHZ;        //  Number of ticks per second
-  static tms    mBuffer;
+class Timer
+{
+    static double mHZ;        //  Number of ticks per second
+    static tms    mBuffer;
 
-  clock_t       mUser;
-  clock_t       mSys;
-  clock_t       mTimeUser;
-  clock_t       mTimeSys;
+    clock_t mUser;
+    clock_t mSys;
+    clock_t mTimeUser;
+    clock_t mTimeSys;
 
 public:
-  Timer(): mUser(0), mSys(0), mTimeUser(0), mTimeSys(0) {}
-  ~Timer() {}
+    Timer(): mUser(0), mSys(0), mTimeUser(0), mTimeSys(0) {}
+    ~Timer() {}
 
-  void start();
-  void stop();
-  void ignore();
-  void cont();
+    void start();
+    void stop();
+    void cont();
 
-  double userTime() const { return mTimeUser / mHZ; }
-  double sysTime() const { return mTimeSys / mHZ; }
-  double realTime() const { return (mTimeUser + mTimeSys) / mHZ; }
+    double userTime() const { return mTimeUser / mHZ; }
+    double sysTime() const { return mTimeSys / mHZ; }
+    double realTime() const { return (mTimeUser + mTimeSys) / mHZ; }
 
-  void operator= (const Timer &a);
+    void operator= (const Timer &a);
 
-  friend std::ostream& operator<<(std::ostream& out, const Timer &a);
+    friend std::ostream& operator<<(std::ostream& out, const Timer &a);
 };
 
 #endif // ITIMER_H

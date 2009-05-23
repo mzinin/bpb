@@ -1,31 +1,37 @@
 #ifndef QSET_H
 #define QSET_H
 
-#include "triple64.h"
+#include "triple.h"
 #include <list>
 #include <algorithm>
 
 class QSET
 {
-	list<Triple64*> trpl_list;
-
-  	Triple64* PfindR(Triple64 *t, list<Triple64*> &Q);
-  	Triple64* PReduce(Triple64 *t, list<Triple64*> &Q);
+    list<Triple*> tripleList;
 
 public:
-	QSET();
-	QSET(list<Poly64*> &basis);
-	~QSET();
+    QSET();
+    QSET(list<Polynom*> &basis);
+    ~QSET();
 
-	void insert(list<Poly64*> &add_list);
-	void insert(Triple64* new_trpl) { trpl_list.push_back(new_trpl); }
-	Triple64* get();
+    void insert(list<Polynom*> &addList);
+    void insert(list<Triple*> &addList);
+    void update(Triple* newTriple, list<Triple*> &set);
+    Triple* get();
 
-	bool empty() { return trpl_list.empty(); }
-	size_t size() { return trpl_list.size(); }
-	Triple64* back() { return trpl_list.back(); }
-
-	void PAutoReduce();
+    bool empty();
+    std::size_t size();
+    void deleteDescendants(Triple* ancestor);
 };
+
+inline bool QSET::empty()
+{
+    return tripleList.empty();
+}
+
+inline std::size_t QSET::size()
+{
+    return tripleList.size();
+}
 
 #endif // QSET_H
