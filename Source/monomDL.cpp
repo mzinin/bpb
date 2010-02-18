@@ -1,17 +1,22 @@
 #include "monomDL.h"
 
-void MonomDL::addVariable(const char *var)
+void MonomDL::AddVariable(const char *var)
 {
-    if (mIndepend->add(var))
+    if (mIndepend->Add(var))
     {
         mDimIndepend++;
     }
 }
 
+const char* MonomDL::GetVariable(MonomDL::Integer var)
+{
+    return mIndepend->Variable(var);
+}
+
 std::istream& operator>>(std::istream& in, MonomDL& a)
 {
     std::streampos posbeg = in.tellg();
-    int var = a.mIndepend->read(in);
+    int var = a.mIndepend->Read(in);
     if (var < 0)
     {
         in.clear();
@@ -19,7 +24,7 @@ std::istream& operator>>(std::istream& in, MonomDL& a)
     }
     else
     {
-        a.setOne();
+        a.SetOne();
         int deg;
         do
         {
@@ -38,11 +43,13 @@ std::istream& operator>>(std::istream& in, MonomDL& a)
             a *= var;
             posbeg = in.tellg();
             if (in.peek() != '*')
+            {
                 var = -1;
+            }
             else
             {
                 in.get();
-                var = a.mIndepend->read(in);
+                var = a.mIndepend->Read(in);
                 if (var < 0)
                 {
                     in.clear();
@@ -50,8 +57,11 @@ std::istream& operator>>(std::istream& in, MonomDL& a)
                 }
             }
         } while(var >= 0);
+
         if (in.eof() && deg >= 0)
+        {
             in.clear();
+        }
     }
     return in;
 }
@@ -65,11 +75,11 @@ std::ostream& operator<<(std::ostream& out, const MonomDL& a)
     else
     {
         MonomDL::VarsListNode* iteratorA(a.mListHead);
-        out << a.mIndepend->variable(iteratorA->value);
+        out << a.mIndepend->Variable(iteratorA->value);
         iteratorA = iteratorA->next;
         while (iteratorA != NULL)
         {
-            out << "*" << a.mIndepend->variable(iteratorA->value);
+            out << "*" << a.mIndepend->Variable(iteratorA->value);
             iteratorA = iteratorA->next;
         }
     }
@@ -77,7 +87,7 @@ std::ostream& operator<<(std::ostream& out, const MonomDL& a)
     return out;
 }
 
-int MonomDL::compare(const MonomDL& monomA, const MonomDL& monomB)
+int MonomDL::Compare(const MonomDL& monomA, const MonomDL& monomB)
 {
     if (monomA.mDegree < monomB.mDegree)
     {

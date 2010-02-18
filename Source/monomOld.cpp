@@ -1,8 +1,8 @@
 #include "monomOld.h"
 
-void MonomOld::addVariable(const char *var)
+void MonomOld::AddVariable(const char *var)
 {
-    if (mIndepend->add(var))
+    if (mIndepend->Add(var))
     {
         mDimIndepend++;
     }
@@ -17,85 +17,100 @@ void MonomOld::addVariable(const char *var)
     }
 }
 
+const char* MonomOld::GetVariable(MonomOld::Integer var)
+{
+    return mIndepend->Variable(var);
+}
+
 std::istream& operator>>(std::istream& in, MonomOld& a)
 {
-  	std::streampos posbeg = in.tellg();
-  	int var = a.mIndepend->read(in);
-  	if (var < 0)
-	{
-    		in.clear();
-    		in.setstate(std::ios::failbit);
-  	}
-  	else
-	{
-    		a.setOne();
-    		int deg;
-    		do
-		{
-      			deg = 1;
-      			std::streampos posbeg = in.tellg();
-      			if ((in >> std::ws).peek() == '^')
-			{
-        			in.get();
-        			in >> std::ws >> deg;
-        			if (in.fail() || deg < 0)
-				{
-          				in.setstate(std::ios::failbit);
-          				IMESSAGE("expected 'degree >= 0'");
-        			}
-      			}
-      			a *= var;
-               		posbeg = in.tellg();
-      			if (in.peek() != '*')
-        			var = -1;
-      			else
-			{
-        			in.get();
-        			var = a.mIndepend->read(in);
-        			if (var < 0)
-				{
-          				in.clear();
-          				in.seekg(posbeg);
-        			}
-      			}
-    		} while(var >= 0);
-    		if (in.eof() && deg >= 0)
-      			in.clear();
-  	}
-  	return in;
+    std::streampos posbeg = in.tellg();
+    int var = a.mIndepend->Read(in);
+    if (var < 0)
+    {
+        in.clear();
+        in.setstate(std::ios::failbit);
+    }
+    else
+    {
+        a.SetOne();
+        int deg;
+        do
+        {
+            deg = 1;
+            std::streampos posbeg = in.tellg();
+            if ((in >> std::ws).peek() == '^')
+            {
+                in.get();
+                in >> std::ws >> deg;
+                if (in.fail() || deg < 0)
+                {
+                    in.setstate(std::ios::failbit);
+                    IMESSAGE("expected 'degree >= 0'");
+                }
+            }
+            a *= var;
+            posbeg = in.tellg();
+            if (in.peek() != '*')
+            {
+                var = -1;
+            }
+            else
+            {
+                in.get();
+                var = a.mIndepend->Read(in);
+                if (var < 0)
+                {
+                    in.clear();
+                    in.seekg(posbeg);
+                }
+            }
+        } while(var >= 0);
+        if (in.eof() && deg >= 0)
+        {
+            in.clear();
+        }
+    }
+    return in;
 }
 
 std::ostream& operator<<(std::ostream& out, const MonomOld& a)
 {
-  	if (a.degree() == 0)
-    		out << '1';
-  	else
-	{
-    		int i = 0;
-    		Variables::ConstIterator j(a.mIndepend->begin());
-    		while(a[i] == 0)
-		{
-      			++i;
-      			++j;
-    		}
-    		out << *j;
-    		if (a[i] > 1)
-      			out << '^' << a[i];
-    		++i;
-    		++j;
-    		while(j!=a.mIndepend->end())
-		{
-      			if (a[i])
-			{
-        			out << '*' << *j;
-        			if (a[i] > 1)
-          				out << '^' << a[i];
-      			}
-      			++i;
-      			++j;
-    		}
-  	}
-  	return out;
+    if (a.Degree() == 0)
+    {
+        out << '1';
+    }
+    else
+    {
+        int i = 0;
+        Variables::ConstIterator j(a.mIndepend->Begin());
+        while(a[i] == 0)
+        {
+            ++i;
+            ++j;
+        }
+        out << *j;
+        if (a[i] > 1)
+        {
+            out << '^' << a[i];
+        }
+        ++i;
+        ++j;
+        while(j != a.mIndepend->End())
+        {
+            if (a[i])
+            {
+                out << '*' << *j;
+                if (a[i] > 1)
+                {
+                    out << '^' << a[i];
+                }
+            }
+            ++i;
+            ++j;
+        }
+    }
+    return out;
 }
 
 Variables* MonomOld::mIndepend = new Variables();

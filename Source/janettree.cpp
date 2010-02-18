@@ -2,31 +2,31 @@
 
 JanetTree::~JanetTree()
 {
-    clear();
+    Clear();
     delete jRoot;
 }
 
-Triple* JanetTree::find(const Monom& monom) const
+const Triple* JanetTree::Find(const Monom& monom) const
 {
-    Triple* trpl = NULL;
+    const Triple* trpl = NULL;
 
     if (jRoot)
     {
         ConstIterator j(jRoot);
-        Monom::Integer d = monom.degree();
+        Monom::Integer d = monom.Degree();
         Monom::Integer var = 0;
         do
         {
-            if (j.degree() != monom[var] && j.isNextDegree())
+            if (j.Degree() != monom[var] && j.IsNextDegree())
             {
-                j.step_deg();
+                j.StepDegree();
             }
 
-            if (j.degree() != monom[var])
+            if (j.Degree() != monom[var])
             {
                 break;
             }
-            else if (j.isNextVar())
+            else if (j.IsNextVariable())
             {
                 d -= monom[var];
                 if (d == 0)
@@ -34,11 +34,11 @@ Triple* JanetTree::find(const Monom& monom) const
                     break;
                 }
                 var++;
-                j.step_var();
+                j.StepVariable();
             }
             else
             {
-                trpl = j.trpl();
+                trpl = j.GetTriple();
                 break;
             }
         } while(true);
@@ -46,32 +46,32 @@ Triple* JanetTree::find(const Monom& monom) const
     return trpl;
 }
 
-void JanetTree::del(Triple *trpl)
+void JanetTree::Delete(Triple *trpl)
 {
     Iterator j(jRoot);
     //подсчет ветвлений
     Monom::Integer var = 0, vet = 0;
-    if (j.isNextDegree() && j.isNextVar())
+    if (j.IsNextDegree() && j.IsNextVariable())
     {
         vet++;
     }
 
     do
     {
-        while(j.degree() < trpl->getPolyLm()[var])
+        while(j.Degree() < trpl->GetPolyLm()[var])
         {
-            j.step_deg();
-            if (j.isNextDegree() && j.isNextVar())
+            j.StepDegree();
+            if (j.IsNextDegree() && j.IsNextVariable())
             {
                 vet++;
             }
         }
 
-        if (j.nextVar())
+        if (j.NextVariable())
         {
             var++;
-            j.step_var();
-            if (j.isNextDegree() && j.isNextVar())
+            j.StepVariable();
+            if (j.IsNextDegree() && j.IsNextVariable())
             {
                 vet++;
             }
@@ -87,15 +87,15 @@ void JanetTree::del(Triple *trpl)
     var = 0;
     bool varDirection = false;
 
-    if (j.isNextDegree() && j.isNextVar())
+    if (j.IsNextDegree() && j.IsNextVariable())
     {
         vet--;
     }
     if (vet == 0)
     {
-        if (j.degree() < trpl->getPolyLm()[var])
+        if (j.Degree() < trpl->GetPolyLm()[var])
         {
-            j.step_deg();
+            j.StepDegree();
         }
         else
         {
@@ -105,10 +105,10 @@ void JanetTree::del(Triple *trpl)
 
     while (vet > 0)
     {
-        while(j.degree() < trpl->getPolyLm()[var] && vet > 0)
+        while(j.Degree() < trpl->GetPolyLm()[var] && vet > 0)
         {
-            j.step_deg();
-            if (j.isNextDegree() && j.isNextVar())
+            j.StepDegree();
+            if (j.IsNextDegree() && j.IsNextVariable())
             {
                 vet--;
             }
@@ -116,9 +116,9 @@ void JanetTree::del(Triple *trpl)
 
         if (vet==0)
         {
-            if (j.degree() < trpl->getPolyLm()[var])
+            if (j.Degree() < trpl->GetPolyLm()[var])
             {
-                j.step_deg();
+                j.StepDegree();
                 break;
             }
             else
@@ -129,16 +129,16 @@ void JanetTree::del(Triple *trpl)
         }
 
         var++;
-        j.step_var();
-        if (j.isNextDegree() && j.isNextVar())
+        j.StepVariable();
+        if (j.IsNextDegree() && j.IsNextVariable())
         {
             vet--;
         }
         if (vet==0)
         {
-            if (j.degree() < trpl->getPolyLm()[var])
+            if (j.Degree() < trpl->GetPolyLm()[var])
             {
-                j.step_deg();
+                j.StepDegree();
                 break;
             }
             else
@@ -152,61 +152,61 @@ void JanetTree::del(Triple *trpl)
     if (varDirection)
     {
         Iterator j1 = j;
-        j1.step_var();
-        j1.clear();
-        j.del();
+        j1.StepVariable();
+        j1.Clear();
+        j.Delete();
     }
     else
     {
-        j.clear();
+        j.Clear();
     }
 }
 
-void JanetTree::insert(Triple* trpl)
+void JanetTree::Insert(Triple* trpl)
 {
-    Monom::Integer d = trpl->getPolyLm().degree();
+    Monom::Integer d = trpl->GetPolyLm().Degree();
     JanetTree::Iterator j(jRoot);
 
     if (jRoot == NULL)
     {
-        j.build(d, 0, trpl);
+        j.Build(d, 0, trpl);
     }
     else
     {
         Monom::Integer var = 0;
         do
         {
-            while(j.degree() < trpl->getPolyLm()[var] && j.isNextDegree())
+            while(j.Degree() < trpl->GetPolyLm()[var] && j.IsNextDegree())
             {
-                j.step_deg();
+                j.StepDegree();
             }
 
-            if (j.degree() > trpl->getPolyLm()[var])
+            if (j.Degree() > trpl->GetPolyLm()[var])
             {
-                j.build(d, var, trpl);
+                j.Build(d, var, trpl);
                 break;
             }
-            else if (j.degree() == trpl->getPolyLm()[var])
+            else if (j.Degree() == trpl->GetPolyLm()[var])
             {
-                d -= trpl->getPolyLm()[var];
+                d -= trpl->GetPolyLm()[var];
                 var++;
-                j.step_var();
+                j.StepVariable();
             }
             else
             {
-                j.step_deg();
-                j.build(d, var, trpl);
+                j.StepDegree();
+                j.Build(d, var, trpl);
                 break;
             }
         } while(true);
     }
 }
 
-void JanetTree::clear()
+void JanetTree::Clear()
 {
     if (jRoot)
     {
         JanetTree::Iterator j(jRoot);
-        j.clear();
+        j.Clear();
     }
 }

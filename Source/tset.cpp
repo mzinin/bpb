@@ -6,7 +6,7 @@ TSET::TSET(): tripleList(), jTree()
 
 TSET::~TSET()
 {
-    jTree.clear();
+    jTree.Clear();
 
     iterator it(tripleList.begin());
     while (it != tripleList.end())
@@ -17,20 +17,20 @@ TSET::~TSET()
     tripleList.clear();
 }
 
-void TSET::clear()
+void TSET::Clear()
 {
-    jTree.clear();
+    jTree.Clear();
     tripleList.clear();
 }
 
-TSET::iterator TSET::erase(TSET::iterator it)
+TSET::iterator TSET::Erase(TSET::iterator it)
 {
-    jTree.del(*it);
+    jTree.Delete(*it);
     return tripleList.erase(it);
 }
 
-void TSET::push_back(Triple* newTriple)
+void TSET::PushBack(Triple* newTriple)
 {
     tripleList.push_back(newTriple);
-    jTree.insert(newTriple);
+    jTree.Insert(newTriple);
 }

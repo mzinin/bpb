@@ -35,7 +35,7 @@
 
 double Timer::sHZ = 10000000.0;
 
-void Timer::start()
+void Timer::Start()
 {
 	mUserElapsed = 0.0;
 	mSysElapsed = 0.0;
@@ -51,7 +51,7 @@ void Timer::start()
 	mRealTime = rTime.QuadPart/sHZ;
 }
 
-void Timer::cont()
+void Timer::Continue()
 {
 	ULARGE_INTEGER cTime, eTime, kTime, uTime, rTime;
 
@@ -63,7 +63,7 @@ void Timer::cont()
 	mRealTime = rTime.QuadPart/sHZ;
 }
 
-void Timer::stop()
+void Timer::Stop()
 {
 	ULARGE_INTEGER cTime, eTime, kTime, uTime, rTime;
 
@@ -83,7 +83,7 @@ void Timer::stop()
 
 double Timer::sHZ = double(sysconf(_SC_CLK_TCK));
 
-void Timer::start()
+void Timer::Start()
 {
 	mUserElapsed = 0.0;
 	mSysElapsed = 0.0;
@@ -95,7 +95,7 @@ void Timer::start()
 	mSysTime = buffer.tms_stime/sHZ;
 }
 
-void Timer::cont()
+void Timer::Continue()
 {
 	tms buffer;
 	mRealTime = times(&buffer)/sHZ;
@@ -103,7 +103,7 @@ void Timer::cont()
 	mSysTime = buffer.tms_stime/sHZ;
 }
 
-void Timer::stop()
+void Timer::Stop()
 {
 	tms buffer;
 	double t = times(&buffer)/sHZ;

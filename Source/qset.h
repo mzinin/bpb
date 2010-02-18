@@ -12,25 +12,25 @@ class QSET
 
 public:
     QSET();
-    QSET(list<Polynom*> &basis);
+    QSET(const list<Polynom*>& basis);
     ~QSET();
 
-    void insert(list<Polynom*> &addList);
-    void insert(list<Triple*> &addList);
-    void update(Triple* newTriple, list<Triple*> &set);
-    Triple* get();
+    void Insert(list<Polynom*>& addList);
+    void Insert(list<Triple*>& addList);
+    void Update(Triple* newTriple, list<Triple*>& set);
+    Triple* Get();
 
-    bool empty();
-    std::size_t size();
-    void deleteDescendants(Triple* ancestor);
+    bool Empty() const;
+    std::size_t Size() const;
+    void DeleteDescendants(const Triple* ancestor);
 };
 
-inline bool QSET::empty()
+inline bool QSET::Empty() const
 {
     return tripleList.empty();
 }
 
-inline std::size_t QSET::size()
+inline std::size_t QSET::Size() const
 {
     return tripleList.size();
 }

@@ -10,7 +10,7 @@ Variables::~Variables()
     mVector.clear();
 }
 
-bool Variables::add(const char *var)
+bool Variables::Add(const char *var)
 {
     int n = strlen(var);
     char *name = new char[n+1];
@@ -29,7 +29,7 @@ bool Variables::add(const char *var)
     }
     name[i] = '\0';
 
-    if (find(name) >= 0)
+    if (Find(name) >= 0)
     {
         return false;
     }
@@ -40,7 +40,7 @@ bool Variables::add(const char *var)
     }
 }
 
-int Variables::find(const char *var) const
+int Variables::Find(const char *var) const
 {
     int r = 0;
     ConstIterator i(mVector.begin());
@@ -58,7 +58,7 @@ int Variables::find(const char *var) const
     return r;
 }
 
-static int readVariable(std::istream& in, const char *var)
+static int ReadVariable(std::istream& in, const char *var)
 {
     in >> std::ws;
     int r = 0;
@@ -75,7 +75,7 @@ static int readVariable(std::istream& in, const char *var)
     return r;
 }
 
-int Variables::read(std::istream& in) const
+int Variables::Read(std::istream& in) const
 {
    std::streampos posbeg = in.tellg(), posend;
    int varCurrent = 0, var = -1;
@@ -84,7 +84,7 @@ int Variables::read(std::istream& in) const
    while (i != mVector.end())
    {
         in.seekg(posbeg);
-        lenCurrent = readVariable(in, *i);
+        lenCurrent = ReadVariable(in, *i);
         if (lenCurrent > 0)
         {
             var = varCurrent;
@@ -99,7 +99,7 @@ int Variables::read(std::istream& in) const
     while (i != mVector.end())
     {
         in.seekg(posbeg);
-        lenCurrent = readVariable(in, *i);
+        lenCurrent = ReadVariable(in, *i);
         if (lenCurrent > len)
         {
             var = varCurrent;

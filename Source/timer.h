@@ -44,9 +44,9 @@ public:
       mSysElapsed(0.0),
       mRealElapsed(0.0) {}
 
-	void start();
-	void cont();
-	void stop();
+	void Start();
+	void Continue();
+	void Stop();
 
 	double userTime() const { return mUserElapsed; }
 	double sysTime() const { return mSysElapsed; }

@@ -29,40 +29,40 @@ public:
 
     ~Triple();
 
-    const Polynom* getPoly() const;
-    const Monom& getPolyLm() const;
-    const Triple* getAnc() const;
-    const Monom& getAncLm() const;
-    const Triple* getWanc() const;
-    const set<Monom::Integer>& getNmp() const;
-    Monom::Integer getVar() const;
-    bool isCriteriaAppliable() const;
+    const Polynom* GetPoly() const;
+    const Monom& GetPolyLm() const;
+    const Triple* GetAnc() const;
+    const Monom& GetAncLm() const;
+    const Triple* GetWanc() const;
+    const set<Monom::Integer>& GetNmp() const;
+    Monom::Integer GetVar() const;
+    bool IsCriteriaAppliable() const;
 
-    void setNmp(const set<Monom::Integer>& newNmp);
-    void setNmp(Monom::Integer var);
-    bool testNmp(Monom::Integer var) const;
+    void SetNmp(const set<Monom::Integer>& newNmp);
+    void SetNmp(Monom::Integer var);
+    bool TestNmp(Monom::Integer var) const;
 
     void* operator new(std::size_t);
     void operator delete(void *ptr);
-    static bool compare(Triple* a, Triple* b);
+    static bool Compare(const Triple* a, const Triple* b);
 };
 
-inline const Monom& Triple::getAncLm() const
+inline const Monom& Triple::GetAncLm() const
 {
     return *anc_lm;
 }
 
-inline const Triple* Triple::getWanc() const
+inline const Triple* Triple::GetWanc() const
 {
     return wanc;
 }
 
-inline Monom::Integer Triple::getVar() const
+inline Monom::Integer Triple::GetVar() const
 {
     return var;
 }
 
-inline bool Triple::isCriteriaAppliable() const
+inline bool Triple::IsCriteriaAppliable() const
 {
     return var != -1;
 }
@@ -86,52 +86,52 @@ class Triple
 
         ~Triple();
 
-        const Polynom* getPoly() const;
-        const Monom& getPolyLm() const;
-        const Triple* getAnc() const;
-        const set<Monom::Integer>& getNmp() const;
+        const Polynom* GetPoly() const;
+        const Monom& GetPolyLm() const;
+        const Triple* GetAnc() const;
+        const set<Monom::Integer>& GetNmp() const;
 
-        void setNmp(const set<Monom::Integer>& newNmp);
-        void setNmp(Monom::Integer var);
-        bool testNmp(Monom::Integer var) const;
+        void SetNmp(const set<Monom::Integer>& newNmp);
+        void SetNmp(Monom::Integer var);
+        bool TestNmp(Monom::Integer var) const;
 
         void* operator new(std::size_t);
         void operator delete(void *ptr);
-        static bool compare(Triple* a, Triple* b);
+        static bool Compare(const Triple* a, const Triple* b);
 };
 #endif
 
-inline const Polynom* Triple::getPoly() const
+inline const Polynom* Triple::GetPoly() const
 {
     return poly;
 }
 
-inline const Monom& Triple::getPolyLm() const
+inline const Monom& Triple::GetPolyLm() const
 {
     return *lm;
 }
 
-inline const Triple* Triple::getAnc() const
+inline const Triple* Triple::GetAnc() const
 {
     return anc;
 }
 
-inline const set<Monom::Integer>& Triple::getNmp() const
+inline const set<Monom::Integer>& Triple::GetNmp() const
 {
     return nmp;
 }
 
-inline void Triple::setNmp(const set<Monom::Integer>& newNmp)
+inline void Triple::SetNmp(const set<Monom::Integer>& newNmp)
 {
     nmp = newNmp;
 }
 
-inline void Triple::setNmp(Monom::Integer var)
+inline void Triple::SetNmp(Monom::Integer var)
 {
     nmp.insert(var);
 }
 
-inline bool Triple::testNmp(Monom::Integer var) const
+inline bool Triple::TestNmp(Monom::Integer var) const
 {
     //short res = nmp.count(var);
     //return res;
@@ -148,7 +148,7 @@ inline void Triple::operator delete(void *ptr)
     tAllocator.deallocate(ptr);
 }
 
-inline bool Triple::compare(Triple* a, Triple* b)
+inline bool Triple::Compare(const Triple* a, const Triple* b)
 {
     return *a->lm > *b->lm;
 }

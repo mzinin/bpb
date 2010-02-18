@@ -19,35 +19,35 @@ public:
     Variables(): mVector() {}
     ~Variables();
 
-    bool add(const char *var);
-    int find(const char *var) const;
-    int read(std::istream& in) const;
+    bool Add(const char *var);
+    int Find(const char *var) const;
+    int Read(std::istream& in) const;
 
-    int dim() const;
-    ConstIterator begin() const;
-    ConstIterator end() const;
-    const char* variable(int varNumber) const;
+    int Dim() const;
+    ConstIterator Begin() const;
+    ConstIterator End() const;
+    const char* Variable(int varNumber) const;
 };
 
 
-inline int Variables::dim() const
+inline int Variables::Dim() const
 {
     return mVector.size();
 }
 
-inline Variables::ConstIterator Variables::begin() const
+inline Variables::ConstIterator Variables::Begin() const
 {
     return mVector.begin();
 }
 
-inline Variables::ConstIterator Variables::end() const
+inline Variables::ConstIterator Variables::End() const
 {
     return mVector.end();
 }
 
-inline const char* Variables::variable(int varNumber) const
+inline const char* Variables::Variable(int varNumber) const
 {
-    if (varNumber >= dim())
+    if (varNumber >= Dim())
     {
         varNumber = 0;
     }

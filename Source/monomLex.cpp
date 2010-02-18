@@ -1,17 +1,22 @@
 #include "monomLex.h"
 
-void MonomLex::addVariable(const char *var)
+void MonomLex::AddVariable(const char *var)
 {
-    if (mIndepend->add(var))
+    if (mIndepend->Add(var))
     {
         mDimIndepend++;
     }
 }
 
+const char* MonomLex::GetVariable(MonomLex::Integer var)
+{
+    return mIndepend->Variable(var);
+}
+
 std::istream& operator>>(std::istream& in, MonomLex& a)
 {
     std::streampos posbeg = in.tellg();
-    int var = a.mIndepend->read(in);
+    int var = a.mIndepend->Read(in);
     if (var < 0)
     {
         in.clear();
@@ -19,7 +24,7 @@ std::istream& operator>>(std::istream& in, MonomLex& a)
     }
     else
     {
-        a.setOne();
+        a.SetOne();
         int deg;
         do
         {
@@ -42,7 +47,7 @@ std::istream& operator>>(std::istream& in, MonomLex& a)
             else
             {
                 in.get();
-                var = a.mIndepend->read(in);
+                var = a.mIndepend->Read(in);
                 if (var < 0)
                 {
                     in.clear();
@@ -50,8 +55,11 @@ std::istream& operator>>(std::istream& in, MonomLex& a)
                 }
             }
         } while(var >= 0);
+
         if (in.eof() && deg >= 0)
+        {
             in.clear();
+        }
     }
     return in;
 }
@@ -65,11 +73,11 @@ std::ostream& operator<<(std::ostream& out, const MonomLex& a)
     else
     {
         MonomLex::VarsListNode* iteratorA(a.mListHead);
-        out << a.mIndepend->variable(iteratorA->value);
+        out << a.mIndepend->Variable(iteratorA->value);
         iteratorA = iteratorA->next;
         while (iteratorA != NULL)
         {
-            out << "*" << a.mIndepend->variable(iteratorA->value);
+            out << "*" << a.mIndepend->Variable(iteratorA->value);
             iteratorA = iteratorA->next;
         }
     }
@@ -77,7 +85,7 @@ std::ostream& operator<<(std::ostream& out, const MonomLex& a)
     return out;
 }
 
-int MonomLex::compare(const MonomLex& monomA, const MonomLex& monomB)
+int MonomLex::Compare(const MonomLex& monomA, const MonomLex& monomB)
 {
     VarsListNode *iteratorA(monomA.mListHead),
                  *iteratorB(monomB.mListHead);

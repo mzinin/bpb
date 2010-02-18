@@ -4,7 +4,7 @@ QSET::QSET(): tripleList()
 {
 }
 
-QSET::QSET(list<Polynom*> &basis): tripleList()
+QSET::QSET(const list<Polynom*>& basis): tripleList()
 {
     list<Polynom*>::const_iterator itBasis(basis.begin());
     while (itBasis != basis.end())
@@ -12,7 +12,7 @@ QSET::QSET(list<Polynom*> &basis): tripleList()
         tripleList.push_back(new Triple(*itBasis));
         itBasis++;
     }
-    tripleList.sort(Triple::compare);
+    tripleList.sort(Triple::Compare);
 }
 
 QSET::~QSET()
@@ -26,7 +26,7 @@ QSET::~QSET()
     tripleList.clear();
 }
 
-void QSET::insert(list<Polynom*> &addList)
+void QSET::Insert(list<Polynom*>& addList)
 {
     list<Polynom*>::const_iterator itBasis(addList.begin());
     while ( itBasis != addList.end() )
@@ -34,49 +34,46 @@ void QSET::insert(list<Polynom*> &addList)
         tripleList.push_back(new Triple(*itBasis));
         itBasis++;
     }
-    tripleList.sort(Triple::compare);
+    tripleList.sort(Triple::Compare);
 }
 
-void QSET::insert(list<Triple*> &addList)
+void QSET::Insert(list<Triple*>& addList)
 {
-    addList.sort(Triple::compare);
-    tripleList.merge(addList, Triple::compare);
+    addList.sort(Triple::Compare);
+    tripleList.merge(addList, Triple::Compare);
 }
 
 
-void QSET::update(Triple* newTriple, list<Triple*> &set)
+void QSET::Update(Triple* newTriple, list<Triple*>& set)
 {
-    Monom::Integer firstMultiVar = newTriple->getPolyLm().firstMultiVar();
+    Monom::Integer firstMultiVar = newTriple->GetPolyLm().FirstMultiVar();
     Monom tmpMonom;
 
-    std::set<Monom::Integer> nmp(newTriple->getNmp());
     for (register Monom::Integer var = 0; var < firstMultiVar; var++)
     {
-        nmp.insert(var);
-    }
-
-    for (register Monom::Integer var = 0; var < firstMultiVar; var++)
-    {
-        if (!newTriple->testNmp(var))
+        if (!newTriple->TestNmp(var))
 	{
-            Polynom* tmpPolynom = new Polynom(*newTriple->getPoly());
+            Polynom* tmpPolynom = new Polynom(*newTriple->GetPoly());
             (*tmpPolynom) *= var;
-            if (!tmpPolynom->isZero())
+
+            newTriple->SetNmp(var);
+
+            if (!tmpPolynom->IsZero())
             {
-                tmpMonom = newTriple->getPolyLm();
+                tmpMonom = newTriple->GetPolyLm();
                 tmpMonom *= var;
-                if (tmpMonom == tmpPolynom->lm())
+                if (tmpMonom == tmpPolynom->Lm())
                 {
-#ifdef USE_CRITRERIA
+#ifdef USE_CRITERIA
                     set.push_back(new Triple(tmpPolynom,
-                                             newTriple->getAnc(),
+                                             newTriple->GetAnc(),
                                              newTriple,
-                                             nmp,
+                                             newTriple->GetNmp(),
                                              var));
 #else
                     set.push_back(new Triple(tmpPolynom,
-                                             newTriple->getAnc(),
-                                             nmp));
+                                             newTriple->GetAnc(),
+                                             newTriple->GetNmp()));
 #endif
                 }
                 else
@@ -84,24 +81,65 @@ void QSET::update(Triple* newTriple, list<Triple*> &set)
                     set.push_back(new Triple(tmpPolynom));
                 }
             }
-            newTriple->setNmp(var);
         }
     }
 }
 
-Triple* QSET::get()
+/*
+void QSET::Update(Triple* newTriple, list<Triple*>& set)
+{
+    Monom::Integer firstMultiVar = newTriple->GetPolyLm().FirstMultiVar();
+
+    Monom tmpMonom = newTriple->GetPolyLm();;
+    Polynom* tmpPolynom = new Polynom(*newTriple->GetPoly());
+    for (register Monom::Integer var = 0; var < firstMultiVar; var++)
+    {
+        //if (!newTriple->TestNmp(var))
+        {
+            (*tmpPolynom) *= var;
+            tmpMonom *= var;
+            newTriple->SetNmp(var);
+        }
+    }
+
+
+    if (!tmpPolynom->IsZero())
+    {
+        if (tmpMonom == tmpPolynom->Lm())
+        {
+#ifdef USE_CRITERIA
+            set.push_back(new Triple(tmpPolynom,
+                          newTriple->GetAnc(),
+                          newTriple,
+                          newTriple->GetNmp(),
+                          var));
+#else
+            set.push_back(new Triple(tmpPolynom,
+                          newTriple->GetAnc(),
+                          newTriple->GetNmp()));
+#endif
+        }
+        else
+        {
+            set.push_back(new Triple(tmpPolynom));
+        }
+    }
+}
+*/
+
+Triple* QSET::Get()
 {
     Triple* result = tripleList.back();
     tripleList.pop_back();
     return result;
 }
 
-void QSET::deleteDescendants(Triple* ancestor)
+void QSET::DeleteDescendants(const Triple* ancestor)
 {
     list<Triple*>::iterator it(tripleList.begin());
     while ( it != tripleList.end() )
     {
-        if ((**it).getAnc() == ancestor)
+        if ((**it).GetAnc() == ancestor)
         {
             delete *it;
             it = tripleList.erase(it);

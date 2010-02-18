@@ -25,7 +25,6 @@ int main(int argc, char *argv[])
         }
     }
 
-
     //read variables
     char c = '0';
     std::string tmpString;
@@ -34,7 +33,7 @@ int main(int argc, char *argv[])
         fileInputStream >> c;
         if (c == ',' || c == ';')
         {
-            Monom::addVariable(tmpString.c_str());
+            Monom::AddVariable(tmpString.c_str());
             tmpString.clear();
         }
         else
@@ -47,7 +46,6 @@ int main(int argc, char *argv[])
     Polynom poly;
     list<Polynom*> polyList, answerList;
     list<Polynom*>::iterator iterPolyList(polyList.begin()), iterAnswerList(answerList.begin());
-
 
     stringstream* tmpStream = new stringstream();
     c = '0';
@@ -76,6 +74,33 @@ int main(int argc, char *argv[])
     delete tmpStream;
     //initial polynomial set is read
 
+/*{
+    ofstream newFile;
+    string newFileName = argv[1];
+    newFileName.insert(newFileName.find_last_of('.'), "_new");
+    newFile.open(newFileName.c_str());
+
+    if (!newFile.good())
+        return 1;
+
+    for (register unsigned i = 0; i < Monom::DimIndepend(); ++i)
+    {
+        newFile << Monom::GetVariable(i) << ",";
+    }
+    newFile.seekp(-1, ios_base::cur);
+    newFile << ";\n";
+
+    list<Polynom*>::const_reverse_iterator it = polyList.rbegin();
+    for (; it != polyList.rend(); ++it)
+    {
+        newFile << **it << ",\n";
+    }
+    newFile.seekp(-2, ios_base::cur);
+    newFile << ";\n1;\n";
+
+    newFile.close();
+    return 0;
+}*/
 
     tmpStream = new stringstream();
     c = '0';
@@ -94,7 +119,6 @@ int main(int argc, char *argv[])
         }
     }
 
-
     while (!tmpStream->eof())
     {
         *tmpStream >> poly;
@@ -108,18 +132,17 @@ int main(int argc, char *argv[])
 
 
     Timer timer;
-    timer.start();
+    timer.Start();
     GBasis basisGroebner(polyList);
-    timer.stop();
+    timer.Stop();
 
-    cout << "Size: " << basisGroebner.length() << endl;
     //cout << basisGroebner << endl;
     cout << timer << endl;
 
 
-	bool isCorrect = true, Found;
+    bool isCorrect = true, Found;
     //checking
-    if (basisGroebner.length() != answerList.size())
+    if (basisGroebner.Length() != answerList.size())
     {
         isCorrect = false;
     }
@@ -129,7 +152,7 @@ int main(int argc, char *argv[])
         while (iterAnswerList != answerList.end())
         {
             Found = false;
-            for (register unsigned i = 0; i < basisGroebner.length(); i++)
+            for (register unsigned i = 0; i < basisGroebner.Length(); i++)
             {
                 if (*basisGroebner[i] == **iterAnswerList)
                 {
@@ -149,12 +172,14 @@ int main(int argc, char *argv[])
     cout << endl;
     //end checking
 
-
     if (isCorrect)
+    {
         cout << "The answer is CORRECT" << endl;
+    }
     else
+    {
         cout << "The answer is WRONG" << endl;
-
+    }
 
     return EXIT_SUCCESS;
 }

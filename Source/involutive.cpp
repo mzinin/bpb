@@ -1,6 +1,7 @@
 #include <iostream>
 #include "involutive.h"
 #include "timer.h"
+#include "pcomparator.h"
 
 using namespace std;
 
@@ -9,12 +10,12 @@ long int c1 = 0, c2 = 0, c3 = 0, c4 = 0;
 #endif
 
 #ifdef USE_CRITERIA
-bool GBasis::Criteria1(Triple* p, Triple* g)
+bool GBasis::Criteria1(const Triple* p, const Triple* g)
 {
-    Monom tmp = p->getAncLm();
-    tmp *= g->getAncLm();
+    Monom tmp = p->GetAncLm();
+    tmp *= g->GetAncLm();
 
-    if (p->getPolyLm() == tmp && !Monom::gcdDegree(p->getAncLm(), g->getAncLm()))
+    if (p->GetPolyLm() == tmp && !Monom::GcdDegree(p->GetAncLm(), g->GetAncLm()))
     {
 #ifdef COLLECT_STATISTIC
         c1++;
@@ -27,12 +28,12 @@ bool GBasis::Criteria1(Triple* p, Triple* g)
     }
 }
 
-bool GBasis::Criteria2(Triple* p, Triple* g)
+bool GBasis::Criteria2(const Triple* p, const Triple* g)
 {
-    Monom tmp = p->getAncLm();
-    tmp *= g->getAncLm();
+    Monom tmp = p->GetAncLm();
+    tmp *= g->GetAncLm();
 
-    if (p->getPolyLm().isTrueDivisibleBy(tmp) && !Monom::gcdDegree(p->getAncLm(), g->getAncLm()))
+    if (p->GetPolyLm().IsTrueDivisibleBy(tmp) && !Monom::GcdDegree(p->GetAncLm(), g->GetAncLm()))
     {
 #ifdef COLLECT_STATISTIC
         c2++;
@@ -45,19 +46,19 @@ bool GBasis::Criteria2(Triple* p, Triple* g)
     }
 }
 
-bool GBasis::Criteria3(Triple* p, Triple* g)
+bool GBasis::Criteria3(const Triple* p, const Triple* g)
 {
-    Monom m = p->getPolyLm(), mp, mg;
-    m *= g->getPolyLm();
+    Monom m = p->GetPolyLm(), mp, mg;
+    m *= g->GetPolyLm();
     //Monom m = p->getAncLm(), mp, mg;
     //m *= g->getAncLm();
 
-    TSET::const_iterator ctit(tSet.begin());
-    while(ctit != tSet.end())
+    TSET::const_iterator ctit(tSet.Begin());
+    while(ctit != tSet.End())
     {
-        mp = p->getAncLm(); mp *= (**ctit).getPolyLm();
-        mg = g->getAncLm(); mg *= (**ctit).getPolyLm();
-        if(m.isTrueDivisibleBy(mp) && m.isTrueDivisibleBy(mg))
+        mp = p->GetAncLm(); mp *= (**ctit).GetPolyLm();
+        mg = g->GetAncLm(); mg *= (**ctit).GetPolyLm();
+        if(m.IsTrueDivisibleBy(mp) && m.IsTrueDivisibleBy(mg))
         {
 #ifdef COLLECT_STATISTIC
             c3++;
@@ -70,28 +71,28 @@ bool GBasis::Criteria3(Triple* p, Triple* g)
     return false;
 }
 
-bool GBasis::Criteria4(Triple* p, Triple* g)
+bool GBasis::Criteria4(const Triple* p, const Triple* g)
 {
-    TSET::const_iterator ctit(tSet.begin());
+    TSET::const_iterator ctit(tSet.Begin());
 
-    while (ctit != tSet.end() && p->getWanc() != *ctit)
-    {   std::cout << (**ctit).getAncLm().degree() << std::endl;
-        if ((**ctit).getPoly()->degree() == p->getPoly()->degree()-1)
+    while (ctit != tSet.End() && p->GetWanc() != *ctit)
+    {
+        if ((**ctit).GetPoly()->Degree() == p->GetPoly()->Degree()-1)
         {
-            Monom tmp1(p->getAncLm());
+            Monom tmp1(p->GetAncLm());
             //tmp1 *= (**ctit).getAncLm();
 
             Triple* ct = *ctit;
-            tmp1 *= ct->getAncLm();
+            tmp1 *= ct->GetAncLm();
 
-            Monom::Integer firstMultiVar = (**ctit).getPolyLm().firstMultiVar();
+            Monom::Integer firstMultiVar = (**ctit).GetPolyLm().FirstMultiVar();
             for (register Monom::Integer i = 0; i < firstMultiVar; i++)
             {
-                Monom tmp2((**ctit).getPolyLm());
+                Monom tmp2((**ctit).GetPolyLm());
                 tmp2 *= i;
-                if (tmp2 == p->getPolyLm())
+                if (tmp2 == p->GetPolyLm())
                 {
-                    if (tmp2.isTrueDivisibleBy(tmp1))
+                    if (tmp2.IsTrueDivisibleBy(tmp1))
                     {
 #ifdef COLLECT_STATISTIC
                         c4++;
@@ -108,16 +109,16 @@ bool GBasis::Criteria4(Triple* p, Triple* g)
 }
 #endif
 
-Polynom* GBasis::NormalForm(Triple* p)
+Polynom* GBasis::NormalForm(const Triple* p)
 {
     Polynom *h, *q;
-    Triple  *involutiveDivisor;
+    const Triple  *involutiveDivisor;
     q = new Polynom();
-    h = new Polynom(*p->getPoly());
+    h = new Polynom(*p->GetPoly());
 
 #ifdef USE_CRITERIA
-    involutiveDivisor = tSet.find(h->lm());
-    if (p->isCriteriaAppliable() && involutiveDivisor)
+    involutiveDivisor = tSet.Find(h->Lm());
+    if (p->IsCriteriaAppliable() && involutiveDivisor)
     {
         bool c = Criteria1(p, involutiveDivisor) || Criteria2(p, involutiveDivisor) || Criteria3(p, involutiveDivisor);// || Criteria4(p, involutiveDivisor);
         //bool c = Criteria3(p, involutiveDivisor) || Criteria4(p, involutiveDivisor);
@@ -130,15 +131,15 @@ Polynom* GBasis::NormalForm(Triple* p)
     }
 #endif
 
-    while (!h->isZero())
+    while (!h->IsZero())
     {
-        involutiveDivisor = tSet.find(h->lm());
+        involutiveDivisor = tSet.Find(h->Lm());
         while (involutiveDivisor)
         {
-            h->headReduction(*involutiveDivisor->getPoly());
-            if (!h->isZero())
+            h->HeadReduction(*involutiveDivisor->GetPoly());
+            if (!h->IsZero())
             {
-                involutiveDivisor = tSet.find(h->lm());
+                involutiveDivisor = tSet.Find(h->Lm());
             }
             else
             {
@@ -146,10 +147,10 @@ Polynom* GBasis::NormalForm(Triple* p)
             }
         }
 
-        if (!h->isZero())
+        if (!h->IsZero())
         {
-            (*q) += h->lm();
-            h->ridOfLm();
+            (*q) += h->Lm();
+            h->RidOfLm();
         }
     }
 
@@ -157,19 +158,19 @@ Polynom* GBasis::NormalForm(Triple* p)
     return q;
 }
 
-Polynom* GBasis::findR(Polynom* p, list<Polynom*> &Q)
+const Polynom* GBasis::FindR(const Polynom* p, const list<Polynom*>& Q)
 {
-    if (p->isZero())
+    if (p->IsZero())
     {
         return NULL;
     }
 
     list<Polynom*>::const_iterator iq(Q.begin()), qEnd(Q.end());
-    const Monom& plm = p->lm();
+    const Monom& plm = p->Lm();
 
     while (iq != qEnd)
     {
-        if (plm.isDivisibleBy((**iq).lm()) )
+        if (plm.IsDivisibleBy((**iq).Lm()) )
         {
             return *iq;
         }
@@ -179,151 +180,99 @@ Polynom* GBasis::findR(Polynom* p, list<Polynom*> &Q)
     return NULL;
 }
 
-Polynom* GBasis::Reduce(Polynom* p, list<Polynom*> &Q)
+Polynom* GBasis::Reduce(Polynom* p, const list<Polynom*>& Q)
 {
-    Polynom *r, *q, *red;
-    q = new Polynom();
-    r = new Polynom(*p);
+    Polynom* result;
+    const Polynom* currentReducer;
+    result = new Polynom();
 
-    while (!r->isZero())
+    while (!p->IsZero())
     {
-        red = findR(r, Q);
-        while (red)
+        currentReducer = FindR(p, Q);
+        while (currentReducer)
         {
-            r->reduction(*red);
-            red = findR(r, Q);
+            p->Reduction(*currentReducer);
+            currentReducer = FindR(p, Q);
         }
-        if (!r->isZero())
+        if (!p->IsZero())
         {
-            (*q) += r->lm();
-            r->ridOfLm();
+            (*result) += p->Lm();
+            p->RidOfLm();
         }
     }
 
-    delete r;
-    return q;
+    delete p;
+    p = result;
+    return result;
 }
 
 void GBasis::ReduceSet()
 {
-    list<Polynom*> R, P, Q;
-    list<Polynom*>::iterator ir(R.begin()), ip(P.begin()), iq(Q.begin());
-    list<Polynom*>::const_iterator j(gBasis.begin()), qEnd, rEnd, pEnd;
-    Polynom *h, *h1;
+    list<Polynom*> tmpPolySet;
+    //gBasis.sort(PointerMoreComparator<Polynom>());
 
-    R = gBasis;
-    while (!R.empty())
+    while (!gBasis.empty())
     {
-        ir = R.begin();
-        h = *ir;
-        ir = R.erase(ir);
-        h = Reduce(h, P);
+        Polynom* h = gBasis.front();
+        gBasis.pop_front();
+        h = Reduce(h, tmpPolySet);
 
-        if (!h->isZero())
+        if (!h->IsZero())
         {
-            const Monom& hlm = h->lm();
-            ip = P.begin();
-            pEnd = P.end();
-            while (ip != pEnd)
+            const Monom& hLm = h->Lm();
+            list<Polynom*>::iterator iteratorTmpPolySet = tmpPolySet.begin();
+            while (iteratorTmpPolySet != tmpPolySet.end())
             {
-                if ((**ip).lm().isDivisibleBy(hlm))
+                if ((**iteratorTmpPolySet).Lm().IsDivisibleBy(hLm))
                 {
-                    iq = Q.insert(iq, *ip);
-                }
-                ip++;
-            }
-
-            iq = Q.begin();
-            qEnd = Q.end();
-            while (iq != qEnd)
-            {
-                ir = R.begin();
-                rEnd = R.end();
-                while (ir != rEnd && (**ir) != (**iq))
-                {
-                    ir++;
-                }
-                if (ir == rEnd)
-                {
-                    ir = R.insert(ir, *iq);
-                }
-                iq++;
-            }
-
-            ip = P.begin();
-            while (ip != P.end())
-            {
-                iq = Q.begin();
-                qEnd = Q.end();
-                while (iq != qEnd && (**iq) != (**ip))
-                {
-                    iq++;
-                }
-                if (iq != qEnd)
-                {
-                    ip = P.erase(ip);
+                    gBasis.push_back(*iteratorTmpPolySet);
+                    iteratorTmpPolySet = tmpPolySet.erase(iteratorTmpPolySet);
                 }
                 else
                 {
-                    ip++;
+                    iteratorTmpPolySet++;
                 }
             }
-            ip = P.insert(ip, h);
+            tmpPolySet.push_back(h);
         }
     }
 
-    R.clear();
-    Q.clear();
-    ir = R.begin();
-    iq = Q.begin();
-    ip = P.begin();
-    pEnd = P.end();
-    while (ip != pEnd)
+    unsigned tmpPolySetSize = tmpPolySet.size();
+    for (register unsigned i = 0; i < tmpPolySetSize; ++i)
     {
-        iq = Q.insert(iq, *ip);
-        ip++;
+        Polynom* h = tmpPolySet.front();
+        tmpPolySet.pop_front();
+        h = Reduce(h, tmpPolySet);
+        if (h->IsZero())
+        {
+            tmpPolySetSize--;
+        }
+        else
+        {
+            tmpPolySet.push_back(h);
+        }
     }
 
-    ip = P.begin();
-    while (ip != pEnd)
-    {
-        h = *ip;
-        iq = Q.begin();
-        while ((*h) != (**iq))
-        {
-            iq++;
-        }
-        iq = Q.erase(iq);
-        h1 = Reduce(h, Q);
-        iq = Q.insert(iq, h);
-        if (!h1->isZero())
-        {
-            ir = R.insert(ir, h1);
-        }
-        ip++;
-    }
-    gBasis.clear();
-    gBasis = R;
+    gBasis = tmpPolySet;
 }
 
 void GBasis::InvolutiveBasis()
 {
-    TSET::iterator tit(tSet.begin());
+    TSET::iterator tit(tSet.Begin());
     Polynom* h;
     Triple* current_trpl;
 
-static long int i = 0;
-    while (!qSet.empty())
+    while (!qSet.Empty())
     {
-        current_trpl = qSet.get();
+        current_trpl = qSet.Get();
         h = NormalForm(current_trpl);
 
         set<Monom::Integer> n;
         const Triple* qanc = NULL;
-        if (!h->isZero() && h->lm() == current_trpl->getPolyLm())
+        if (!h->IsZero() && h->Lm() == current_trpl->GetPolyLm())
         {
-            n = current_trpl->getNmp();
-            qanc = current_trpl->getAnc();
+            n = current_trpl->GetNmp();
+            qanc = current_trpl->GetAnc();
             if (qanc == current_trpl)
             {
                 qanc = NULL;
@@ -331,18 +280,18 @@ static long int i = 0;
         }
         delete current_trpl;
 
-        if (!h->isZero())
+        if (!h->IsZero())
         {
             list<Triple*> add_to_qSet;
-            tit = tSet.begin();
+            tit = tSet.Begin();
 
-            while (tit != tSet.end())
+            while (tit != tSet.End())
             {
-                if ((**tit).getPolyLm().isTrueDivisibleBy(h->lm()))
+                if ((**tit).GetPolyLm().IsTrueDivisibleBy(h->Lm()))
                 {
-                    qSet.deleteDescendants(*tit);
+                    qSet.DeleteDescendants(*tit);
                     add_to_qSet.push_back(*tit);
-                    tit = tSet.erase(tit);
+                    tit = tSet.Erase(tit);
                 }
                 else
                 {
@@ -351,12 +300,14 @@ static long int i = 0;
             }
 
 #ifdef USE_CRITERIA
-            tSet.push_back(new Triple(h, qanc, NULL, n, -1));
+            tSet.PushBack(new Triple(h, qanc, NULL, n, -1));
 #else
-            tSet.push_back(new Triple(h, qanc, n));
+            tSet.PushBack(new Triple(h, qanc, n));
 #endif
-            qSet.update(tSet.back(), add_to_qSet);
-            qSet.insert(add_to_qSet);
+            if (!h->Degree()) return;
+
+            qSet.Update(tSet.Back(), add_to_qSet);
+            qSet.Insert(add_to_qSet);
         }
         else
         {
@@ -369,39 +320,23 @@ GBasis::GBasis(): gBasis(), qSet(), tSet()
 {
 }
 
-GBasis::GBasis(list<Polynom*> set): gBasis(), qSet(), tSet()
+GBasis::GBasis(const list<Polynom*>& set): gBasis(set), qSet(), tSet()
 {
-    list<Polynom*>::const_iterator i1(set.begin());
-    list<Polynom*>::iterator i2(gBasis.begin());
-
-    Dim = (**i1).lm().dimIndepend();
-    while (i1 != set.end())
-    {
-        i2 = gBasis.insert(i2, new Polynom(**i1));
-/*
-        for (register Monom::Integer i = 0; i < Dim; i++)
-        {
-            i2 = gBasis.insert(i2, new Polynom(**i1));
-            (**i2) *= i;
-        }
-*/
-        ++i1;
-    }
     ReduceSet();
 
-    qSet.insert(gBasis);
+    qSet.Insert(gBasis);
     gBasis.clear();
     InvolutiveBasis();
 
-    TSET::const_iterator i3(tSet.begin());
-    while(i3 != tSet.end())
+    TSET::const_iterator i3(tSet.Begin());
+    while(i3 != tSet.End())
     {
-        gBasis.push_back(const_cast<Polynom*>((**i3).getPoly()));
+        gBasis.push_back(const_cast<Polynom*>((**i3).GetPoly()));
         i3++;
     }
-    tSet.clear();
+    tSet.Clear();
     ReduceSet();
-
+cout << "Size: " << gBasis.size() << endl;
 
 #ifdef COLLECT_STATISTIC
     long int all_c = c1 + c2 + c3 + c4;
@@ -416,21 +351,21 @@ GBasis::GBasis(list<Polynom*> set): gBasis(), qSet(), tSet()
 Polynom* GBasis::operator[](int num)
 {
     list<Polynom*>::const_iterator it(gBasis.begin());
-    for (register unsigned i = length()-1-num; i > 0; i--)
+    for (register unsigned i = Length()-1-num; i > 0; i--)
     {
         it++;
     }
     return *it;
 }
 
-unsigned GBasis::length()
+unsigned GBasis::Length()
 {
     return gBasis.size();
 }
 
 std::ostream& operator<<(std::ostream& out, GBasis& gBasis)
 {
-    for (register unsigned i = 0; i < gBasis.length(); i++)
+    for (register unsigned i = 0; i < gBasis.Length(); i++)
     {
     		out << '[' << i << "] = " << *gBasis[i] << '\n';
     }

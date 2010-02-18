@@ -1,9 +1,10 @@
 #include <algorithm>
+#include <sstream>
 #include "polynom.h"
 
 const Polynom& Polynom::operator+=(const Monom& newMonom)
 {
-    Monom** position = const_cast<Monom**>(find(newMonom));
+    Monom** position = const_cast<Monom**>(Find(newMonom));
     Monom* tmpMonom;
 
     if (position == NULL)
@@ -44,7 +45,7 @@ const Polynom& Polynom::operator+=(const Polynom& anotherPolynom)
 
         while (*iterator != NULL && iteratorAnother != NULL)
         {
-            switch (Monom::compare(**iterator, *iteratorAnother))
+            switch (Monom::Compare(**iterator, *iteratorAnother))
             {
                 case -1:
                     tmpMonom = new Monom(*iteratorAnother);
@@ -106,7 +107,7 @@ const Polynom& Polynom::operator*=(Monom::Integer var)
             iterator = &((*iterator)->mNext);
         }
 
-        mergeWith(polynomWithVar);
+        MergeWith(polynomWithVar);
     }
 
     return *this;
@@ -116,7 +117,7 @@ const Polynom& Polynom::operator*=(const Monom& anotherMonom)
 {
     if (pListHead != NULL)
     {
-        for (register Monom::Integer i = 0; i < anotherMonom.dimIndepend(); ++i)
+        for (register Monom::Integer i = 0; i < anotherMonom.DimIndepend(); ++i)
         {
             if (anotherMonom[i])
             {
@@ -137,11 +138,11 @@ const Polynom& Polynom::operator*=(const Polynom& anotherPolynom)
         {
             tmpPolynom = new Polynom(*this);
             *tmpPolynom *= *iteratorAnother;
-            tmpResult->mergeWith(*tmpPolynom);
+            tmpResult->MergeWith(*tmpPolynom);
             delete tmpPolynom;
             iteratorAnother = iteratorAnother->mNext;
         }
-        setZero();
+        SetZero();
         pListHead = tmpResult->pListHead;
         tmpResult->pListHead = 0;
         delete tmpResult;
@@ -149,23 +150,23 @@ const Polynom& Polynom::operator*=(const Polynom& anotherPolynom)
     return *this;
 }
 
-void Polynom::reduction(const Polynom &anotherPolynom)
+void Polynom::Reduction(const Polynom &anotherPolynom)
 {
     if (pListHead != NULL && anotherPolynom.pListHead != NULL)
     {
         Monom tmpMonom;
         Polynom* tmpPolynom;
         Monom* iterator(pListHead);
-        const Monom& anotherLm(anotherPolynom.lm());
+        const Monom& anotherLm(anotherPolynom.Lm());
 
         while (iterator != NULL)
         {
-            if (iterator->isDivisibleBy(anotherLm))
+            if (iterator->IsDivisibleBy(anotherLm))
             {
-                tmpMonom.setQuotientOf(*iterator, anotherLm);
+                tmpMonom.SetQuotientOf(*iterator, anotherLm);
                 tmpPolynom = new Polynom(anotherPolynom);
                 *tmpPolynom *= tmpMonom;
-                mergeWith(*tmpPolynom);
+                MergeWith(*tmpPolynom);
                 delete tmpPolynom;
                 iterator = pListHead;
             }
@@ -181,12 +182,12 @@ void Polynom::reduction(const Polynom &anotherPolynom)
             iterator = iterator->mNext;
             while (iterator != NULL)
             {
-                if (iterator->isDivisibleBy(anotherLm))
+                if (iterator->IsDivisibleBy(anotherLm))
                 {
-                    tmpMonom.setQuotientOf(*iterator, anotherLm);
+                    tmpMonom.SetQuotientOf(*iterator, anotherLm);
                     tmpPolynom = new Polynom(anotherPolynom);
                     *tmpPolynom *= tmpMonom;
-                    mergeWith(*tmpPolynom);
+                    MergeWith(*tmpPolynom);
                     delete tmpPolynom;
                     iterator = iterator2->mNext;
                 }
@@ -200,23 +201,23 @@ void Polynom::reduction(const Polynom &anotherPolynom)
     }
 }
 
-void Polynom::headReduction(const Polynom &anotherPolynom)
+void Polynom::HeadReduction(const Polynom &anotherPolynom)
 {
     if (pListHead != NULL && anotherPolynom.pListHead != NULL)
     {
         Monom tmpMonom;
         Polynom* tmpPolynom;
         Monom* iterator(pListHead);
-        const Monom& anotherLm(anotherPolynom.lm());
+        const Monom& anotherLm(anotherPolynom.Lm());
 
         while (iterator != NULL)
         {
-            if (iterator->isDivisibleBy(anotherLm))
+            if (iterator->IsDivisibleBy(anotherLm))
             {
-                tmpMonom.setQuotientOf(*iterator, anotherLm);
+                tmpMonom.SetQuotientOf(*iterator, anotherLm);
                 tmpPolynom = new Polynom(anotherPolynom);
                 *tmpPolynom *= tmpMonom;
-                mergeWith(*tmpPolynom);
+                MergeWith(*tmpPolynom);
                 delete tmpPolynom;
                 iterator = pListHead;
             }
@@ -228,7 +229,7 @@ void Polynom::headReduction(const Polynom &anotherPolynom)
     }
 }
 
-void Polynom::mergeWith(Polynom& anotherPolynom)
+void Polynom::MergeWith(Polynom& anotherPolynom)
 {
     Monom **iterator = &pListHead,
           *iteratorAnother = anotherPolynom.pListHead,
@@ -236,7 +237,7 @@ void Polynom::mergeWith(Polynom& anotherPolynom)
 
     while (*iterator != NULL && iteratorAnother != NULL)
     {
-        switch (Monom::compare(**iterator, *iteratorAnother))
+        switch (Monom::Compare(**iterator, *iteratorAnother))
         {
         case -1:
             tmpPointer = iteratorAnother;
@@ -288,40 +289,40 @@ std::ostream& operator<<(std::ostream& out, const Polynom& a)
     return out;
 }
 
-void Polynom::additive(std::istream& in)
+void Polynom::Additive(std::istream& in)
 {
-    multiplicative(in);
+    Multiplicative(in);
     int op = (in >> std::ws).peek();
     Polynom tmpPolynom;
     while(op == '+' || op == '-')
     {
         in.get();
-        tmpPolynom.multiplicative(in);
+        tmpPolynom.Multiplicative(in);
         *this += tmpPolynom;
         op = in.peek();
     }
 }
 
-void Polynom::multiplicative(std::istream& in)
+void Polynom::Multiplicative(std::istream& in)
 {
-    unary(in);
+    Unary(in);
     int op = (in >> std::ws).peek();
     Polynom tmpPolynom;
     while(op == '*')
     {
         in.get();
-        tmpPolynom.unary(in);
+        tmpPolynom.Unary(in);
         *this *= tmpPolynom;
         op = in.peek();
     }
 }
 
-void Polynom::unary(std::istream& in)
+void Polynom::Unary(std::istream& in)
 {
     int ch = (in >> std::ws).peek();
     if (ch != '+' && ch != '-')
     {
-        bracket(in);
+        Bracket(in);
     }
     else
     {
@@ -329,30 +330,26 @@ void Polynom::unary(std::istream& in)
             //ch = in.get();
             ch = (in >> std::ws).peek();
         } while (ch == '+' || ch == '-');
-        bracket(in);
+        Bracket(in);
     }
 }
 
-void Polynom::bracket(std::istream& in)
+void Polynom::Bracket(std::istream& in)
 {
     int op = (in >> std::ws).peek();
     if (op == '(')
     {
         in.get();
-        additive(in);
+        Additive(in);
         if (in.get() != ')')
         {
             cerr << "expected ')'" << endl;
             exit(EXIT_FAILURE);
         }
     }
-    else if (op == '0')
-    {
-        return;
-    }
     else
     {
-        setOne();
+        SetOne();
         Monom tmpMonom;
         in >> tmpMonom;
         if (!in.fail())
@@ -373,8 +370,15 @@ void Polynom::bracket(std::istream& in)
 
 std::istream& operator>>(std::istream& in, Polynom& a)
 {
-    a.additive(in);
+    a.Additive(in);
     return in;
+}
+
+std::string Polynom::ToString() const
+{
+    stringstream tmpStream;
+    tmpStream << *this;
+    return tmpStream.str();
 }
 
 Allocator Polynom::pAllocator(sizeof(Polynom));

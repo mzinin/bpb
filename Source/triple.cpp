@@ -4,7 +4,7 @@
 Triple::Triple(Polynom *initialPolynom)
 {
     poly = initialPolynom;
-    lm = &poly->lm();
+    lm = &poly->Lm();
     anc = this;
     anc_lm = lm;
     wanc = NULL;
@@ -19,11 +19,11 @@ Triple::Triple(Polynom *initialPolynom,
                Monom::Integer lastProlongingVar)
 {
     poly = initialPolynom;
-    lm = &poly->lm();
+    lm = &poly->Lm();
     if (initialAncestor)
     {
         anc = initialAncestor;
-        anc_lm = &anc->getPolyLm();
+        anc_lm = &anc->GetPolyLm();
     }
     else
     {
@@ -42,7 +42,7 @@ Triple::Triple(Polynom *initialPolynom,
 Triple::Triple(Polynom *initialPolynom)
 {
     poly = initialPolynom;
-    lm = &poly->lm();
+    lm = &poly->Lm();
     anc = this;
     nmp = set<Monom::Integer>();
 }
@@ -52,7 +52,7 @@ Triple::Triple(Polynom *initialPolynom,
                const set<Monom::Integer>& initialNmp)
 {
     poly = initialPolynom;
-    lm = &poly->lm();
+    lm = &poly->Lm();
     if (initialAncestor)
     {
         anc = initialAncestor;

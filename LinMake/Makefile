@@ -27,7 +27,7 @@ myginv: myginv.o involutive.o qset.o tset.o janettree.o triple.o polynom.o monom
 myginv.o: $(SOURCE)/involutive.h $(SOURCE)/timer.h
 	$(CXX) $(CXXFLAGS) $(SOURCE)/myginv.cpp -o $(BINARY)/myginv.o
 
-involutive.o: $(SOURCE)/involutive.h $(SOURCE)/qset.h $(SOURCE)/tset.h $(SOURCE)/timer.h
+involutive.o: $(SOURCE)/involutive.h $(SOURCE)/qset.h $(SOURCE)/tset.h $(SOURCE)/timer.h $(SOURCE)/pcomparator.h
 	$(CXX) $(CXXFLAGS) $(SOURCE)/involutive.cpp -o $(BINARY)/involutive.o
 
 qset.o: $(SOURCE)/qset.h $(SOURCE)/triple.h

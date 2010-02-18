@@ -36,19 +36,20 @@ protected:
     Integer mDegree;
 
 protected:
-    VarsListNode* find(const Integer var) const;
+    VarsListNode* Find(const Integer var) const;
 
 public:
     MonomDL* mNext;
 
-    static void addVariable(const char *var);
+    static void AddVariable(const char *var);
+    static const char* GetVariable(Integer var);
+    static Integer DimIndepend();
 
     MonomDL();
     MonomDL(const MonomDL& anotherMonom);
     ~MonomDL();
 
-    Integer dimIndepend() const;
-    Integer degree() const;
+    Integer Degree() const;
 
     void* operator new(std::size_t);
     void operator delete(void *ptr);
@@ -57,36 +58,36 @@ public:
     const MonomDL& operator=(const MonomDL& anotherMonom);
     const MonomDL& operator*=(Integer var);
     const MonomDL& operator*=(const MonomDL& anotherMonom);
-    void setProductOf(const MonomDL& monomA, Integer var);
-    void setProductOf(const MonomDL& monomA, const MonomDL& monomB);
+    void SetProductOf(const MonomDL& monomA, Integer var);
+    void SetProductOf(const MonomDL& monomA, const MonomDL& monomB);
     const MonomDL& operator/=(const MonomDL& anotherMonom);
-    void setQuotientOf(const MonomDL& monomA, const MonomDL& monomB);
+    void SetQuotientOf(const MonomDL& monomA, const MonomDL& monomB);
 
     bool operator==(const MonomDL& anotherMonom) const;
     bool operator!=(const MonomDL& anotherMonom) const;
     bool operator<(const MonomDL& anotherMonom) const;
     bool operator>(const MonomDL& anotherMonom) const;
-    static int compare(const MonomDL& monomA, const MonomDL& monomB);
+    static int Compare(const MonomDL& monomA, const MonomDL& monomB);
 
-    void setOne();
+    void SetOne();
 
-    bool isDivisibleBy(const MonomDL& anotherMonom) const;
-    bool isTrueDivisibleBy(const MonomDL& anotherMonom) const;
-    bool isPommaretDivisibleBy(const MonomDL& anotherMonom) const;
+    bool IsDivisibleBy(const MonomDL& anotherMonom) const;
+    bool IsTrueDivisibleBy(const MonomDL& anotherMonom) const;
+    bool IsPommaretDivisibleBy(const MonomDL& anotherMonom) const;
 
     friend std::istream& operator>>(std::istream& in, MonomDL& a);
     friend std::ostream& operator<<(std::ostream& out, const MonomDL& a);
 
-    static Integer gcdDegree(const MonomDL& monomA, const MonomDL& monomB);
-    static Integer lcmDegree(const MonomDL& monomA, const MonomDL& monomB);
-    void setGcdOf(const MonomDL& monomA, const MonomDL& monomB);
-    void setLcmOf(const MonomDL& monomA, const MonomDL& monomB);
+    static Integer GcdDegree(const MonomDL& monomA, const MonomDL& monomB);
+    static Integer LcmDegree(const MonomDL& monomA, const MonomDL& monomB);
+    void SetGcdOf(const MonomDL& monomA, const MonomDL& monomB);
+    void SetLcmOf(const MonomDL& monomA, const MonomDL& monomB);
 
-    Integer firstMultiVar() const;
+    Integer FirstMultiVar() const;
 };
 
 
-inline MonomDL::VarsListNode* MonomDL::find(const MonomDL::Integer var) const
+inline MonomDL::VarsListNode* MonomDL::Find(const MonomDL::Integer var) const
 {
     if (mListHead == NULL || mListHead->value > var)
     {
@@ -149,15 +150,15 @@ inline MonomDL::MonomDL(const MonomDL& anotherMonom):
 
 inline MonomDL::~MonomDL()
 {
-    setOne();
+    SetOne();
 }
 
-inline MonomDL::Integer MonomDL::dimIndepend() const
+inline MonomDL::Integer MonomDL::DimIndepend()
 {
     return mDimIndepend;
 }
 
-inline MonomDL::Integer MonomDL::degree() const
+inline MonomDL::Integer MonomDL::Degree() const
 {
     return mDegree;
 }
@@ -212,7 +213,7 @@ inline const MonomDL& MonomDL::operator=(const MonomDL& anotherMonom)
 {
     if (anotherMonom.mListHead == NULL)
     {
-        setOne();
+        SetOne();
     }
     else
     {
@@ -265,7 +266,7 @@ inline const MonomDL& MonomDL::operator*=(Integer var)
     }
     else
     {
-        VarsListNode* position = find(var);
+        VarsListNode* position = Find(var);
         //inserted variable is the eldest one
         if (position == NULL)
         {
@@ -338,15 +339,15 @@ inline const MonomDL& MonomDL::operator*=(const MonomDL& anotherMonom)
     return *this;
 }
 
-inline void MonomDL::setProductOf(const MonomDL& monomA, MonomDL::Integer var)
+inline void MonomDL::SetProductOf(const MonomDL& monomA, MonomDL::Integer var)
 {
     *this = monomA;
     *this *= var;
 }
 
-inline void MonomDL::setProductOf(const MonomDL& monomA, const MonomDL& monomB)
+inline void MonomDL::SetProductOf(const MonomDL& monomA, const MonomDL& monomB)
 {
-    setOne();
+    SetOne();
     VarsListNode **iterator = &mListHead,
                  *iteratorA = monomA.mListHead,
                  *iteratorB = monomB.mListHead;
@@ -417,9 +418,9 @@ inline const MonomDL& MonomDL::operator/=(const MonomDL& anotherMonom)
     return *this;
 }
 
-inline void MonomDL::setQuotientOf(const MonomDL& monomA, const MonomDL& monomB)
+inline void MonomDL::SetQuotientOf(const MonomDL& monomA, const MonomDL& monomB)
 {
-    setOne();
+    SetOne();
     VarsListNode **iterator = &mListHead,
                  *iteratorA = monomA.mListHead,
                  *iteratorB = monomB.mListHead;
@@ -454,7 +455,7 @@ inline void MonomDL::setQuotientOf(const MonomDL& monomA, const MonomDL& monomB)
     }
 }
 
-inline void MonomDL::setOne()
+inline void MonomDL::SetOne()
 {
     mDegree = 0;
     if (mListHead != NULL)
@@ -469,7 +470,7 @@ inline void MonomDL::setOne()
     }
 }
 
-inline bool MonomDL::isDivisibleBy(const MonomDL& anotherMonom) const
+inline bool MonomDL::IsDivisibleBy(const MonomDL& anotherMonom) const
 {
     VarsListNode *iterator(mListHead),
                  *anotherIterator(anotherMonom.mListHead);
@@ -493,9 +494,9 @@ inline bool MonomDL::isDivisibleBy(const MonomDL& anotherMonom) const
     return anotherIterator == NULL;
 }
 
-inline bool MonomDL::isTrueDivisibleBy(const MonomDL& anotherMonom) const
+inline bool MonomDL::IsTrueDivisibleBy(const MonomDL& anotherMonom) const
 {
-    if (degree() <= anotherMonom.degree())
+    if (Degree() <= anotherMonom.Degree())
     {
         return false;
     }
@@ -522,7 +523,7 @@ inline bool MonomDL::isTrueDivisibleBy(const MonomDL& anotherMonom) const
     return anotherIterator == NULL;
 }
 
-inline bool MonomDL::isPommaretDivisibleBy(const MonomDL& anotherMonom) const
+inline bool MonomDL::IsPommaretDivisibleBy(const MonomDL& anotherMonom) const
 {
     if (mDegree < anotherMonom.mDegree)
     {
@@ -656,7 +657,7 @@ inline bool MonomDL::operator>(const MonomDL& anotherMonom) const
     }
 }
 
-inline MonomDL::Integer MonomDL::gcdDegree(const MonomDL& monomA, const MonomDL& monomB)
+inline MonomDL::Integer MonomDL::GcdDegree(const MonomDL& monomA, const MonomDL& monomB)
 {
     Integer gcd = 0;
     VarsListNode *iteratorA(monomA.mListHead),
@@ -682,7 +683,7 @@ inline MonomDL::Integer MonomDL::gcdDegree(const MonomDL& monomA, const MonomDL&
     return gcd;
 }
 
-inline MonomDL::Integer MonomDL::lcmDegree(const MonomDL& monomA, const MonomDL& monomB)
+inline MonomDL::Integer MonomDL::LcmDegree(const MonomDL& monomA, const MonomDL& monomB)
 {
     Integer lcm = 0;
     VarsListNode *iteratorA(monomA.mListHead),
@@ -721,9 +722,9 @@ inline MonomDL::Integer MonomDL::lcmDegree(const MonomDL& monomA, const MonomDL&
     return lcm;
 }
 
-inline void MonomDL::setGcdOf(const MonomDL& monomA, const MonomDL& monomB)
+inline void MonomDL::SetGcdOf(const MonomDL& monomA, const MonomDL& monomB)
 {
-    setOne();
+    SetOne();
     VarsListNode **iterator = &mListHead,
                  *iteratorA = monomA.mListHead,
                  *iteratorB = monomB.mListHead;
@@ -751,12 +752,12 @@ inline void MonomDL::setGcdOf(const MonomDL& monomA, const MonomDL& monomB)
     }
 }
 
-inline void MonomDL::setLcmOf(const MonomDL& monomA, const MonomDL& monomB)
+inline void MonomDL::SetLcmOf(const MonomDL& monomA, const MonomDL& monomB)
 {
-    setProductOf(monomA, monomB);
+    SetProductOf(monomA, monomB);
 }
 
-inline MonomDL::Integer MonomDL::firstMultiVar() const
+inline MonomDL::Integer MonomDL::FirstMultiVar() const
 {
     if (mListHead == NULL)
     {

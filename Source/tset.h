@@ -17,53 +17,53 @@ public:
     TSET();
     ~TSET();
 
-    Triple* find(const Monom& monom) const;
+    const Triple* Find(const Monom& monom) const;
 
-    iterator begin();
-    const_iterator begin() const;
-    iterator end();
-    const_iterator end() const;
+    iterator Begin();
+    const_iterator Begin() const;
+    iterator End();
+    const_iterator End() const;
 
-    void clear();
-    iterator erase(iterator it);
-    void push_back(Triple* newTriple);
-    std::size_t size() const;
+    void Clear();
+    iterator Erase(iterator it);
+    void PushBack(Triple* newTriple);
+    std::size_t Size() const;
 
-    Triple* const back() const;
+    Triple* const Back() const;
 };
 
 
-inline Triple* TSET::find(const Monom& monom) const
+inline const Triple* TSET::Find(const Monom& monom) const
 {
-    return jTree.find(monom);
+    return jTree.Find(monom);
 }
 
-inline TSET::iterator TSET::begin()
-{
-    return tripleList.begin();
-}
-
-inline TSET::const_iterator TSET::begin() const
+inline TSET::iterator TSET::Begin()
 {
     return tripleList.begin();
 }
 
-inline TSET::iterator TSET::end()
+inline TSET::const_iterator TSET::Begin() const
+{
+    return tripleList.begin();
+}
+
+inline TSET::iterator TSET::End()
 {
     return tripleList.end();
 }
 
-inline TSET::const_iterator TSET::end() const
+inline TSET::const_iterator TSET::End() const
 {
     return tripleList.end();
 }
 
-inline std::size_t TSET::size() const
+inline std::size_t TSET::Size() const
 {
     return tripleList.size();
 }
 
-inline Triple* const TSET::back() const
+inline Triple* const TSET::Back() const
 {
     return tripleList.back();
 }

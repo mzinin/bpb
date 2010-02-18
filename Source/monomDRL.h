@@ -36,19 +36,20 @@ protected:
     Integer mDegree;
 
 protected:
-    VarsListNode* find(const Integer var) const;
+    VarsListNode* Find(const Integer var) const;
 
 public:
     MonomDRL* mNext;
 
-    static void addVariable(const char *var);
+    static void AddVariable(const char *var);
+    static const char* GetVariable(Integer var);
+    static Integer DimIndepend();
 
     MonomDRL();
     MonomDRL(const MonomDRL& anotherMonom);
     ~MonomDRL();
 
-    Integer dimIndepend() const;
-    Integer degree() const;
+    Integer Degree() const;
 
     void* operator new(std::size_t);
     void operator delete(void *ptr);
@@ -57,36 +58,36 @@ public:
     const MonomDRL& operator=(const MonomDRL& anotherMonom);
     const MonomDRL& operator*=(Integer var);
     const MonomDRL& operator*=(const MonomDRL& anotherMonom);
-    void setProductOf(const MonomDRL& monomA, Integer var);
-    void setProductOf(const MonomDRL& monomA, const MonomDRL& monomB);
+    void SetProductOf(const MonomDRL& monomA, Integer var);
+    void SetProductOf(const MonomDRL& monomA, const MonomDRL& monomB);
     const MonomDRL& operator/=(const MonomDRL& anotherMonom);
-    void setQuotientOf(const MonomDRL& monomA, const MonomDRL& monomB);
+    void SetQuotientOf(const MonomDRL& monomA, const MonomDRL& monomB);
 
     bool operator==(const MonomDRL& anotherMonom) const;
     bool operator!=(const MonomDRL& anotherMonom) const;
     bool operator<(const MonomDRL& anotherMonom) const;
     bool operator>(const MonomDRL& anotherMonom) const;
-    static int compare(const MonomDRL& monomA, const MonomDRL& monomB);
+    static int Compare(const MonomDRL& monomA, const MonomDRL& monomB);
 
-    void setOne();
+    void SetOne();
 
-    bool isDivisibleBy(const MonomDRL& anotherMonom) const;
-    bool isTrueDivisibleBy(const MonomDRL& anotherMonom) const;
-    bool isPommaretDivisibleBy(const MonomDRL& anotherMonom) const;
+    bool IsDivisibleBy(const MonomDRL& anotherMonom) const;
+    bool IsTrueDivisibleBy(const MonomDRL& anotherMonom) const;
+    bool IsPommaretDivisibleBy(const MonomDRL& anotherMonom) const;
 
     friend std::istream& operator>>(std::istream& in, MonomDRL& a);
     friend std::ostream& operator<<(std::ostream& out, const MonomDRL& a);
 
-    static Integer gcdDegree(const MonomDRL& monomA, const MonomDRL& monomB);
-    static Integer lcmDegree(const MonomDRL& monomA, const MonomDRL& monomB);
-    void setGcdOf(const MonomDRL& monomA, const MonomDRL& monomB);
-    void setLcmOf(const MonomDRL& monomA, const MonomDRL& monomB);
+    static Integer GcdDegree(const MonomDRL& monomA, const MonomDRL& monomB);
+    static Integer LcmDegree(const MonomDRL& monomA, const MonomDRL& monomB);
+    void SetGcdOf(const MonomDRL& monomA, const MonomDRL& monomB);
+    void SetLcmOf(const MonomDRL& monomA, const MonomDRL& monomB);
 
-    Integer firstMultiVar() const;
+    Integer FirstMultiVar() const;
 };
 
 
-inline MonomDRL::VarsListNode* MonomDRL::find(const MonomDRL::Integer var) const
+inline MonomDRL::VarsListNode* MonomDRL::Find(const MonomDRL::Integer var) const
 {
     if (mListHead == NULL || mListHead->value < var)
     {
@@ -149,15 +150,15 @@ inline MonomDRL::MonomDRL(const MonomDRL& anotherMonom):
 
 inline MonomDRL::~MonomDRL()
 {
-    setOne();
+    SetOne();
 }
 
-inline MonomDRL::Integer MonomDRL::dimIndepend() const
+inline MonomDRL::Integer MonomDRL::DimIndepend()
 {
     return mDimIndepend;
 }
 
-inline MonomDRL::Integer MonomDRL::degree() const
+inline MonomDRL::Integer MonomDRL::Degree() const
 {
     return mDegree;
 }
@@ -212,7 +213,7 @@ inline const MonomDRL& MonomDRL::operator=(const MonomDRL& anotherMonom)
 {
     if (anotherMonom.mListHead == NULL)
     {
-        setOne();
+        SetOne();
     }
     else
     {
@@ -265,7 +266,7 @@ inline const MonomDRL& MonomDRL::operator*=(Integer var)
     }
     else
     {
-        VarsListNode* position = find(var);
+        VarsListNode* position = Find(var);
         //inserted variable is the eldest one
         if (position == NULL)
         {
@@ -338,15 +339,15 @@ inline const MonomDRL& MonomDRL::operator*=(const MonomDRL& anotherMonom)
     return *this;
 }
 
-inline void MonomDRL::setProductOf(const MonomDRL& monomA, MonomDRL::Integer var)
+inline void MonomDRL::SetProductOf(const MonomDRL& monomA, MonomDRL::Integer var)
 {
     *this = monomA;
     *this *= var;
 }
 
-inline void MonomDRL::setProductOf(const MonomDRL& monomA, const MonomDRL& monomB)
+inline void MonomDRL::SetProductOf(const MonomDRL& monomA, const MonomDRL& monomB)
 {
-    setOne();
+    SetOne();
     VarsListNode **iterator = &mListHead,
                  *iteratorA = monomA.mListHead,
                  *iteratorB = monomB.mListHead;
@@ -417,9 +418,9 @@ inline const MonomDRL& MonomDRL::operator/=(const MonomDRL& anotherMonom)
     return *this;
 }
 
-inline void MonomDRL::setQuotientOf(const MonomDRL& monomA, const MonomDRL& monomB)
+inline void MonomDRL::SetQuotientOf(const MonomDRL& monomA, const MonomDRL& monomB)
 {
-    setOne();
+    SetOne();
     VarsListNode **iterator = &mListHead,
                  *iteratorA = monomA.mListHead,
                  *iteratorB = monomB.mListHead;
@@ -454,7 +455,7 @@ inline void MonomDRL::setQuotientOf(const MonomDRL& monomA, const MonomDRL& mono
     }
 }
 
-inline void MonomDRL::setOne()
+inline void MonomDRL::SetOne()
 {
     mDegree = 0;
     if (mListHead != NULL)
@@ -469,7 +470,7 @@ inline void MonomDRL::setOne()
     }
 }
 
-inline bool MonomDRL::isDivisibleBy(const MonomDRL& anotherMonom) const
+inline bool MonomDRL::IsDivisibleBy(const MonomDRL& anotherMonom) const
 {
     VarsListNode *iterator = mListHead,
                  *anotherIterator = anotherMonom.mListHead;
@@ -493,9 +494,9 @@ inline bool MonomDRL::isDivisibleBy(const MonomDRL& anotherMonom) const
     return anotherIterator == NULL;
 }
 
-inline bool MonomDRL::isTrueDivisibleBy(const MonomDRL& anotherMonom) const
+inline bool MonomDRL::IsTrueDivisibleBy(const MonomDRL& anotherMonom) const
 {
-    if (degree() <= anotherMonom.degree())
+    if (Degree() <= anotherMonom.Degree())
     {
         return false;
     }
@@ -522,7 +523,7 @@ inline bool MonomDRL::isTrueDivisibleBy(const MonomDRL& anotherMonom) const
     return anotherIterator == NULL;
 }
 
-inline bool MonomDRL::isPommaretDivisibleBy(const MonomDRL& anotherMonom) const
+inline bool MonomDRL::IsPommaretDivisibleBy(const MonomDRL& anotherMonom) const
 {
     if (mDegree < anotherMonom.mDegree)
     {
@@ -660,7 +661,7 @@ inline bool MonomDRL::operator>(const MonomDRL& anotherMonom) const
     }
 }
 
-inline MonomDRL::Integer MonomDRL::gcdDegree(const MonomDRL& monomA, const MonomDRL& monomB)
+inline MonomDRL::Integer MonomDRL::GcdDegree(const MonomDRL& monomA, const MonomDRL& monomB)
 {
     Integer gcd = 0;
     VarsListNode *iteratorA = monomA.mListHead,
@@ -686,7 +687,7 @@ inline MonomDRL::Integer MonomDRL::gcdDegree(const MonomDRL& monomA, const Monom
     return gcd;
 }
 
-inline MonomDRL::Integer MonomDRL::lcmDegree(const MonomDRL& monomA, const MonomDRL& monomB)
+inline MonomDRL::Integer MonomDRL::LcmDegree(const MonomDRL& monomA, const MonomDRL& monomB)
 {
     Integer lcm = 0;
     VarsListNode *iteratorA = monomA.mListHead,
@@ -725,9 +726,9 @@ inline MonomDRL::Integer MonomDRL::lcmDegree(const MonomDRL& monomA, const Monom
     return lcm;
 }
 
-inline void MonomDRL::setGcdOf(const MonomDRL& monomA, const MonomDRL& monomB)
+inline void MonomDRL::SetGcdOf(const MonomDRL& monomA, const MonomDRL& monomB)
 {
-    setOne();
+    SetOne();
     VarsListNode **iterator = &mListHead,
                  *iteratorA = monomA.mListHead,
                  *iteratorB = monomB.mListHead;
@@ -755,12 +756,12 @@ inline void MonomDRL::setGcdOf(const MonomDRL& monomA, const MonomDRL& monomB)
     }
 }
 
-inline void MonomDRL::setLcmOf(const MonomDRL& monomA, const MonomDRL& monomB)
+inline void MonomDRL::SetLcmOf(const MonomDRL& monomA, const MonomDRL& monomB)
 {
-    setProductOf(monomA, monomB);
+    SetProductOf(monomA, monomB);
 }
 
-inline MonomDRL::Integer MonomDRL::firstMultiVar() const
+inline MonomDRL::Integer MonomDRL::FirstMultiVar() const
 {
     if (mListHead == NULL)
     {

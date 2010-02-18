@@ -1,18 +1,23 @@
 #include <string>
 #include "monomDRL.h"
 
-void MonomDRL::addVariable(const char *var)
+void MonomDRL::AddVariable(const char *var)
 {
-    if (mIndepend->add(var))
+    if (mIndepend->Add(var))
     {
         mDimIndepend++;
     }
 }
 
+const char* MonomDRL::GetVariable(MonomDRL::Integer var)
+{
+    return mIndepend->Variable(var);
+}
+
 std::istream& operator>>(std::istream& in, MonomDRL& a)
 {
     std::streampos posbeg = in.tellg();
-    int var = a.mIndepend->read(in);
+    int var = a.mIndepend->Read(in);
     if (var < 0)
     {
         in.clear();
@@ -20,7 +25,7 @@ std::istream& operator>>(std::istream& in, MonomDRL& a)
     }
     else
     {
-        a.setOne();
+        a.SetOne();
         int deg;
         do
         {
@@ -43,7 +48,7 @@ std::istream& operator>>(std::istream& in, MonomDRL& a)
             else
             {
                 in.get();
-                var = a.mIndepend->read(in);
+                var = a.mIndepend->Read(in);
                 if (var < 0)
                 {
                     in.clear();
@@ -67,12 +72,12 @@ std::ostream& operator<<(std::ostream& out, const MonomDRL& a)
     {
         std::string monomString;
         MonomDRL::VarsListNode* iteratorA(a.mListHead);
-        monomString.insert(0, a.mIndepend->variable(iteratorA->value));
+        monomString.insert(0, a.mIndepend->Variable(iteratorA->value));
         iteratorA = iteratorA->next;
         while (iteratorA != NULL)
         {
             monomString.insert(0, "*");
-            monomString.insert(0, a.mIndepend->variable(iteratorA->value));
+            monomString.insert(0, a.mIndepend->Variable(iteratorA->value));
             iteratorA = iteratorA->next;
         }
         out << monomString;
@@ -81,7 +86,7 @@ std::ostream& operator<<(std::ostream& out, const MonomDRL& a)
     return out;
 }
 
-int MonomDRL::compare(const MonomDRL& monomA, const MonomDRL& monomB)
+int MonomDRL::Compare(const MonomDRL& monomA, const MonomDRL& monomB)
 {
     if (monomA.mDegree < monomB.mDegree)
     {
