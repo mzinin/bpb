@@ -3,33 +3,32 @@
 JanetTree::~JanetTree()
 {
     clear();
-    delete mRoot;
+    delete jRoot;
 }
 
-Triple* JanetTree::find(const Monom& m) const
+Triple* JanetTree::find(const Monom& monom) const
 {
     Triple* trpl = NULL;
 
-    if (mRoot)
+    if (jRoot)
     {
-        ConstIterator j(mRoot);
-        Monom::Integer d = m.degree();
+        ConstIterator j(jRoot);
+        Monom::Integer d = monom.degree();
         Monom::Integer var = 0;
         do
         {
-            //while(j.degree() != m[var] && j.isNextDeg())
-            if (j.degree() != m[var] && j.isNextDeg())
+            if (j.degree() != monom[var] && j.isNextDegree())
             {
                 j.step_deg();
             }
 
-            if (j.degree() != m[var])
+            if (j.degree() != monom[var])
             {
                 break;
             }
             else if (j.isNextVar())
             {
-                d -= m[var];
+                d -= monom[var];
                 if (d == 0)
                 {
                     break;
@@ -49,10 +48,10 @@ Triple* JanetTree::find(const Monom& m) const
 
 void JanetTree::del(Triple *trpl)
 {
-    Iterator j(mRoot);
+    Iterator j(jRoot);
     //подсчет ветвлений
     Monom::Integer var = 0, vet = 0;
-    if (j.isNextDeg() && j.isNextVar())
+    if (j.isNextDegree() && j.isNextVar())
     {
         vet++;
     }
@@ -62,7 +61,7 @@ void JanetTree::del(Triple *trpl)
         while(j.degree() < trpl->getPolyLm()[var])
         {
             j.step_deg();
-            if (j.isNextDeg() && j.isNextVar())
+            if (j.isNextDegree() && j.isNextVar())
             {
                 vet++;
             }
@@ -72,7 +71,7 @@ void JanetTree::del(Triple *trpl)
         {
             var++;
             j.step_var();
-            if (j.isNextDeg() && j.isNextVar())
+            if (j.isNextDegree() && j.isNextVar())
             {
                 vet++;
             }
@@ -84,11 +83,11 @@ void JanetTree::del(Triple *trpl)
     } while(true);
 
     //собственно удаление
-    j = mRoot;
+    j = jRoot;
     var = 0;
     bool varDirection = false;
 
-    if (j.isNextDeg() && j.isNextVar())
+    if (j.isNextDegree() && j.isNextVar())
     {
         vet--;
     }
@@ -109,7 +108,7 @@ void JanetTree::del(Triple *trpl)
         while(j.degree() < trpl->getPolyLm()[var] && vet > 0)
         {
             j.step_deg();
-            if (j.isNextDeg() && j.isNextVar())
+            if (j.isNextDegree() && j.isNextVar())
             {
                 vet--;
             }
@@ -131,7 +130,7 @@ void JanetTree::del(Triple *trpl)
 
         var++;
         j.step_var();
-        if (j.isNextDeg() && j.isNextVar())
+        if (j.isNextDegree() && j.isNextVar())
         {
             vet--;
         }
@@ -166,9 +165,9 @@ void JanetTree::del(Triple *trpl)
 void JanetTree::insert(Triple* trpl)
 {
     Monom::Integer d = trpl->getPolyLm().degree();
-    JanetTree::Iterator j(mRoot);
+    JanetTree::Iterator j(jRoot);
 
-    if (mRoot == NULL)
+    if (jRoot == NULL)
     {
         j.build(d, 0, trpl);
     }
@@ -177,7 +176,7 @@ void JanetTree::insert(Triple* trpl)
         Monom::Integer var = 0;
         do
         {
-            while(j.degree() < trpl->getPolyLm()[var] && j.isNextDeg())
+            while(j.degree() < trpl->getPolyLm()[var] && j.isNextDegree())
             {
                 j.step_deg();
             }
@@ -205,43 +204,9 @@ void JanetTree::insert(Triple* trpl)
 
 void JanetTree::clear()
 {
-    if (mRoot)
+    if (jRoot)
     {
-        JanetTree::Iterator j(mRoot);
+        JanetTree::Iterator j(jRoot);
         j.clear();
     }
-}
-
-set<Monom::Integer> JanetTree::nmulti(Triple *trpl)
-{
-    IASSERT(trpl->getPoly() != NULL);
-    IASSERT(find(trpl->getPolyLm()) == trpl);
-
-    JanetTree::ConstIterator j(mRoot);
-    set<Monom::Integer> result;
-    Monom::Integer var = 0;
-    do
-    {
-        while(j.degree() < trpl->getPolyLm()[var])
-        {
-            j.step_deg();
-        }
-
-        if (j.isNextDeg())
-        {
-            result.insert(var);
-        }
-
-        var++;
-        if (j.isNextVar())
-        {
-            j.step_var();
-        }
-        else
-        {
-            break;
-        }
-    } while(true);
-
-    return result;
 }

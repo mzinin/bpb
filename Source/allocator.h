@@ -36,30 +36,40 @@ class Allocator
     void getMem();
 
 public:
-    static int maxMemory() { return sMaxMemory*memoryPageSize; }
+    static int maxMemory();
 
     Allocator(const size_t n);
-    ~Allocator() { clear(); }
+    ~Allocator();
 
-    inline void* allocate()
-    {
-        if (mFree == NULL)
-        {
-            getMem();
-        }
-        IASSERT(mFree != NULL);
-        void* ptr = (void*)mFree;
-        mFree = (void**)(*mFree);
-        return ptr;
-    }
-
-    inline void deallocate(void* ptr)
-    {
-        *((void***)ptr) = mFree;
-        mFree = (void**)ptr;
-    }
-
-    void clear() {}
+    void* allocate() ;
+    void deallocate(void* ptr) ;
 };
+
+
+inline int Allocator::maxMemory()
+{
+    return sMaxMemory*memoryPageSize;
+}
+
+inline Allocator::~Allocator()
+{
+}
+
+inline void* Allocator::allocate()
+{
+    if (mFree == NULL)
+    {
+        getMem();
+    }
+    void* ptr = (void*)mFree;
+    mFree = (void**)(*mFree);
+    return ptr;
+}
+
+inline void Allocator::deallocate(void* ptr)
+{
+    *((void***)ptr) = mFree;
+    mFree = (void**)ptr;
+}
 
 #endif // ALLOCATOR_H

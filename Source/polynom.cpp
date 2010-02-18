@@ -3,239 +3,288 @@
 
 const Polynom& Polynom::operator+=(const Monom& newMonom)
 {
-    MonomInnerSet::iterator it = lower_bound(monomSet.begin(), monomSet.end(),
-                                             &newMonom, monomPointerComparator());
-    if (it == monomSet.end() || **it != newMonom)
+    Monom** position = const_cast<Monom**>(find(newMonom));
+    Monom* tmpMonom;
+
+    if (position == NULL)
     {
-        monomSet.insert(it, new Monom(newMonom));
+        tmpMonom = new Monom(newMonom);
+        tmpMonom->mNext = pListHead;
+        pListHead = tmpMonom;
     }
     else
     {
-        monomSet.erase(it);
+        if (*position != NULL && **position == newMonom)
+        {
+            tmpMonom = *position;
+            *position = (*position)->mNext;
+            delete tmpMonom;
+        }
+        else
+        {
+            //tmpMonom = new Monom(newMonom);
+            //tmpMonom->mNext = *position;
+            //*position = tmpMonom;
+            tmpMonom = new Monom(newMonom);
+            tmpMonom->mNext = (*position)->mNext;
+            (*position)->mNext = tmpMonom;
+        }
     }
+
     return *this;
 }
 
 const Polynom& Polynom::operator+=(const Polynom& anotherPolynom)
 {
-    MonomInnerSet tmpMonomSet;
-    set_symmetric_difference(monomSet.begin(), monomSet.end(),
-                             anotherPolynom.monomSet.begin(), anotherPolynom.monomSet.end(),
-                             inserter(tmpMonomSet, tmpMonomSet.begin()));
-    monomSet = tmpMonomSet;
+    if (anotherPolynom.pListHead != NULL)
+    {
+        Monom **iterator = &pListHead,
+              *iteratorAnother = anotherPolynom.pListHead,
+              *tmpMonom;
+
+        while (*iterator != NULL && iteratorAnother != NULL)
+        {
+            switch (Monom::compare(**iterator, *iteratorAnother))
+            {
+                case -1:
+                    tmpMonom = new Monom(*iteratorAnother);
+                    tmpMonom->mNext = *iterator;
+                    *iterator = tmpMonom;
+                    iterator = &(tmpMonom->mNext);
+                    iteratorAnother = iteratorAnother->mNext;
+                    break;
+                case 0:
+                    tmpMonom = *iterator;
+                    *iterator = (*iterator)->mNext;
+                    delete tmpMonom;
+                    iteratorAnother = iteratorAnother->mNext;
+                    break;
+                case 1:
+                    iterator = &((*iterator)->mNext);
+                    break;
+            }
+        }
+
+        while (iteratorAnother != NULL)
+        {
+            *iterator = new Monom(*iteratorAnother);
+            iterator = &((*iterator)->mNext);
+            iteratorAnother = iteratorAnother->mNext;
+        }
+    }
+
     return *this;
-}
-
-Polynom Polynom::operator+(const Monom& newMonom) const
-{
-    Polynom tmpPolynom(*this);
-    tmpPolynom += newMonom;
-    return tmpPolynom;
-}
-
-Polynom Polynom::operator+(const Polynom& anotherPolynom) const
-{
-    Polynom tmpPolynom;
-    set_symmetric_difference(monomSet.begin(), monomSet.end(),
-                             anotherPolynom.monomSet.begin(), anotherPolynom.monomSet.end(),
-                             inserter(tmpPolynom.monomSet, tmpPolynom.monomSet.begin()));
-    return tmpPolynom;
 }
 
 const Polynom& Polynom::operator*=(Monom::Integer var)
 {
-    Polynom tmpPolynom;
-    Monom tmpMonom;
-    MonomInnerSet::const_iterator it;
-    for (it = monomSet.begin(); it != monomSet.end(); ++it)
+    if (pListHead != NULL)
     {
-        tmpMonom = **it;
-        tmpMonom *= var;
-        tmpPolynom += tmpMonom;
+        Polynom polynomWithVar;
+        Monom **iterator = &pListHead,
+              **iteratorWithVar = &polynomWithVar.pListHead;
+
+        while (*iterator != NULL)
+        {
+            if ((**iterator)[var])
+            {
+                *iteratorWithVar = *iterator;
+                *iterator = (*iterator)->mNext;
+                (*iteratorWithVar)->mNext = NULL;
+                iteratorWithVar = &((*iteratorWithVar)->mNext);
+            }
+            else
+            {
+                iterator = &((*iterator)->mNext);
+            }
+        }
+
+        iterator = &pListHead;
+        while (*iterator != NULL)
+        {
+            **iterator *= var;
+            iterator = &((*iterator)->mNext);
+        }
+
+        mergeWith(polynomWithVar);
     }
-    monomSet = tmpPolynom.monomSet;
-    tmpPolynom.monomSet.clear();
+
     return *this;
 }
 
 const Polynom& Polynom::operator*=(const Monom& anotherMonom)
 {
-    Polynom tmpPolynom;
-    Monom tmpMonom;
-    MonomInnerSet::const_iterator it;
-    for (it = monomSet.begin(); it != monomSet.end(); ++it)
+    if (pListHead != NULL)
     {
-        tmpMonom = **it;
-        tmpMonom *= anotherMonom;
-        tmpPolynom += tmpMonom;
+        for (register Monom::Integer i = 0; i < anotherMonom.dimIndepend(); ++i)
+        {
+            if (anotherMonom[i])
+            {
+                *this *= i;
+            }
+        }
     }
-    monomSet = tmpPolynom.monomSet;
-    tmpPolynom.monomSet.clear();
     return *this;
 }
 
 const Polynom& Polynom::operator*=(const Polynom& anotherPolynom)
 {
-    Polynom tmpPolynom1, tmpPolynom2;
-    MonomInnerSet::const_iterator it;
-    for (it = anotherPolynom.monomSet.begin(); it != anotherPolynom.monomSet.end(); ++it)
+    if (pListHead != NULL)
     {
-        tmpPolynom2 = *this;
-        tmpPolynom2 *= **it;
-        tmpPolynom1 += tmpPolynom2;
+        Polynom *tmpPolynom, *tmpResult = new Polynom();
+        Monom* iteratorAnother(anotherPolynom.pListHead);
+        while (iteratorAnother != NULL)
+        {
+            tmpPolynom = new Polynom(*this);
+            *tmpPolynom *= *iteratorAnother;
+            tmpResult->mergeWith(*tmpPolynom);
+            delete tmpPolynom;
+            iteratorAnother = iteratorAnother->mNext;
+        }
+        setZero();
+        pListHead = tmpResult->pListHead;
+        tmpResult->pListHead = 0;
+        delete tmpResult;
     }
-    monomSet = tmpPolynom1.monomSet;
-    tmpPolynom1.monomSet.clear();
     return *this;
-}
-
-Polynom Polynom::operator*(Monom::Integer var) const
-{
-    Polynom tmpPolynom;
-    Monom tmpMonom;
-    MonomInnerSet::const_iterator it;
-    for (it = monomSet.begin(); it != monomSet.end(); ++it)
-    {
-        tmpMonom = **it;
-        tmpMonom *= var;
-        tmpPolynom += tmpMonom;
-    }
-    return tmpPolynom;
-}
-
-Polynom Polynom::operator*(const Monom& anotherMonom) const
-{
-    Polynom tmpPolynom;
-    Monom tmpMonom;
-    MonomInnerSet::const_iterator it;
-    for (it = monomSet.begin(); it != monomSet.end(); ++it)
-    {
-        tmpMonom = **it;
-        tmpMonom *= anotherMonom;
-        tmpPolynom += tmpMonom;
-    }
-    return tmpPolynom;
-}
-
-Polynom Polynom::operator*(const Polynom& anotherPolynom) const
-{
-    Polynom tmpPolynom1, tmpPolynom2;
-    MonomInnerSet::const_iterator it;
-    for (it = anotherPolynom.monomSet.begin(); it != anotherPolynom.monomSet.end(); ++it)
-    {
-        tmpPolynom2 = *this;
-        tmpPolynom2 *= **it;
-        tmpPolynom1 += tmpPolynom1;
-    }
-    return tmpPolynom1;
 }
 
 void Polynom::reduction(const Polynom &anotherPolynom)
 {
-    Monom tmpMonom;
-    Polynom tmpPolynom;
-
-    MonomInnerSet::const_iterator jIt(monomSet.begin());
-    while (jIt != monomSet.end())
+    if (pListHead != NULL && anotherPolynom.pListHead != NULL)
     {
-        if ((**jIt).isDivisibleBy(anotherPolynom.lm()))
-        {
-            tmpMonom = **jIt / anotherPolynom.lm();
-            tmpPolynom = anotherPolynom;
-            tmpPolynom *= tmpMonom;
-            *this += tmpPolynom;
-            jIt = monomSet.begin();
-        }
-        else
-        {
-            break;
-        }
-    }
+        Monom tmpMonom;
+        Polynom* tmpPolynom;
+        Monom* iterator(pListHead);
+        const Monom& anotherLm(anotherPolynom.lm());
 
-    if (isZero())
-    {
-        return;
-    }
-
-    MonomInnerSet::const_iterator iIt(jIt);
-    iIt++;
-
-    while (iIt != monomSet.end())
-    {
-        if ((**iIt).isDivisibleBy(anotherPolynom.lm()))
+        while (iterator != NULL)
         {
-            tmpMonom = **iIt / anotherPolynom.lm();
-            tmpPolynom = anotherPolynom;
-            tmpPolynom *= tmpMonom;
-            *this += tmpPolynom;
-            //iIt = jIt;
-            //iIt++;
-            iIt = monomSet.begin();
+            if (iterator->isDivisibleBy(anotherLm))
+            {
+                tmpMonom.setQuotientOf(*iterator, anotherLm);
+                tmpPolynom = new Polynom(anotherPolynom);
+                *tmpPolynom *= tmpMonom;
+                mergeWith(*tmpPolynom);
+                delete tmpPolynom;
+                iterator = pListHead;
+            }
+            else
+            {
+                break;
+            }
         }
-        else
+
+        if (pListHead != NULL)
         {
-            iIt++;
-            //jIt++;
+            Monom* iterator2(iterator);
+            iterator = iterator->mNext;
+            while (iterator != NULL)
+            {
+                if (iterator->isDivisibleBy(anotherLm))
+                {
+                    tmpMonom.setQuotientOf(*iterator, anotherLm);
+                    tmpPolynom = new Polynom(anotherPolynom);
+                    *tmpPolynom *= tmpMonom;
+                    mergeWith(*tmpPolynom);
+                    delete tmpPolynom;
+                    iterator = iterator2->mNext;
+                }
+                else
+                {
+                    iterator2 = iterator2->mNext;
+                    iterator = iterator2->mNext;
+                }
+            }
         }
     }
 }
 
 void Polynom::headReduction(const Polynom &anotherPolynom)
 {
-    Monom tmpMonom;
-    Polynom tmpPolynom;
-
-    MonomInnerSet::const_iterator jIt(monomSet.begin());
-    while (jIt != monomSet.end())
+    if (pListHead != NULL && anotherPolynom.pListHead != NULL)
     {
-        if ((**jIt).isDivisibleBy(anotherPolynom.lm()))
+        Monom tmpMonom;
+        Polynom* tmpPolynom;
+        Monom* iterator(pListHead);
+        const Monom& anotherLm(anotherPolynom.lm());
+
+        while (iterator != NULL)
         {
-            tmpMonom = **jIt / anotherPolynom.lm();
-            tmpPolynom = anotherPolynom;
-            tmpPolynom *= tmpMonom;
-            *this += tmpPolynom;
-            jIt = monomSet.begin();
-        }
-        else
-        {
-            break;
+            if (iterator->isDivisibleBy(anotherLm))
+            {
+                tmpMonom.setQuotientOf(*iterator, anotherLm);
+                tmpPolynom = new Polynom(anotherPolynom);
+                *tmpPolynom *= tmpMonom;
+                mergeWith(*tmpPolynom);
+                delete tmpPolynom;
+                iterator = pListHead;
+            }
+            else
+            {
+                break;
+            }
         }
     }
 }
 
+void Polynom::mergeWith(Polynom& anotherPolynom)
+{
+    Monom **iterator = &pListHead,
+          *iteratorAnother = anotherPolynom.pListHead,
+          *tmpPointer;
+
+    while (*iterator != NULL && iteratorAnother != NULL)
+    {
+        switch (Monom::compare(**iterator, *iteratorAnother))
+        {
+        case -1:
+            tmpPointer = iteratorAnother;
+            iteratorAnother = iteratorAnother->mNext;
+            tmpPointer->mNext = *iterator;
+            *iterator = tmpPointer;
+            iterator = &(tmpPointer->mNext);
+            break;
+        case 0:
+            tmpPointer = *iterator;
+            *iterator = (*iterator)->mNext;
+            delete tmpPointer;
+            tmpPointer = iteratorAnother;
+            iteratorAnother = iteratorAnother->mNext;
+            delete tmpPointer;
+            break;
+        case 1:
+            iterator = &((*iterator)->mNext);
+            break;
+        }
+    }
+
+    if (iteratorAnother != NULL)
+    {
+        *iterator = iteratorAnother;
+    }
+
+    anotherPolynom.pListHead = NULL;
+}
 
 std::ostream& operator<<(std::ostream& out, const Polynom& a)
 {
-    if (a.isZero())
+    if (a.pListHead == NULL)
     {
-        out << '0';
+        out << "0";
     }
     else
     {
-        Polynom::MonomInnerSet::const_iterator it(a.monomSet.begin());
-        if ((**it).degree())
+        Monom* iteratorA(a.pListHead);
+        out << *iteratorA;
+        iteratorA = iteratorA->mNext;
+        while (iteratorA != NULL)
         {
-            out << **it;
-        }
-        else
-        {
-            out << '1';
-        }
-        it++;
-        while(it != a.monomSet.end())
-        {
-            out << " + ";
-            if ((**it).degree())
-            {
-                out << **it;
-            }
-            else
-            {
-                out << '1';
-            }
-            it++;
+            out << " + " << *iteratorA;
+            iteratorA = iteratorA->mNext;
         }
     }
+
     return out;
 }
 
@@ -297,6 +346,10 @@ void Polynom::bracket(std::istream& in)
             exit(EXIT_FAILURE);
         }
     }
+    else if (op == '0')
+    {
+        return;
+    }
     else
     {
         setOne();
@@ -323,3 +376,5 @@ std::istream& operator>>(std::istream& in, Polynom& a)
     a.additive(in);
     return in;
 }
+
+Allocator Polynom::pAllocator(sizeof(Polynom));

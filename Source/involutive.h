@@ -11,10 +11,12 @@ protected:
     TSET tSet;
     QSET qSet;
 
+#ifdef USE_CRITERIA
     bool Criteria1(Triple* p, Triple* g);
     bool Criteria2(Triple* p, Triple* g);
     bool Criteria3(Triple* p, Triple* g);
     bool Criteria4(Triple* p, Triple* g);
+#endif
 
     Polynom* findR(Polynom* p, list<Polynom*> &Q);
     Polynom* Reduce(Polynom* p, list<Polynom*> &Q);

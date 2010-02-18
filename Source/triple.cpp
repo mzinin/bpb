@@ -1,9 +1,10 @@
 #include "triple.h"
 
+#ifdef USE_CRITERIA
 Triple::Triple(Polynom *initialPolynom)
 {
     poly = initialPolynom;
-    lm = poly->lm();
+    lm = &poly->lm();
     anc = this;
     anc_lm = lm;
     wanc = NULL;
@@ -18,11 +19,11 @@ Triple::Triple(Polynom *initialPolynom,
                Monom::Integer lastProlongingVar)
 {
     poly = initialPolynom;
-    lm = poly->lm();
+    lm = &poly->lm();
     if (initialAncestor)
     {
         anc = initialAncestor;
-        anc_lm = anc->getPolyLm();
+        anc_lm = &anc->getPolyLm();
     }
     else
     {
@@ -37,10 +38,36 @@ Triple::Triple(Polynom *initialPolynom,
         nmp.insert(var);
     }
 }
+#else
+Triple::Triple(Polynom *initialPolynom)
+{
+    poly = initialPolynom;
+    lm = &poly->lm();
+    anc = this;
+    nmp = set<Monom::Integer>();
+}
+
+Triple::Triple(Polynom *initialPolynom,
+               const Triple* initialAncestor,
+               const set<Monom::Integer>& initialNmp)
+{
+    poly = initialPolynom;
+    lm = &poly->lm();
+    if (initialAncestor)
+    {
+        anc = initialAncestor;
+    }
+    else
+    {
+        anc = this;
+    }
+    nmp = initialNmp;
+}
+#endif
 
 Triple::~Triple()
 {
     delete poly;
 }
 
-Allocator Triple::sAllocator(sizeof(Triple));
+Allocator Triple::tAllocator(sizeof(Triple));

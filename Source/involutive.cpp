@@ -4,20 +4,19 @@
 
 using namespace std;
 
-//#define MK_STAT
-
-#ifdef MK_STAT
+#ifdef COLLECT_STATISTIC
 long int c1 = 0, c2 = 0, c3 = 0, c4 = 0;
 #endif
 
+#ifdef USE_CRITERIA
 bool GBasis::Criteria1(Triple* p, Triple* g)
 {
     Monom tmp = p->getAncLm();
     tmp *= g->getAncLm();
 
-    if (p->getPolyLm() == tmp && !Monom::GCD_degree(p->getAncLm(), g->getAncLm()))
+    if (p->getPolyLm() == tmp && !Monom::gcdDegree(p->getAncLm(), g->getAncLm()))
     {
-#ifdef MK_STAT
+#ifdef COLLECT_STATISTIC
         c1++;
 #endif
         return true;
@@ -33,9 +32,9 @@ bool GBasis::Criteria2(Triple* p, Triple* g)
     Monom tmp = p->getAncLm();
     tmp *= g->getAncLm();
 
-    if (p->getPolyLm().isTrueDivisibleBy(tmp) && !Monom::GCD_degree(p->getAncLm(), g->getAncLm()))
+    if (p->getPolyLm().isTrueDivisibleBy(tmp) && !Monom::gcdDegree(p->getAncLm(), g->getAncLm()))
     {
-#ifdef MK_STAT
+#ifdef COLLECT_STATISTIC
         c2++;
 #endif
         return true;
@@ -53,14 +52,14 @@ bool GBasis::Criteria3(Triple* p, Triple* g)
     //Monom m = p->getAncLm(), mp, mg;
     //m *= g->getAncLm();
 
-    TSET::tsConstIterator ctit(tSet.begin());
+    TSET::const_iterator ctit(tSet.begin());
     while(ctit != tSet.end())
     {
         mp = p->getAncLm(); mp *= (**ctit).getPolyLm();
         mg = g->getAncLm(); mg *= (**ctit).getPolyLm();
         if(m.isTrueDivisibleBy(mp) && m.isTrueDivisibleBy(mg))
         {
-#ifdef MK_STAT
+#ifdef COLLECT_STATISTIC
             c3++;
 #endif
             return true;
@@ -73,24 +72,28 @@ bool GBasis::Criteria3(Triple* p, Triple* g)
 
 bool GBasis::Criteria4(Triple* p, Triple* g)
 {
-    TSET::tsConstIterator ctit(tSet.begin());
+    TSET::const_iterator ctit(tSet.begin());
 
-    while (p->getWanc() != *ctit && ctit != tSet.end())
-    {
+    while (ctit != tSet.end() && p->getWanc() != *ctit)
+    {   std::cout << (**ctit).getAncLm().degree() << std::endl;
         if ((**ctit).getPoly()->degree() == p->getPoly()->degree()-1)
         {
-            Monom tmp1 = p->getAncLm();
-            tmp1 *= (**ctit).getAncLm();
+            Monom tmp1(p->getAncLm());
+            //tmp1 *= (**ctit).getAncLm();
+
+            Triple* ct = *ctit;
+            tmp1 *= ct->getAncLm();
+
             Monom::Integer firstMultiVar = (**ctit).getPolyLm().firstMultiVar();
             for (register Monom::Integer i = 0; i < firstMultiVar; i++)
             {
-                Monom tmp2 = (**ctit).getPolyLm();
+                Monom tmp2((**ctit).getPolyLm());
                 tmp2 *= i;
                 if (tmp2 == p->getPolyLm())
                 {
                     if (tmp2.isTrueDivisibleBy(tmp1))
                     {
-#ifdef MK_STAT
+#ifdef COLLECT_STATISTIC
                         c4++;
 #endif
                         return true;
@@ -101,8 +104,9 @@ bool GBasis::Criteria4(Triple* p, Triple* g)
         ctit++;
     }
 
-  	return false;
+    return false;
 }
+#endif
 
 Polynom* GBasis::NormalForm(Triple* p)
 {
@@ -111,19 +115,20 @@ Polynom* GBasis::NormalForm(Triple* p)
     q = new Polynom();
     h = new Polynom(*p->getPoly());
 
-/*
+#ifdef USE_CRITERIA
     involutiveDivisor = tSet.find(h->lm());
     if (p->isCriteriaAppliable() && involutiveDivisor)
     {
-        //bool c = Criteria1(p, inv_div) || Criteria2(p, inv_div) || Criteria3(p, inv_div) || Criteria4(p, inv_div);
-        bool c = Criteria3(p, involutiveDivisor) || Criteria4(p, involutiveDivisor);
+        bool c = Criteria1(p, involutiveDivisor) || Criteria2(p, involutiveDivisor) || Criteria3(p, involutiveDivisor);// || Criteria4(p, involutiveDivisor);
+        //bool c = Criteria3(p, involutiveDivisor) || Criteria4(p, involutiveDivisor);
+        Criteria4(p, involutiveDivisor);
         if (c)
         {
             delete h;
             return q;
         }
     }
-*/
+#endif
 
     while (!h->isZero())
     {
@@ -205,7 +210,6 @@ void GBasis::ReduceSet()
     list<Polynom*>::iterator ir(R.begin()), ip(P.begin()), iq(Q.begin());
     list<Polynom*>::const_iterator j(gBasis.begin()), qEnd, rEnd, pEnd;
     Polynom *h, *h1;
-    int num;
 
     R = gBasis;
     while (!R.empty())
@@ -304,11 +308,11 @@ void GBasis::ReduceSet()
 
 void GBasis::InvolutiveBasis()
 {
-    TSET::tsIterator tit(tSet.begin());
+    TSET::iterator tit(tSet.begin());
     Polynom* h;
     Triple* current_trpl;
-    bool lm_changed;
 
+static long int i = 0;
     while (!qSet.empty())
     {
         current_trpl = qSet.get();
@@ -316,7 +320,7 @@ void GBasis::InvolutiveBasis()
 
         set<Monom::Integer> n;
         const Triple* qanc = NULL;
-        if (!h->isZero() && h->lm() != current_trpl->getPolyLm())
+        if (!h->isZero() && h->lm() == current_trpl->getPolyLm())
         {
             n = current_trpl->getNmp();
             qanc = current_trpl->getAnc();
@@ -346,8 +350,11 @@ void GBasis::InvolutiveBasis()
                 }
             }
 
+#ifdef USE_CRITERIA
             tSet.push_back(new Triple(h, qanc, NULL, n, -1));
-
+#else
+            tSet.push_back(new Triple(h, qanc, n));
+#endif
             qSet.update(tSet.back(), add_to_qSet);
             qSet.insert(add_to_qSet);
         }
@@ -386,17 +393,17 @@ GBasis::GBasis(list<Polynom*> set): gBasis(), qSet(), tSet()
     gBasis.clear();
     InvolutiveBasis();
 
-    TSET::tsConstIterator i3(tSet.begin());
+    TSET::const_iterator i3(tSet.begin());
     while(i3 != tSet.end())
     {
-        gBasis.push_back((**i3).getPoly());
+        gBasis.push_back(const_cast<Polynom*>((**i3).getPoly()));
         i3++;
     }
     tSet.clear();
     ReduceSet();
 
 
-#ifdef MK_STAT
+#ifdef COLLECT_STATISTIC
     long int all_c = c1 + c2 + c3 + c4;
     cout << "All criteria: " << all_c<<endl;
     cout << "Criterion 1: " << c1 << " (" << (double(c1)/all_c)*100 << "%)" << endl;

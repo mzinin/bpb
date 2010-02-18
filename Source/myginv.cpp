@@ -3,11 +3,8 @@
 #include <fstream>
 #include <sstream>
 
-
 #include "timer.h"
 #include "involutive.h"
-
-using namespace std;
 
 
 int main(int argc, char *argv[])
@@ -15,9 +12,8 @@ int main(int argc, char *argv[])
     ifstream fileInputStream;
     if (argc == 1)
     {
-        //cout << "Usage:\n\t" << argv[0] << " <file_name.gnv>" << endl;
-    	//return EXIT_FAILURE;
-        fileInputStream.open("life6.gnv");
+        cout << "Usage:\n\t" << argv[0] << " <file_name.gnv>" << endl;
+    	return EXIT_FAILURE;
     }
     else
     {
@@ -47,7 +43,6 @@ int main(int argc, char *argv[])
         }
     }
     //variales are read
-
 
     Polynom poly;
     list<Polynom*> polyList, answerList;
@@ -109,18 +104,20 @@ int main(int argc, char *argv[])
     delete tmpStream;
     //answer set is read
 
-
     fileInputStream.close();
+
 
     Timer timer;
     timer.start();
     GBasis basisGroebner(polyList);
     timer.stop();
+
+    cout << "Size: " << basisGroebner.length() << endl;
     //cout << basisGroebner << endl;
     cout << timer << endl;
 
 
-    bool isCorrect = true, Found;
+	bool isCorrect = true, Found;
     //checking
     if (basisGroebner.length() != answerList.size())
     {
@@ -132,7 +129,7 @@ int main(int argc, char *argv[])
         while (iterAnswerList != answerList.end())
         {
             Found = false;
-            for (int i = 0; i < basisGroebner.length(); i++)
+            for (register unsigned i = 0; i < basisGroebner.length(); i++)
             {
                 if (*basisGroebner[i] == **iterAnswerList)
                 {
@@ -161,62 +158,3 @@ int main(int argc, char *argv[])
 
     return EXIT_SUCCESS;
 }
-
-/*
-int main(int argc, char *argv[])
-{
-    ifstream fileInputStream;
-    if (argc == 1)
-    {
-        //cout << "Usage:\n\t" << argv[0] << " <file_name.gnv>" << endl;
-        //return EXIT_FAILURE;
-        fileInputStream.open("test.gnv");
-    }
-    else
-    {
-        fileInputStream.open(argv[1]);
-        if (!fileInputStream)
-        {
-            cout << "No such file:" << argv[1] << endl;
-            return EXIT_FAILURE;
-        }
-    }
-
-
-    //read variables
-    char c = '0';
-    std::string tmpString;
-    while (c != ';' && !fileInputStream.eof())
-    {
-        fileInputStream >> c;
-        if (c == ',' || c == ';')
-        {
-            Monom::addVariable(tmpString.c_str());
-            tmpString.clear();
-        }
-        else
-        {
-            tmpString += c;
-        }
-    }
-    //variales are read
-
-    Polynom p1, p2, p3;
-    Monom m1, m2, m3;
-
-    fileInputStream >> p1;
-    fileInputStream >> p2;
-
-    cout << "1st polynom: " << p1 << "; degree: " << p1.degree() << endl;
-    cout << "2nd polynom: " << p2 << "; degree: " << p2.degree() << endl << endl;
-
-    p1.reduction(p2);
-
-    cout << "1st polynom: " << p1 << "; degree: " << p1.degree() << endl;
-    cout << "2nd polynom: " << p2 << "; degree: " << p2.degree() << endl << endl;
-
-
-    fileInputStream.close();
-    return EXIT_SUCCESS;
-}
-*/

@@ -8,7 +8,7 @@ TSET::~TSET()
 {
     jTree.clear();
 
-    list<Triple*>::iterator it(tripleList.begin());
+    iterator it(tripleList.begin());
     while (it != tripleList.end())
     {
         delete *it;
@@ -23,7 +23,7 @@ void TSET::clear()
     tripleList.clear();
 }
 
-TSET::tsIterator TSET::erase(TSET::tsIterator it)
+TSET::iterator TSET::erase(TSET::iterator it)
 {
     jTree.del(*it);
     return tripleList.erase(it);

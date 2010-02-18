@@ -27,7 +27,6 @@ void Allocator::getMem()
          **end = beg + mTSize*(mPageSize-1),
          **tmp;
 
-    IASSERT(beg != NULL);
     *((void***)end) = mFree;
     mFree = (void**)beg;
     do

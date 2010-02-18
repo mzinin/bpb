@@ -7,6 +7,7 @@
 
 class QSET
 {
+//public:
     list<Triple*> tripleList;
 
 public:

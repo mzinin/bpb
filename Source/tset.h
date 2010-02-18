@@ -11,21 +11,21 @@ class TSET
     JanetTree jTree;
 
 public:
-    typedef list<Triple*>::iterator tsIterator;
-    typedef list<Triple*>::const_iterator tsConstIterator;
+    typedef list<Triple*>::iterator iterator;
+    typedef list<Triple*>::const_iterator const_iterator;
 
     TSET();
     ~TSET();
 
-    Triple* find(const Monom& m) const;
+    Triple* find(const Monom& monom) const;
 
-    tsIterator begin();
-    tsConstIterator begin() const;
-    tsIterator end();
-    tsConstIterator end() const;
+    iterator begin();
+    const_iterator begin() const;
+    iterator end();
+    const_iterator end() const;
 
     void clear();
-    tsIterator erase(tsIterator it);
+    iterator erase(iterator it);
     void push_back(Triple* newTriple);
     std::size_t size() const;
 
@@ -33,27 +33,27 @@ public:
 };
 
 
-inline Triple* TSET::find(const Monom& m) const
+inline Triple* TSET::find(const Monom& monom) const
 {
-    return jTree.find(m);
+    return jTree.find(monom);
 }
 
-inline TSET::tsIterator TSET::begin()
-{
-    return tripleList.begin();
-}
-
-inline TSET::tsConstIterator TSET::begin() const
+inline TSET::iterator TSET::begin()
 {
     return tripleList.begin();
 }
 
-inline TSET::tsIterator TSET::end()
+inline TSET::const_iterator TSET::begin() const
+{
+    return tripleList.begin();
+}
+
+inline TSET::iterator TSET::end()
 {
     return tripleList.end();
 }
 
-inline TSET::tsConstIterator TSET::end() const
+inline TSET::const_iterator TSET::end() const
 {
     return tripleList.end();
 }

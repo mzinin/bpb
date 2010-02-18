@@ -49,6 +49,12 @@ void QSET::update(Triple* newTriple, list<Triple*> &set)
     Monom::Integer firstMultiVar = newTriple->getPolyLm().firstMultiVar();
     Monom tmpMonom;
 
+    std::set<Monom::Integer> nmp(newTriple->getNmp());
+    for (register Monom::Integer var = 0; var < firstMultiVar; var++)
+    {
+        nmp.insert(var);
+    }
+
     for (register Monom::Integer var = 0; var < firstMultiVar; var++)
     {
         if (!newTriple->testNmp(var))
@@ -61,11 +67,17 @@ void QSET::update(Triple* newTriple, list<Triple*> &set)
                 tmpMonom *= var;
                 if (tmpMonom == tmpPolynom->lm())
                 {
+#ifdef USE_CRITRERIA
                     set.push_back(new Triple(tmpPolynom,
                                              newTriple->getAnc(),
                                              newTriple,
-                                             newTriple->getNmp(),
+                                             nmp,
                                              var));
+#else
+                    set.push_back(new Triple(tmpPolynom,
+                                             newTriple->getAnc(),
+                                             nmp));
+#endif
                 }
                 else
                 {

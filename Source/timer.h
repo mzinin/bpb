@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2004 by Blinkov Yu.A.                                   *
+ *   Copyright (C) 2008 by Blinkov Yu. A.                                  *
  *   BlinkovUA@info.sgu.ru                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -22,34 +22,37 @@
 #define TIMER_H
 
 #include <iostream>
-#include <iomanip>
-#include <sys/times.h>
 
 class Timer
 {
-    static double mHZ;        //  Number of ticks per second
-    static tms    mBuffer;
+	static double sHZ;
 
-    clock_t mUser;
-    clock_t mSys;
-    clock_t mTimeUser;
-    clock_t mTimeSys;
+	double mUserTime;
+	double mSysTime;
+	double mRealTime;
+
+	double mUserElapsed;
+	double mSysElapsed;
+	double mRealElapsed;
 
 public:
-    Timer(): mUser(0), mSys(0), mTimeUser(0), mTimeSys(0) {}
-    ~Timer() {}
+	Timer():
+      mUserTime(0.0),
+      mSysTime(0.0),
+      mRealTime(0.0),
+      mUserElapsed(0.0),
+      mSysElapsed(0.0),
+      mRealElapsed(0.0) {}
 
-    void start();
-    void stop();
-    void cont();
+	void start();
+	void cont();
+	void stop();
 
-    double userTime() const { return mTimeUser / mHZ; }
-    double sysTime() const { return mTimeSys / mHZ; }
-    double realTime() const { return (mTimeUser + mTimeSys) / mHZ; }
+	double userTime() const { return mUserElapsed; }
+	double sysTime() const { return mSysElapsed; }
+	double realTime() const { return mRealElapsed; }
 
-    void operator= (const Timer &a);
-
-    friend std::ostream& operator<<(std::ostream& out, const Timer &a);
+	friend std::ostream& operator<<(std::ostream& out, const Timer &a);
 };
 
-#endif // ITIMER_H
+#endif // TIMER_H
