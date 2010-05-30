@@ -4,39 +4,38 @@
 #include <set>
 #include "polynom.h"
 
-
-#ifdef USE_CRITERIA
-
 class Triple
 {
     const Monom* lm;
-    const Monom* anc_lm;
-    set<Monom::Integer> nmp;
     Polynom* poly;
     const Triple* anc;
     const Triple* wanc;
-    Monom::Integer var;
+    set<Monom::Integer> nmp;
+    const Monom::Integer var;
+    const Monom::Integer hiddenDegree;
     static Allocator tAllocator;
 
 public:
     Triple(Polynom* initialPolynom);
 
-    Triple(Polynom* initialPolynom,
-           const Triple* initialAncestor,
-           const Triple* initialWeakAncestor,
-           const set<Monom::Integer>& initialNmp,
-           Monom::Integer lastProlongingVar);
+    Triple(Polynom* initialPolynom
+          ,const Triple* initialAncestor
+          ,const set<Monom::Integer>& initialNmp
+          ,const Triple* weakAncestor
+          ,Monom::Integer nmVar
+#ifdef USE_REAL_MINSTRATEGY
+          ,Monom::Integer hDegree = 0
+#endif
+          );
 
     ~Triple();
 
     const Polynom* GetPoly() const;
     const Monom& GetPolyLm() const;
     const Triple* GetAnc() const;
-    const Monom& GetAncLm() const;
-    const Triple* GetWanc() const;
-    const set<Monom::Integer>& GetNmp() const;
+    const Triple* GetWAnc() const;
     Monom::Integer GetVar() const;
-    bool IsCriteriaAppliable() const;
+    const set<Monom::Integer>& GetNmp() const;
 
     void SetNmp(const set<Monom::Integer>& newNmp);
     void SetNmp(Monom::Integer var);
@@ -46,60 +45,6 @@ public:
     void operator delete(void *ptr);
     static bool Compare(const Triple* a, const Triple* b);
 };
-
-inline const Monom& Triple::GetAncLm() const
-{
-    return *anc_lm;
-}
-
-inline const Triple* Triple::GetWanc() const
-{
-    return wanc;
-}
-
-inline Monom::Integer Triple::GetVar() const
-{
-    return var;
-}
-
-inline bool Triple::IsCriteriaAppliable() const
-{
-    return var != -1;
-}
-
-#else
-
-class Triple
-{
-    const Monom* lm;
-    set<Monom::Integer> nmp;
-    Polynom* poly;
-    const Triple* anc;
-    static Allocator tAllocator;
-
-    public:
-        Triple(Polynom* initialPolynom);
-
-        Triple(Polynom* initialPolynom,
-               const Triple* initialAncestor,
-               const set<Monom::Integer>& initialNmp);
-
-        ~Triple();
-
-        const Polynom* GetPoly() const;
-        const Monom& GetPolyLm() const;
-        const Triple* GetAnc() const;
-        const set<Monom::Integer>& GetNmp() const;
-
-        void SetNmp(const set<Monom::Integer>& newNmp);
-        void SetNmp(Monom::Integer var);
-        bool TestNmp(Monom::Integer var) const;
-
-        void* operator new(std::size_t);
-        void operator delete(void *ptr);
-        static bool Compare(const Triple* a, const Triple* b);
-};
-#endif
 
 inline const Polynom* Triple::GetPoly() const
 {
@@ -114,6 +59,16 @@ inline const Monom& Triple::GetPolyLm() const
 inline const Triple* Triple::GetAnc() const
 {
     return anc;
+}
+
+inline const Triple* Triple::GetWAnc() const
+{
+    return wanc;
+}
+
+inline Monom::Integer Triple::GetVar() const
+{
+    return var;
 }
 
 inline const set<Monom::Integer>& Triple::GetNmp() const
@@ -150,7 +105,18 @@ inline void Triple::operator delete(void *ptr)
 
 inline bool Triple::Compare(const Triple* a, const Triple* b)
 {
-    return *a->lm > *b->lm;
+#ifdef USE_REAL_MINSTRATEGY
+    static Monom::Integer aDegree;
+    static Monom::Integer bDegree;
+    aDegree = a->GetPolyLm().Degree() + a->hiddenDegree;
+    bDegree = b->GetPolyLm().Degree() + b->hiddenDegree;
+    if (aDegree > bDegree)
+        return true;
+    else if (aDegree < bDegree)
+        return false;
+    else
+#endif
+        return *a->lm > *b->lm;
 }
 
 #endif // TRIPLE_H

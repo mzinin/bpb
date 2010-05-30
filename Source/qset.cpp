@@ -53,6 +53,10 @@ void QSET::Update(Triple* newTriple, list<Triple*>& set)
     {
         if (!newTriple->TestNmp(var))
 	{
+#ifdef USE_REAL_MINSTRATEGY
+            Monom::Integer hiddenDegree = 0;
+            if (newTriple->GetPolyLm()[var]) hiddenDegree++;
+#endif
             Polynom* tmpPolynom = new Polynom(*newTriple->GetPoly());
             (*tmpPolynom) *= var;
 
@@ -60,72 +64,22 @@ void QSET::Update(Triple* newTriple, list<Triple*>& set)
 
             if (!tmpPolynom->IsZero())
             {
-                tmpMonom = newTriple->GetPolyLm();
-                tmpMonom *= var;
-                if (tmpMonom == tmpPolynom->Lm())
-                {
-#ifdef USE_CRITERIA
-                    set.push_back(new Triple(tmpPolynom,
-                                             newTriple->GetAnc(),
-                                             newTriple,
-                                             newTriple->GetNmp(),
-                                             var));
-#else
-                    set.push_back(new Triple(tmpPolynom,
-                                             newTriple->GetAnc(),
-                                             newTriple->GetNmp()));
+                set.push_back(new Triple(tmpPolynom
+                                        ,newTriple->GetAnc()
+                                        ,newTriple->GetNmp()
+                                        ,newTriple
+                                        ,var
+#ifdef USE_REAL_MINSTRATEGY
+                                        ,hiddenDegree
 #endif
-                }
-                else
-                {
-                    set.push_back(new Triple(tmpPolynom));
-                }
+                                        )
+                             );
             }
+            delete tmpPolynom;
         }
     }
 }
 
-/*
-void QSET::Update(Triple* newTriple, list<Triple*>& set)
-{
-    Monom::Integer firstMultiVar = newTriple->GetPolyLm().FirstMultiVar();
-
-    Monom tmpMonom = newTriple->GetPolyLm();;
-    Polynom* tmpPolynom = new Polynom(*newTriple->GetPoly());
-    for (register Monom::Integer var = 0; var < firstMultiVar; var++)
-    {
-        //if (!newTriple->TestNmp(var))
-        {
-            (*tmpPolynom) *= var;
-            tmpMonom *= var;
-            newTriple->SetNmp(var);
-        }
-    }
-
-
-    if (!tmpPolynom->IsZero())
-    {
-        if (tmpMonom == tmpPolynom->Lm())
-        {
-#ifdef USE_CRITERIA
-            set.push_back(new Triple(tmpPolynom,
-                          newTriple->GetAnc(),
-                          newTriple,
-                          newTriple->GetNmp(),
-                          var));
-#else
-            set.push_back(new Triple(tmpPolynom,
-                          newTriple->GetAnc(),
-                          newTriple->GetNmp()));
-#endif
-        }
-        else
-        {
-            set.push_back(new Triple(tmpPolynom));
-        }
-    }
-}
-*/
 
 Triple* QSET::Get()
 {
@@ -139,7 +93,7 @@ void QSET::DeleteDescendants(const Triple* ancestor)
     list<Triple*>::iterator it(tripleList.begin());
     while ( it != tripleList.end() )
     {
-        if ((**it).GetAnc() == ancestor)
+        if ((**it).GetAnc() == ancestor || (**it).GetWAnc() == ancestor)
         {
             delete *it;
             it = tripleList.erase(it);

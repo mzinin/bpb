@@ -17,13 +17,6 @@ public:
     friend std::ostream& operator<<(std::ostream& out, GBasis& gBasis);
 
 protected:
-#ifdef USE_CRITERIA
-    bool Criteria1(const Triple* p, const Triple* g);
-    bool Criteria2(const Triple* p, const Triple* g);
-    bool Criteria3(const Triple* p, const Triple* g);
-    bool Criteria4(const Triple* p, const Triple* g);
-#endif
-
     const Polynom* FindR(const Polynom* p, const list<Polynom*>& Q);
     Polynom* Reduce(Polynom* p, const list<Polynom*>& Q);
     void ReduceSet();

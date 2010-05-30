@@ -6,8 +6,7 @@
 #include "monomDL.h"
 #include "monomLex.h"
 
-//#define USE_CRITERIA
-//#define COLLECT_STATISTIC
+#define USE_REAL_MINSTRATEGY
 
 typedef MonomDRL Monom;
 

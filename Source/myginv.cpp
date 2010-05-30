@@ -74,34 +74,6 @@ int main(int argc, char *argv[])
     delete tmpStream;
     //initial polynomial set is read
 
-/*{
-    ofstream newFile;
-    string newFileName = argv[1];
-    newFileName.insert(newFileName.find_last_of('.'), "_new");
-    newFile.open(newFileName.c_str());
-
-    if (!newFile.good())
-        return 1;
-
-    for (register unsigned i = 0; i < Monom::DimIndepend(); ++i)
-    {
-        newFile << Monom::GetVariable(i) << ",";
-    }
-    newFile.seekp(-1, ios_base::cur);
-    newFile << ";\n";
-
-    list<Polynom*>::const_reverse_iterator it = polyList.rbegin();
-    for (; it != polyList.rend(); ++it)
-    {
-        newFile << **it << ",\n";
-    }
-    newFile.seekp(-2, ios_base::cur);
-    newFile << ";\n1;\n";
-
-    newFile.close();
-    return 0;
-}*/
-
     tmpStream = new stringstream();
     c = '0';
     //read answer set
@@ -137,6 +109,7 @@ int main(int argc, char *argv[])
     timer.Stop();
 
     //cout << basisGroebner << endl;
+    cout << "Size: " << basisGroebner.Length() << endl;
     cout << timer << endl;
 
 
