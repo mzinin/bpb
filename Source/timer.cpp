@@ -19,14 +19,14 @@
  ***************************************************************************/
 
 #ifdef _WIN32
-  #ifndef _WIN32_WINNT            // Allow use of features specific to Windows 2000 or later.
-  #define _WIN32_WINNT 0x0500
-  #endif
-  #include <windows.h>
+    #ifndef _WIN32_WINNT            // Allow use of features specific to Windows 2000 or later.
+        #define _WIN32_WINNT 0x0500
+    #endif
+    #include <windows.h>
 #else
-  #include <unistd.h>
-  #include <sys/times.h>
-#endif // _WIN32
+    #include <unistd.h>
+    #include <sys/times.h>
+#endif //_WIN32
 
 #include <iomanip>
 #include "timer.h"

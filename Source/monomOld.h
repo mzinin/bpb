@@ -84,6 +84,7 @@ public:
 inline const MonomOld& MonomOld::operator=(const MonomOld& anotherMonom)
 {
     memcpy(this, &anotherMonom, sizeof(MonomOld));
+    return *this;
 }
 
 inline MonomOld::Integer MonomOld::operator[](short var) const
@@ -114,6 +115,7 @@ inline const MonomOld& MonomOld::operator*=(short var)
         exp |= One[var];
         mTotalDegree++;
     }
+    return *this;
 }
 
 inline const MonomOld& MonomOld::operator/=(const MonomOld& anotherMonom)
@@ -126,6 +128,7 @@ inline const MonomOld& MonomOld::operator/=(const MonomOld& anotherMonom)
         s++;
         mTotalDegree += Data[*s][DEGREE];
     }
+    return *this;
 }
 
 inline const MonomOld& MonomOld::operator*=(const MonomOld& anotherMonom)
@@ -138,6 +141,7 @@ inline const MonomOld& MonomOld::operator*=(const MonomOld& anotherMonom)
         s++;
         mTotalDegree += Data[*s][DEGREE];
     }
+    return *this;
 }
 
 inline void MonomOld::SetProductOf(const MonomOld& monomA, short var)

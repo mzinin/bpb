@@ -13,7 +13,7 @@ int main(int argc, char *argv[])
     if (argc == 1)
     {
         cout << "Usage:\n\t" << argv[0] << " <file_name.gnv>" << endl;
-    	return EXIT_FAILURE;
+        return EXIT_FAILURE;
     }
     else
     {
