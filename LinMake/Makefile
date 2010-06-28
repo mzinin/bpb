@@ -2,7 +2,7 @@ CXX = g++
 COMPILE_FLAGS = -O3 -c
 LINK_FLAGS =
 SOURCE = ../Source
-BINARY = ./
+BINARY = .
 
 all: myginv
 
