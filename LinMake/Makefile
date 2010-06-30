@@ -6,24 +6,24 @@ BINARY = .
 all: myginv
 
 myginv: myginv.o version.o involutive.o qset.o tset.o janettree.o triple.o polynom.o monomOld.o monomLex.o monomDL.o monomDRL.o allocator.o variables.o timer.o
-    $(CXX) \
-        $(BINARY)/myginv.o \
-        $(BINARY)/version.o \
-        $(BINARY)/involutive.o \
-        $(BINARY)/qset.o \
-        $(BINARY)/tset.o \
-        $(BINARY)/janettree.o \
-        $(BINARY)/triple.o \
-        $(BINARY)/polynom.o \
-        $(BINARY)/monomOld.o \
-        $(BINARY)/monomLex.o \
-        $(BINARY)/monomDL.o \
-        $(BINARY)/monomDRL.o \
-        $(BINARY)/allocator.o \
-        $(BINARY)/variables.o \
-        $(BINARY)/timer.o \
-        -o $(BINARY)/myginv
-    @rm $(BINARY)/*.o
+	$(CXX) \
+            $(BINARY)/myginv.o \
+            $(BINARY)/version.o \
+            $(BINARY)/involutive.o \
+            $(BINARY)/qset.o \
+            $(BINARY)/tset.o \
+            $(BINARY)/janettree.o \
+            $(BINARY)/triple.o \
+            $(BINARY)/polynom.o \
+            $(BINARY)/monomOld.o \
+            $(BINARY)/monomLex.o \
+            $(BINARY)/monomDL.o \
+            $(BINARY)/monomDRL.o \
+            $(BINARY)/allocator.o \
+            $(BINARY)/variables.o \
+            $(BINARY)/timer.o \
+            -o $(BINARY)/myginv
+	@rm $(BINARY)/*.o
 
 myginv.o: $(SOURCE)/timer.h $(SOURCE)/involutive.h $(SOURCE)/version.h
 	$(CXX) $(CXXFLAGS) $(SOURCE)/myginv.cpp -o $(BINARY)/myginv.o
