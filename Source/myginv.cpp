@@ -29,6 +29,7 @@ int main(int argc, char *argv[])
         case 1:
             Usage(argv[0]);
             return EXIT_FAILURE;
+            break;
         case 2:
             for (register int i = 1; i < argc; ++i)
             {
@@ -52,10 +53,12 @@ int main(int argc, char *argv[])
                     }
                 }
             }
+            break;
         default:
-            std::cout << "Too mane arguments." << std::endl;
+            std::cout << "Too many arguments." << std::endl;
             Usage(argv[0]);
             return EXIT_FAILURE;
+            break;
     }
 
     //read variables
