@@ -5,24 +5,57 @@
 
 #include "timer.h"
 #include "involutive.h"
+#include "version.h"
 
+void Usage(const char* applicationName)
+{
+    std::cout << "Usage:" << std::endl;
+    std::cout <<"\t" << applicationName << " <file_name.gnv> - execute given task;" << std::endl;
+    std::cout <<"\t" << applicationName << " -v, --version - print version;" << std::endl;
+    std::cout <<"\t" << applicationName << " -h, --help - print this message." << std::endl;
+}
+
+void PrintVersion()
+{
+    std::cout << "version " << GetVersion().GetMajor() << "." << GetVersion().GetMinor() << "." << GetVersion().GetRevision() << std::endl;
+}
 
 int main(int argc, char *argv[])
 {
     ifstream fileInputStream;
-    if (argc == 1)
+    //parse command line arguments
+    switch (argc)
     {
-        cout << "Usage:\n\t" << argv[0] << " <file_name.gnv>" << endl;
-        return EXIT_FAILURE;
-    }
-    else
-    {
-        fileInputStream.open(argv[1]);
-        if (!fileInputStream)
-        {
-            cout << "No such file:" << argv[1] << endl;
+        case 1:
+            Usage(argv[0]);
             return EXIT_FAILURE;
-        }
+        case 2:
+            for (register int i = 1; i < argc; ++i)
+            {
+                if (!strcmp(argv[i], "-v") || !strcmp(argv[i], "--version"))
+                {
+                    PrintVersion();
+                    return EXIT_SUCCESS;
+                }
+                else if (!strcmp(argv[i], "-h") || !strcmp(argv[i], "--help"))
+                {
+                    Usage(argv[0]);
+                    return EXIT_SUCCESS;
+                }
+                else
+                {
+                    fileInputStream.open(argv[i]);
+                    if (!fileInputStream)
+                    {
+                        cout << "No such file:" << argv[i] << endl;
+                        return EXIT_FAILURE;
+                    }
+                }
+            }
+        default:
+            std::cout << "Too mane arguments." << std::endl;
+            Usage(argv[0]);
+            return EXIT_FAILURE;
     }
 
     //read variables
