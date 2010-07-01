@@ -1,13 +1,6 @@
 #include "version.h"
 
-static VersionInfo Version(0, 5, 3);
-
-VersionInfo::VersionInfo():
-    major(0),
-    minor(0),
-    revision(0)
-{
-}
+static VersionInfo Version(MAJOR_VESION, MINOR_VERSION, REVISION);
 
 VersionInfo::VersionInfo(unsigned initialMajor, unsigned initialMinor, unsigned initialRevision):
     major(initialMajor),

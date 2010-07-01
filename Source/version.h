@@ -17,9 +17,6 @@ public:
     unsigned GetMajor() const;
     unsigned GetMinor() const;
     unsigned GetRevision() const;
-
-private:
-    VersionInfo();
 };
 
 const VersionInfo& GetVersion();
