@@ -197,7 +197,8 @@ void GBasis::InvolutiveBasis()
             tit = tSet.Begin();
             for (; tit != tSet.End(); ++tit)
             {
-                qSet.Update(*tit, tSet.NonMultiNova(*tit), additionalToQSet);
+                std::set<Monom::Integer> nonMultiVars = tSet.NonMultiNova(*tit);
+                qSet.Update(*tit, nonMultiVars, additionalToQSet);
             }
 #else
             qSet.Update(tSet.Back(), additionalToQSet);
@@ -268,3 +269,6 @@ std::ostream& operator<<(std::ostream& out, GBasis& gBasis)
 
     return out;
 }
+
+
+
