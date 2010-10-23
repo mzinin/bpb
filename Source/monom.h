@@ -6,8 +6,6 @@
 #include "monomDL.h"
 #include "monomLex.h"
 
-#define USE_REAL_MINSTRATEGY
-
 typedef MonomDRL Monom;
 
 #endif

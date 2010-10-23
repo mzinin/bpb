@@ -46,7 +46,7 @@ const Triple* JanetTree::Find(const Monom& monom) const
     return trpl;
 }
 
-void JanetTree::Delete(Triple *trpl)
+void JanetTree::Delete(const Triple *trpl)
 {
     Iterator j(jRoot);
     //подсчет ветвлений
@@ -210,3 +210,39 @@ void JanetTree::Clear()
         j.Clear();
     }
 }
+
+#ifdef USE_NOVA_INVOLUTION
+std::set<Monom::Integer> JanetTree::NMulti(const Triple* triple) const
+{
+    std::set<Monom::Integer> result;
+
+    if (jRoot)
+    {
+        ConstIterator j(jRoot);
+        Monom::Integer var = 0;
+        do
+        {
+            while (j.Degree() < triple->GetPolyLm()[var])
+            {
+                j.StepDegree();
+            }
+            if (j.IsNextDegree())
+            {
+                result.insert(var);
+            }
+
+            ++var;
+            if (j.IsNextVariable())
+            {
+                j.StepVariable();
+            }
+            else
+            {
+                break;
+            }
+        } while(true);
+    }
+
+    return result;
+}
+#endif

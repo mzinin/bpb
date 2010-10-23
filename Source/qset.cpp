@@ -4,9 +4,9 @@ QSET::QSET(): tripleList()
 {
 }
 
-QSET::QSET(const list<Polynom*>& basis): tripleList()
+QSET::QSET(const std::list<Polynom*>& basis): tripleList()
 {
-    list<Polynom*>::const_iterator itBasis(basis.begin());
+    std::list<Polynom*>::const_iterator itBasis(basis.begin());
     while (itBasis != basis.end())
     {
         tripleList.push_back(new Triple(*itBasis));
@@ -17,7 +17,7 @@ QSET::QSET(const list<Polynom*>& basis): tripleList()
 
 QSET::~QSET()
 {
-    list<Triple*>::iterator it(tripleList.begin());
+    std::list<Triple*>::iterator it(tripleList.begin());
     while( it != tripleList.end() )
     {
         delete *it;
@@ -26,9 +26,9 @@ QSET::~QSET()
     tripleList.clear();
 }
 
-void QSET::Insert(list<Polynom*>& addList)
+void QSET::Insert(std::list<Polynom*>& addList)
 {
-    list<Polynom*>::const_iterator itBasis(addList.begin());
+    std::list<Polynom*>::const_iterator itBasis(addList.begin());
     while ( itBasis != addList.end() )
     {
         tripleList.push_back(new Triple(*itBasis));
@@ -37,19 +37,44 @@ void QSET::Insert(list<Polynom*>& addList)
     tripleList.sort(Triple::Compare);
 }
 
-void QSET::Insert(list<Triple*>& addList)
+void QSET::Insert(std::list<Triple*>& addList)
 {
     addList.sort(Triple::Compare);
     tripleList.merge(addList, Triple::Compare);
 }
 
+#ifdef USE_NOVA_INVOLUTION
+void QSET::Update(Triple* newTriple, const std::set<Monom::Integer>& nonMultiVars, std::list<Triple*>& set)
+{
+    std::set<Monom::Integer>::const_iterator nmvIterator = nonMultiVars.begin();
+    for (; nmvIterator != nonMultiVars.end(); ++nmvIterator)
+    {
+        if (!newTriple->TestNmp(*nmvIterator))
+        {
+            Polynom* tmpPolynom = new Polynom(*newTriple->GetPoly());
+            (*tmpPolynom) *= *nmvIterator;
 
-void QSET::Update(Triple* newTriple, list<Triple*>& set)
+            newTriple->SetNmp(*nmvIterator);
+
+            if (!tmpPolynom->IsZero())
+            {
+                set.push_back(new Triple(tmpPolynom
+                                        ,newTriple->GetAnc()
+                                        ,newTriple->GetNmp()
+                                        ,newTriple
+                                        ,*nmvIterator
+                                        )
+                             );
+            }
+            delete tmpPolynom;
+        }
+    }
+}
+#else
+void QSET::Update(Triple* newTriple, const std::list<Triple*>& set)
 {
     Monom::Integer firstMultiVar = newTriple->GetPolyLm().FirstMultiVar();
-    Monom tmpMonom;
-
-    for (register Monom::Integer var = 0; var < firstMultiVar; var++)
+    for (register Monom::Integer var = 0; var < firstMultiVar; ++var)
     {
         if (!newTriple->TestNmp(var))
 	{
@@ -79,6 +104,7 @@ void QSET::Update(Triple* newTriple, list<Triple*>& set)
         }
     }
 }
+#endif // USE_NOVA_INVOLUTION
 
 
 Triple* QSET::Get()
@@ -90,7 +116,7 @@ Triple* QSET::Get()
 
 void QSET::DeleteDescendants(const Triple* ancestor)
 {
-    list<Triple*>::iterator it(tripleList.begin());
+    std::list<Triple*>::iterator it(tripleList.begin());
     while ( it != tripleList.end() )
     {
         if ((**it).GetAnc() == ancestor || (**it).GetWAnc() == ancestor)

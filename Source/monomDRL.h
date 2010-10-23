@@ -5,8 +5,8 @@
 
 #include "variables.h"
 #include "allocator.h"
-
-using namespace std;
+#include "definitions.h"
+#include <set>
 
 class MonomDRL
 {
@@ -84,6 +84,9 @@ public:
     void SetLcmOf(const MonomDRL& monomA, const MonomDRL& monomB);
 
     Integer FirstMultiVar() const;
+#ifdef USE_NOVA_INVOLUTION
+    std::set<Integer> GetVariablesSet() const;
+#endif
 };
 
 
@@ -772,5 +775,19 @@ inline MonomDRL::Integer MonomDRL::FirstMultiVar() const
         return mListHead->value;
     }
 }
+
+#ifdef USE_NOVA_INVOLUTION
+inline std::set<MonomDRL::Integer> MonomDRL::GetVariablesSet() const
+{
+    std::set<Integer> result;
+    VarsListNode *iterator = mListHead;
+    while (iterator != NULL)
+    {
+        result.insert(iterator->value);
+        iterator = iterator->next;
+    }
+    return result;
+}
+#endif
 
 #endif // MONOMDRL_H

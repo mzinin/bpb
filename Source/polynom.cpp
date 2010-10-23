@@ -343,7 +343,7 @@ void Polynom::Bracket(std::istream& in)
         Additive(in);
         if (in.get() != ')')
         {
-            cerr << "expected ')'" << endl;
+            std::cerr << "expected ')'" << std::endl;
             exit(EXIT_FAILURE);
         }
     }
@@ -361,7 +361,7 @@ void Polynom::Bracket(std::istream& in)
             in.clear();
             if (in.get() != '1')
             {
-                cerr << "expected 'monomial'" << endl;
+                std::cerr << "expected 'monomial'" << std::endl;
                 exit(EXIT_FAILURE);
             }
         }
@@ -376,7 +376,7 @@ std::istream& operator>>(std::istream& in, Polynom& a)
 
 std::string Polynom::ToString() const
 {
-    stringstream tmpStream;
+    std::stringstream tmpStream;
     tmpStream << *this;
     return tmpStream.str();
 }

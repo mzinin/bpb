@@ -3,21 +3,31 @@
 
 #include "janettree.h"
 #include <list>
+#include <map>
 #include <algorithm>
 
 class TSET
 {
-    list<Triple*> tripleList;
+#ifdef USE_NOVA_INVOLUTION
+    typedef std::map<Monom::Integer, unsigned> VarCountMap;
+    struct FullDegreeInfo
+    {
+        JanetTree JTree;
+        VarCountMap VCMap;
+    };
+    typedef std::map<Monom::Integer, FullDegreeInfo> FullDegreeInfoMap;
+
+    FullDegreeInfoMap degreeInfos;
+#endif
+    std::list<Triple*> tripleList;
     JanetTree jTree;
 
 public:
-    typedef list<Triple*>::iterator iterator;
-    typedef list<Triple*>::const_iterator const_iterator;
+    typedef std::list<Triple*>::iterator iterator;
+    typedef std::list<Triple*>::const_iterator const_iterator;
 
     TSET();
     ~TSET();
-
-    const Triple* Find(const Monom& monom) const;
 
     iterator Begin();
     const_iterator Begin() const;
@@ -29,7 +39,12 @@ public:
     void PushBack(Triple* newTriple);
     std::size_t Size() const;
 
+    const Triple* Find(const Monom& monom) const;
     Triple* const Back() const;
+
+#ifdef USE_NOVA_INVOLUTION
+    std::set<Monom::Integer> NonMultiNova(const Triple* triple);
+#endif
 };
 
 

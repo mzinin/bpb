@@ -9,12 +9,12 @@ Triple::Triple(Polynom *initialPolynom):
     poly = initialPolynom;
     lm = &poly->Lm();
     anc = this;
-    nmp = set<Monom::Integer>();
+    nmp = std::set<Monom::Integer>();
 }
 
 Triple::Triple(Polynom *initialPolynom
               ,const Triple* initialAncestor
-              ,const set<Monom::Integer>& initialNmp
+              ,const std::set<Monom::Integer>& initialNmp
               ,const Triple* weakAncestor
               ,Monom::Integer nmVar
 #ifdef USE_REAL_MINSTRATEGY

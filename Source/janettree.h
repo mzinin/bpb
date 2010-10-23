@@ -3,8 +3,6 @@
 
 #include "triple.h"
 
-using namespace std;
-
 class JanetTree
 {
 protected:
@@ -67,8 +65,12 @@ public:
 
     const Triple* Find(const Monom& monom) const;
     void Insert(Triple *trpl);
-    void Delete(Triple *trpl);
+    void Delete(const Triple *trpl);
     void Clear();
+
+#ifdef USE_NOVA_INVOLUTION
+    std::set<Monom::Integer> NMulti(const Triple* triple) const;
+#endif
 };
 
 

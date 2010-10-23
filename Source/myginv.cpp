@@ -22,7 +22,7 @@ void PrintVersion()
 
 int main(int argc, char *argv[])
 {
-    ifstream fileInputStream;
+    std::ifstream fileInputStream;
     //parse command line arguments
     switch (argc)
     {
@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
                     fileInputStream.open(argv[i]);
                     if (!fileInputStream)
                     {
-                        cout << "No such file:" << argv[i] << endl;
+                        std::cout << "No such file:" << argv[i] << std::endl;
                         return EXIT_FAILURE;
                     }
                 }
@@ -80,10 +80,10 @@ int main(int argc, char *argv[])
     //variales are read
 
     Polynom poly;
-    list<Polynom*> polyList, answerList;
-    list<Polynom*>::iterator iterPolyList(polyList.begin()), iterAnswerList(answerList.begin());
+    std::list<Polynom*> polyList, answerList;
+    std::list<Polynom*>::iterator iterPolyList(polyList.begin()), iterAnswerList(answerList.begin());
 
-    stringstream* tmpStream = new stringstream();
+    std::stringstream* tmpStream = new std::stringstream();
     c = '0';
     //read initial polynomial set
     while (c != ';' && !fileInputStream.eof())
@@ -91,7 +91,7 @@ int main(int argc, char *argv[])
         fileInputStream >> c;
         if (c == ',' || c == ';')
         {
-            *tmpStream << tmpString << endl;
+            *tmpStream << tmpString << std::endl;
             tmpString.clear();
         }
         else
@@ -110,7 +110,7 @@ int main(int argc, char *argv[])
     delete tmpStream;
     //initial polynomial set is read
 
-    tmpStream = new stringstream();
+    tmpStream = new std::stringstream();
     c = '0';
     //read answer set
     while (c != ';' && !fileInputStream.eof())
@@ -118,7 +118,7 @@ int main(int argc, char *argv[])
         fileInputStream >> c;
         if (c == ',' || c == ';')
         {
-            *tmpStream << tmpString << endl;
+            *tmpStream << tmpString << std::endl;
             tmpString.clear();
         }
         else
@@ -144,9 +144,9 @@ int main(int argc, char *argv[])
     GBasis basisGroebner(polyList);
     timer.Stop();
 
-    //cout << basisGroebner << endl;
-    cout << "Size: " << basisGroebner.Length() << endl;
-    cout << timer << endl;
+    //std::cout << basisGroebner << std::endl;
+    std::cout << "Size: " << basisGroebner.Length() << std::endl;
+    std::cout << timer << std::endl;
 
 
     bool isCorrect = true, Found;
@@ -172,22 +172,22 @@ int main(int argc, char *argv[])
             if (!Found)
             {
                 isCorrect = false;
-                cout << "The mistake is here " << **iterAnswerList << endl;
+                std::cout << "The mistake is here " << **iterAnswerList << std::endl;
                 break;
             }
             iterAnswerList++;
         }
     }
-    cout << endl;
+    std::cout << std::endl;
     //end checking
 
     if (isCorrect)
     {
-        cout << "The answer is CORRECT" << endl;
+        std::cout << "The answer is CORRECT" << std::endl;
     }
     else
     {
-        cout << "The answer is WRONG" << endl;
+        std::cout << "The answer is WRONG" << std::endl;
     }
 
     return EXIT_SUCCESS;

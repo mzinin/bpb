@@ -3,8 +3,6 @@
 #include "timer.h"
 #include "pcomparator.h"
 
-using namespace std;
-
 Polynom* GBasis::NormalForm(const Triple* p)
 {
     Polynom *h, *q;
@@ -48,14 +46,14 @@ Polynom* GBasis::NormalForm(const Triple* p)
     return q;
 }
 
-const Polynom* GBasis::FindR(const Polynom* p, const list<Polynom*>& Q)
+const Polynom* GBasis::FindR(const Polynom* p, const std::list<Polynom*>& Q)
 {
     if (p->IsZero())
     {
         return NULL;
     }
 
-    list<Polynom*>::const_iterator iq(Q.begin()), qEnd(Q.end());
+    std::list<Polynom*>::const_iterator iq(Q.begin()), qEnd(Q.end());
     const Monom& plm = p->Lm();
 
     while (iq != qEnd)
@@ -70,7 +68,7 @@ const Polynom* GBasis::FindR(const Polynom* p, const list<Polynom*>& Q)
     return NULL;
 }
 
-Polynom* GBasis::Reduce(Polynom* p, const list<Polynom*>& Q)
+Polynom* GBasis::Reduce(Polynom* p, const std::list<Polynom*>& Q)
 {
     Polynom* result;
     const Polynom* currentReducer;
@@ -98,7 +96,7 @@ Polynom* GBasis::Reduce(Polynom* p, const list<Polynom*>& Q)
 
 void GBasis::ReduceSet()
 {
-    list<Polynom*> tmpPolySet;
+    std::list<Polynom*> tmpPolySet;
     gBasis.sort(PointerMoreComparator<Polynom>());
 
     while (!gBasis.empty())
@@ -110,7 +108,7 @@ void GBasis::ReduceSet()
         if (!h->IsZero())
         {
             const Monom& hLm = h->Lm();
-            list<Polynom*>::iterator iteratorTmpPolySet = tmpPolySet.begin();
+            std::list<Polynom*>::iterator iteratorTmpPolySet = tmpPolySet.begin();
             while (iteratorTmpPolySet != tmpPolySet.end())
             {
                 if ((**iteratorTmpPolySet).Lm().IsDivisibleBy(hLm))
@@ -157,7 +155,7 @@ void GBasis::InvolutiveBasis()
         currentTriple = qSet.Get();
         newNormalForm = NormalForm(currentTriple);
 
-        set<Monom::Integer> n;
+        std::set<Monom::Integer> n;
         const Triple* qanc = NULL;
         if (!newNormalForm->IsZero() && newNormalForm->Lm() == currentTriple->GetPolyLm())
         {
@@ -172,28 +170,38 @@ void GBasis::InvolutiveBasis()
 
         if (!newNormalForm->IsZero())
         {
-            list<Triple*> additionalToQSet;
+            std::list<Triple*> additionalToQSet;
             tit = tSet.Begin();
 
             while (tit != tSet.End())
             {
                 if ((**tit).GetPolyLm().IsTrueDivisibleBy(newNormalForm->Lm()))
                 {
-                    //(**tit).SetNmp(std::set<Monom::Integer>());
+#ifdef USE_NOVA_INVOLUTION
+                    (**tit).SetNmp(std::set<Monom::Integer>());
+#endif // USE_NOVA_INVOLUTION
                     qSet.DeleteDescendants(*tit);
                     additionalToQSet.push_back(*tit);
                     tit = tSet.Erase(tit);
                 }
                 else
                 {
-                    tit++;
+                    ++tit;
                 }
             }
 
             tSet.PushBack(new Triple(newNormalForm, qanc, n, 0, -1));
             if (!newNormalForm->Degree()) return;
 
+#ifdef USE_NOVA_INVOLUTION
+            tit = tSet.Begin();
+            for (; tit != tSet.End(); ++tit)
+            {
+                qSet.Update(*tit, tSet.NonMultiNova(*tit), additionalToQSet);
+            }
+#else
             qSet.Update(tSet.Back(), additionalToQSet);
+#endif // USE_NOVA_INVOLUTION
             qSet.Insert(additionalToQSet);
         }
         else
@@ -207,19 +215,30 @@ GBasis::GBasis(): gBasis(), qSet(), tSet()
 {
 }
 
-GBasis::GBasis(const list<Polynom*>& set): gBasis(set), qSet(), tSet()
+GBasis::GBasis(const std::list<Polynom*>& set): gBasis(set), qSet(), tSet()
 {
+#ifdef USE_NOVA_INVOLUTION
+    std::list<Polynom*>::const_iterator i1 = set.begin();
+    for (; i1 != set.end(); ++i1)
+    {
+        for (register Monom::Integer var = 0; var < Monom::DimIndepend(); ++var)
+        {
+            gBasis.push_back(new Polynom(**i1));
+            (*gBasis.back()) *= var;
+        }
+    }
+#endif
     ReduceSet();
 
     qSet.Insert(gBasis);
     gBasis.clear();
     InvolutiveBasis();
 
-    TSET::const_iterator i3(tSet.Begin());
-    while(i3 != tSet.End())
+    TSET::const_iterator i2(tSet.Begin());
+    while(i2 != tSet.End())
     {
-        gBasis.push_back(const_cast<Polynom*>((**i3).GetPoly()));
-        i3++;
+        gBasis.push_back(const_cast<Polynom*>((**i2).GetPoly()));
+        i2++;
     }
     tSet.Clear();
     ReduceSet();
@@ -227,7 +246,7 @@ GBasis::GBasis(const list<Polynom*>& set): gBasis(set), qSet(), tSet()
 
 Polynom* GBasis::operator[](int num)
 {
-    list<Polynom*>::const_iterator it(gBasis.begin());
+    std::list<Polynom*>::const_iterator it(gBasis.begin());
     for (register unsigned i = Length()-1-num; i > 0; i--)
     {
         it++;

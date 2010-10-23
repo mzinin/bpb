@@ -7,7 +7,7 @@ class GBasis
 {
 public:
     GBasis();
-    GBasis(const list<Polynom*>& set);
+    GBasis(const std::list<Polynom*>& set);
     ~GBasis() {}
 
     Polynom* operator[](int num);
@@ -17,14 +17,14 @@ public:
     friend std::ostream& operator<<(std::ostream& out, GBasis& gBasis);
 
 protected:
-    const Polynom* FindR(const Polynom* p, const list<Polynom*>& Q);
-    Polynom* Reduce(Polynom* p, const list<Polynom*>& Q);
+    const Polynom* FindR(const Polynom* p, const std::list<Polynom*>& Q);
+    Polynom* Reduce(Polynom* p, const std::list<Polynom*>& Q);
     void ReduceSet();
     void InvolutiveBasis();
 
 protected:
     Monom::Integer Dim;
-    list<Polynom*> gBasis;
+    std::list<Polynom*> gBasis;
     TSET tSet;
     QSET qSet;
 };

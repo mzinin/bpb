@@ -6,13 +6,15 @@
 
 class Triple
 {
+private:
     const Monom* lm;
     Polynom* poly;
     const Triple* anc;
     const Triple* wanc;
-    set<Monom::Integer> nmp;
+    std::set<Monom::Integer> nmp;
     const Monom::Integer var;
     const Monom::Integer hiddenDegree;
+
     static Allocator tAllocator;
 
 public:
@@ -20,7 +22,7 @@ public:
 
     Triple(Polynom* initialPolynom
           ,const Triple* initialAncestor
-          ,const set<Monom::Integer>& initialNmp
+          ,const std::set<Monom::Integer>& initialNmp
           ,const Triple* weakAncestor
           ,Monom::Integer nmVar
 #ifdef USE_REAL_MINSTRATEGY
@@ -35,9 +37,9 @@ public:
     const Triple* GetAnc() const;
     const Triple* GetWAnc() const;
     Monom::Integer GetVar() const;
-    const set<Monom::Integer>& GetNmp() const;
+    const std::set<Monom::Integer>& GetNmp() const;
 
-    void SetNmp(const set<Monom::Integer>& newNmp);
+    void SetNmp(const std::set<Monom::Integer>& newNmp);
     void SetNmp(Monom::Integer var);
     bool TestNmp(Monom::Integer var) const;
 
@@ -71,12 +73,12 @@ inline Monom::Integer Triple::GetVar() const
     return var;
 }
 
-inline const set<Monom::Integer>& Triple::GetNmp() const
+inline const std::set<Monom::Integer>& Triple::GetNmp() const
 {
     return nmp;
 }
 
-inline void Triple::SetNmp(const set<Monom::Integer>& newNmp)
+inline void Triple::SetNmp(const std::set<Monom::Integer>& newNmp)
 {
     nmp = newNmp;
 }
@@ -88,8 +90,6 @@ inline void Triple::SetNmp(Monom::Integer var)
 
 inline bool Triple::TestNmp(Monom::Integer var) const
 {
-    //short res = nmp.count(var);
-    //return res;
     return nmp.count(var);
 }
 

@@ -4,10 +4,11 @@
 #include <iostream>
 #include <cstring>
 #include <bitset>
+#include <set>
+
 #include "variables.h"
 #include "allocator.h"
-
-using namespace std;
+#include "definitions.h"
 
 class MonomOld
 {
@@ -79,6 +80,9 @@ public:
     friend std::ostream& operator<<(std::ostream& out, const MonomOld& a);
 
     Integer FirstMultiVar() const;
+#ifdef USE_NOVA_INVOLUTION
+    std::set<Integer> GetVariablesSet() const;
+#endif
 };
 
 inline const MonomOld& MonomOld::operator=(const MonomOld& anotherMonom)
@@ -385,5 +389,19 @@ inline short MonomOld::FirstMultiVar() const
         return result;
     }
 }
+
+#ifdef USE_NOVA_INVOLUTION
+inline std::set<MonomOld::Integer> MonomOld::GetVariablesSet() const
+{
+    std::set<Integer> result;
+    for (register Integer i = 0; i < DimIndepend(); ++i)
+    {
+        if((exp & One[i]))
+        {
+            result.insert(i);
+        }
+    }
+}
+#endif
 
 #endif // MONOMOLD_H
