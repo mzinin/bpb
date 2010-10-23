@@ -63,16 +63,16 @@ triple.obj: $(SOURCE)\triple.h $(SOURCE)\polynom.h
 polynom.obj: $(SOURCE)\polynom.h $(SOURCE)\monom.h $(SOURCE)\monomDRL.h $(SOURCE)\monomDL.h $(SOURCE)\monomLex.h $(SOURCE)\monomOld.h $(SOURCE)\allocator.h
     $(CXX) $(CXXFLAGS) $(SOURCE)\polynom.cpp /Fo $(BINARY)\polynom.obj 2> NUL
 
-monomDRL.obj: $(SOURCE)\monomDRL.h $(SOURCE)\variables.h $(SOURCE)\allocator.h
+monomDRL.obj: $(SOURCE)\monomDRL.h $(SOURCE)\variables.h $(SOURCE)\allocator.h $(SOURCE)\definitions.h
     $(CXX) $(CXXFLAGS) $(SOURCE)\monomDRL.cpp /Fo $(BINARY)\monomDRL.obj 2> NUL
 
-monomDL.obj: $(SOURCE)\monomDL.h $(SOURCE)\variables.h $(SOURCE)\allocator.h
+monomDL.obj: $(SOURCE)\monomDL.h $(SOURCE)\variables.h $(SOURCE)\allocator.h $(SOURCE)\definitions.h
     $(CXX) $(CXXFLAGS) $(SOURCE)\monomDL.cpp /Fo $(BINARY)\monomDL.obj 2> NUL
 
-monomLex.obj: $(SOURCE)\monomLex.h $(SOURCE)\variables.h $(SOURCE)\allocator.h
+monomLex.obj: $(SOURCE)\monomLex.h $(SOURCE)\variables.h $(SOURCE)\allocator.h $(SOURCE)\definitions.h
     $(CXX) $(CXXFLAGS) $(SOURCE)\monomLex.cpp /Fo $(BINARY)\monomLex.obj 2> NUL
 
-monomOld.obj: $(SOURCE)\monomOld.h $(SOURCE)\variables.h $(SOURCE)\allocator.h
+monomOld.obj: $(SOURCE)\monomOld.h $(SOURCE)\variables.h $(SOURCE)\allocator.h $(SOURCE)\definitions.h
     $(CXX) $(CXXFLAGS) $(SOURCE)\monomOld.cpp /Fo $(BINARY)\monomOld.obj 2> NUL
 
 allocator.obj: $(SOURCE)\allocator.h $(SOURCE)\util.h
