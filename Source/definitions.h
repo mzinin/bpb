@@ -10,4 +10,8 @@
  */
 #define USE_NOVA_INVOLUTION
 
+/* COLLECT_STATISTICS - if defined some statistics will be collected and printed out.
+ */
+#define COLLECT_STATISTICS
+
 #endif // DEFINITIONS_H

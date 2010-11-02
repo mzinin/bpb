@@ -17,11 +17,7 @@ public:
 
     void Insert(std::list<Polynom*>& addList);
     void Insert(std::list<Triple*>& addList);
-#ifdef USE_NOVA_INVOLUTION
-    void Update(Triple* newTriple, const std::set<Monom::Integer>& nonMultiVars, std::list<Triple*>& set);
-#else
-    void Update(Triple* newTriple, const std::list<Triple*>& set);
-#endif
+
     Triple* Get();
 
     bool Empty() const;

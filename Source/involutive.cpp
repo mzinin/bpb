@@ -170,6 +170,9 @@ void GBasis::InvolutiveBasis()
 
         if (!newNormalForm->IsZero())
         {
+#ifdef COLLECT_STATISTICS
+            nonZeroReductions++;
+#endif // COLLECT_STATISTICS
             std::list<Triple*> additionalToQSet;
             tit = tSet.Begin();
 
@@ -191,18 +194,23 @@ void GBasis::InvolutiveBasis()
             }
 
             tSet.PushBack(new Triple(newNormalForm, qanc, n, 0, -1));
-            if (!newNormalForm->Degree()) return;
+            if (!newNormalForm->Degree())
+            {
+                return;
+            }
 
 #ifdef USE_NOVA_INVOLUTION
             tit = tSet.Begin();
             for (; tit != tSet.End(); ++tit)
             {
-                std::set<Monom::Integer> nonMultiVars = tSet.NonMultiNova(*tit);
-                qSet.Update(*tit, nonMultiVars, additionalToQSet);
+                tSet.CollectNonMultiProlongations(tit, additionalToQSet);
             }
 #else
-            qSet.Update(tSet.Back(), additionalToQSet);
+            tSet.CollectNonMultiProlongations(--tSet.End(), additionalToQSet);
 #endif // USE_NOVA_INVOLUTION
+#ifdef COLLECT_STATISTICS
+            nonMultiProlongations += additionalToQSet.size();
+#endif // COLLECT_STATISTICS
             qSet.Insert(additionalToQSet);
         }
         else
@@ -212,11 +220,25 @@ void GBasis::InvolutiveBasis()
     }
 }
 
-GBasis::GBasis(): gBasis(), qSet(), tSet()
+GBasis::GBasis()
+    : gBasis()
+    , qSet()
+    , tSet()
+#ifdef COLLECT_STATISTICS
+    , nonMultiProlongations(0)
+    , nonZeroReductions(0)
+#endif // COLLECT_STATISTICS
 {
 }
 
-GBasis::GBasis(const std::list<Polynom*>& set): gBasis(set), qSet(), tSet()
+GBasis::GBasis(const std::list<Polynom*>& set)
+    : gBasis(set)
+    , qSet()
+    , tSet()
+#ifdef COLLECT_STATISTICS
+    , nonMultiProlongations(0)
+    , nonZeroReductions(0)
+#endif // COLLECT_STATISTICS
 {
 #ifdef USE_NOVA_INVOLUTION
     std::list<Polynom*>::const_iterator i1 = set.begin();
@@ -260,15 +282,21 @@ unsigned GBasis::Length()
     return gBasis.size();
 }
 
+#ifdef COLLECT_STATISTICS
+void GBasis::PrintStatistics(std::ostream& out) const
+{
+    out << "Non-Multiple Prolongations considered: " << nonMultiProlongations << std::endl;
+    out << "Non-Zero Reductions made: " << nonZeroReductions << std::endl;
+    out << "Zero Reductions made: " << nonMultiProlongations - nonZeroReductions << std::endl;
+}
+#endif // COLLECT_STATISTICS
+
 std::ostream& operator<<(std::ostream& out, GBasis& gBasis)
 {
     for (register unsigned i = 0; i < gBasis.Length(); i++)
     {
-    		out << '[' << i << "] = " << *gBasis[i] << '\n';
+        out << '[' << i << "] = " << *gBasis[i] << '\n';
     }
 
     return out;
 }
-
-
-

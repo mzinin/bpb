@@ -65,6 +65,74 @@ void TSET::PushBack(Triple* newTriple)
 #endif
 }
 
+void TSET::CollectNonMultiProlongations(TSET::iterator& iterator, std::list<Triple*>& set)
+{
+    if (iterator == tripleList.end() || !(*iterator))
+    {
+        return;
+    }
+
+#ifdef USE_NOVA_INVOLUTION
+    std::set<Monom::Integer> nonMultiVars = NonMultiNova(*iterator);
+    std::set<Monom::Integer>::const_iterator nmvIterator = nonMultiVars.begin();
+    for (; nmvIterator != nonMultiVars.end(); ++nmvIterator)
+    {
+        if (!(**iterator).TestNmp(*nmvIterator))
+        {
+            Polynom* tmpPolynom = new Polynom(*(**iterator).GetPoly());
+            (*tmpPolynom) *= *nmvIterator;
+
+            (**iterator).SetNmp(*nmvIterator);
+
+            if (!tmpPolynom->IsZero())
+            {
+                set.push_back(new Triple(tmpPolynom
+                                        , (**iterator).GetAnc()
+                                        , (**iterator).GetNmp()
+                                        , (*iterator)
+                                        , *nmvIterator
+                                        )
+                             );
+            }
+            delete tmpPolynom;
+        }
+    }
+
+#else
+
+    Monom::Integer firstMultiVar = (**iterator).GetPolyLm().FirstMultiVar();
+    for (register Monom::Integer var = 0; var < firstMultiVar; ++var)
+    {
+        if (!(**iterator).TestNmp(var))
+    {
+#ifdef USE_REAL_MINSTRATEGY
+            Monom::Integer hiddenDegree = 0;
+            if ((**iterator).GetPolyLm()[var]) hiddenDegree++;
+#endif
+            Polynom* tmpPolynom = new Polynom(*(**iterator).GetPoly());
+            (*tmpPolynom) *= var;
+
+            (**iterator).SetNmp(var);
+
+            if (!tmpPolynom->IsZero())
+            {
+                set.push_back(new Triple(tmpPolynom
+                                        , (**iterator).GetAnc()
+                                        , (**iterator).GetNmp()
+                                        , (*iterator)
+                                        , var
+#ifdef USE_REAL_MINSTRATEGY
+                                        , hiddenDegree
+#endif
+                                        )
+                             );
+            }
+            delete tmpPolynom;
+        }
+    }
+#endif // USE_NOVA_INVOLUTION
+}
+
 #ifdef USE_NOVA_INVOLUTION
 std::set<Monom::Integer> TSET::NonMultiNova(const Triple* triple)
 {

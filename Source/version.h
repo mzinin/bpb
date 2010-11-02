@@ -3,7 +3,7 @@
 
 #define MAJOR_VESION 0
 #define MINOR_VERSION 5
-#define REVISION 3
+#define REVISION 4
 
 class VersionInfo
 {

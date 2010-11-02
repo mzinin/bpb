@@ -8,6 +8,7 @@
 
 class TSET
 {
+private:
 #ifdef USE_NOVA_INVOLUTION
     typedef std::map<Monom::Integer, unsigned> VarCountMap;
     struct FullDegreeInfo
@@ -41,6 +42,8 @@ public:
 
     const Triple* Find(const Monom& monom) const;
     Triple* const Back() const;
+
+    void CollectNonMultiProlongations(iterator& iterator, std::list<Triple*>& set);
 
 #ifdef USE_NOVA_INVOLUTION
     std::set<Monom::Integer> NonMultiNova(const Triple* triple);

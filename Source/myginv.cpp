@@ -146,6 +146,9 @@ int main(int argc, char *argv[])
 
     //std::cout << basisGroebner << std::endl;
     std::cout << "Size: " << basisGroebner.Length() << std::endl;
+#ifdef COLLECT_STATISTICS
+    basisGroebner.PrintStatistics(std::cout);
+#endif // COLLECT_STATISTICS
     std::cout << timer << std::endl;
 
 
