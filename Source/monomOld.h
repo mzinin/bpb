@@ -401,6 +401,7 @@ inline std::set<MonomOld::Integer> MonomOld::GetVariablesSet() const
             result.insert(i);
         }
     }
+    return result;
 }
 #endif
 

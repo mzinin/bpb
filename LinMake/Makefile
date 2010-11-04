@@ -5,9 +5,10 @@ BINARY = .
 
 all: myginv
 
-myginv: myginv.o version.o involutive.o qset.o tset.o janettree.o triple.o polynom.o monomOld.o monomLex.o monomDL.o monomDRL.o allocator.o variables.o timer.o
+myginv: myginv.o launcher.o version.o involutive.o qset.o tset.o janettree.o triple.o polynom.o monomOld.o monomLex.o monomDL.o monomDRL.o allocator.o variables.o timer.o
 	$(CXX) \
             $(BINARY)/myginv.o \
+            $(BINARY)/launcher.o \
             $(BINARY)/version.o \
             $(BINARY)/involutive.o \
             $(BINARY)/qset.o \
@@ -25,8 +26,11 @@ myginv: myginv.o version.o involutive.o qset.o tset.o janettree.o triple.o polyn
             -o $(BINARY)/myginv
 	@rm $(BINARY)/*.o
 
-myginv.o: $(SOURCE)/timer.h $(SOURCE)/involutive.h $(SOURCE)/version.h
+myginv.o: $(SOURCE)/launcher.h
 	$(CXX) $(CXXFLAGS) $(SOURCE)/myginv.cpp -o $(BINARY)/myginv.o
+
+launcher.o: $(SOURCE)/launcher.h $(SOURCE)/polynom.h $(SOURCE)/involutive.h $(SOURCE)/version.h $(SOURCE)/timer.h
+	$(CXX) $(CXXFLAGS) $(SOURCE)/launcher.cpp -o $(BINARY)/launcher.o
 
 version.o: $(SOURCE)/version.h
 	$(CXX) $(CXXFLAGS) $(SOURCE)/version.cpp -o $(BINARY)/version.o

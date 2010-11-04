@@ -17,13 +17,7 @@ QSET::QSET(const std::list<Polynom*>& basis): tripleList()
 
 QSET::~QSET()
 {
-    std::list<Triple*>::iterator it(tripleList.begin());
-    while( it != tripleList.end() )
-    {
-        delete *it;
-        it++;
-    }
-    tripleList.clear();
+    Clear();
 }
 
 void QSET::Insert(std::list<Polynom*>& addList)
@@ -48,6 +42,17 @@ Triple* QSET::Get()
     Triple* result = tripleList.back();
     tripleList.pop_back();
     return result;
+}
+
+void QSET::Clear()
+{
+    std::list<Triple*>::iterator it(tripleList.begin());
+    while (it != tripleList.end())
+    {
+        delete *it;
+        ++it;
+    }
+    tripleList.clear();
 }
 
 void QSET::DeleteDescendants(const Triple* ancestor)

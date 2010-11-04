@@ -20,6 +20,7 @@ public:
 
     Triple* Get();
 
+    void Clear();
     bool Empty() const;
     std::size_t Size() const;
     void DeleteDescendants(const Triple* ancestor);

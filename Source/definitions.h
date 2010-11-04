@@ -4,7 +4,7 @@
 /* USE_REAL_MINSTRATEGY - attempt to implement real minimal strategy,
  * without respect to binary reductions (x*x = x).
  */
-#define USE_REAL_MINSTRATEGY
+//#define USE_REAL_MINSTRATEGY
 
 /* USE_NOVA_INVOLUTION - if defined, Blinkov's involutive division Nova is used.
  */

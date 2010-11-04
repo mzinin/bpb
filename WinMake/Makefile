@@ -13,11 +13,12 @@ BINARY = .\
 
 all: myginv.exe
 
-myginv.exe: myginv.res myginv.obj version.obj involutive.obj qset.obj tset.obj janettree.obj triple.obj polynom.obj monomOld.obj monomLex.obj monomDL.obj monomDRL.obj allocator.obj variables.obj timer.obj
+myginv.exe: myginv.res myginv.obj launcher.obj version.obj involutive.obj qset.obj tset.obj janettree.obj triple.obj polynom.obj monomOld.obj monomLex.obj monomDL.obj monomDRL.obj allocator.obj variables.obj timer.obj
     @del $(BINARY)\*.exe 2> NUL
     $(LINK) $(LINKFLAGS) /OUT:$(BINARY)\myginv.exe \
             $(BINARY)\myginv.res \
             $(BINARY)\myginv.obj \
+            $(BINARY)\launcher.obj \
             $(BINARY)\version.obj \
             $(BINARY)\involutive.obj \
             $(BINARY)\qset.obj \
@@ -39,8 +40,11 @@ myginv.exe: myginv.res myginv.obj version.obj involutive.obj qset.obj tset.obj j
 myginv.res: myginv.rc $(SOURCE)\version.h
     $(RC) /fo myginv.res myginv.rc 2> NUL
 
-myginv.obj: $(SOURCE)\timer.h $(SOURCE)\involutive.h $(SOURCE)\version.h
+myginv.obj: $(SOURCE)\launcher.h
     $(CXX) $(CXXFLAGS) $(SOURCE)\myginv.cpp /Fo $(BINARY)\myginv.obj 2> NUL
+
+launcher.obj: $(SOURCE)\launcher.h $(SOURCE)\polynom.h $(SOURCE)\involutive.h $(SOURCE)\version.h $(SOURCE)\timer.h
+    $(CXX) $(CXXFLAGS) $(SOURCE)\launcher.cpp /Fo $(BINARY)\launcher.obj 2> NUL
 
 version.obj: $(SOURCE)\version.h
     $(CXX) $(CXXFLAGS) $(SOURCE)\version.cpp /Fo $(BINARY)\version.obj 2> NUL

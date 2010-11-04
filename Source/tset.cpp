@@ -10,18 +10,7 @@ TSET::TSET(): tripleList()
 
 TSET::~TSET()
 {
-    jTree.Clear();
-#ifdef USE_NOVA_INVOLUTION
-    degreeInfos.clear();
-#endif
-
-    iterator it(tripleList.begin());
-    while (it != tripleList.end())
-    {
-        delete *it;
-        ++it;
-    }
-    tripleList.clear();
+    Clear();
 }
 
 void TSET::Clear()
@@ -30,6 +19,12 @@ void TSET::Clear()
 #ifdef USE_NOVA_INVOLUTION
     degreeInfos.clear();
 #endif
+    iterator it(tripleList.begin());
+    while (it != tripleList.end())
+    {
+        delete *it;
+        ++it;
+    }
     tripleList.clear();
 }
 

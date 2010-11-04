@@ -13,7 +13,9 @@ private:
     const Triple* wanc;
     std::set<Monom::Integer> nmp;
     const Monom::Integer var;
+#ifdef USE_REAL_MINSTRATEGY
     const Monom::Integer hiddenDegree;
+#endif
 
     static Allocator tAllocator;
 

@@ -6,7 +6,6 @@
 class GBasis
 {
 private:
-    Monom::Integer Dim;
     std::list<Polynom*> gBasis;
     TSET tSet;
     QSET qSet;
@@ -17,12 +16,11 @@ private:
 
 public:
     GBasis();
-    GBasis(const std::list<Polynom*>& set);
-    ~GBasis() {}
+    ~GBasis();
+    void Construct(const std::list<Polynom*>& set);
 
-    Polynom* operator[](int num);
-    unsigned Length();
-    Polynom* NormalForm(const Triple* p);
+    const Polynom& operator[](int num) const;
+    unsigned Length() const;
 
 #ifdef COLLECT_STATISTICS
     void PrintStatistics(std::ostream& out) const;
@@ -31,8 +29,10 @@ public:
     friend std::ostream& operator<<(std::ostream& out, GBasis& gBasis);
 
 private:
+    Polynom* NormalForm(const Triple* p);
     const Polynom* FindR(const Polynom* p, const std::list<Polynom*>& Q);
     Polynom* Reduce(Polynom* p, const std::list<Polynom*>& Q);
     void ReduceSet();
-    void InvolutiveBasis();
+    void ConstructInvolutiveBasis();
+    void Reset();
 };

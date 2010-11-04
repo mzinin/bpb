@@ -89,7 +89,6 @@ Polynom* GBasis::Reduce(Polynom* p, const std::list<Polynom*>& Q)
         }
     }
 
-    delete p;
     p = result;
     return result;
 }
@@ -144,7 +143,7 @@ void GBasis::ReduceSet()
     gBasis = tmpPolySet;
 }
 
-void GBasis::InvolutiveBasis()
+void GBasis::ConstructInvolutiveBasis()
 {
     TSET::iterator tit(tSet.Begin());
     Polynom* newNormalForm;
@@ -231,15 +230,27 @@ GBasis::GBasis()
 {
 }
 
-GBasis::GBasis(const std::list<Polynom*>& set)
-    : gBasis(set)
-    , qSet()
-    , tSet()
-#ifdef COLLECT_STATISTICS
-    , nonMultiProlongations(0)
-    , nonZeroReductions(0)
-#endif // COLLECT_STATISTICS
+GBasis::~GBasis()
 {
+    Reset();
+}
+
+void GBasis::Reset()
+{
+    tSet.Clear();
+    qSet.Clear();
+    gBasis.clear();
+#ifdef COLLECT_STATISTICS
+    nonMultiProlongations = 0;
+    nonZeroReductions = 0;
+#endif // COLLECT_STATISTICS
+}
+
+void GBasis::Construct(const std::list<Polynom*>& set)
+{
+    Reset();
+    gBasis = set;
+
 #ifdef USE_NOVA_INVOLUTION
     std::list<Polynom*>::const_iterator i1 = set.begin();
     for (; i1 != set.end(); ++i1)
@@ -255,7 +266,8 @@ GBasis::GBasis(const std::list<Polynom*>& set)
 
     qSet.Insert(gBasis);
     gBasis.clear();
-    InvolutiveBasis();
+    ConstructInvolutiveBasis();
+    qSet.Clear();
 
     TSET::const_iterator i2(tSet.Begin());
     while(i2 != tSet.End())
@@ -263,21 +275,20 @@ GBasis::GBasis(const std::list<Polynom*>& set)
         gBasis.push_back(const_cast<Polynom*>((**i2).GetPoly()));
         i2++;
     }
-    tSet.Clear();
     ReduceSet();
 }
 
-Polynom* GBasis::operator[](int num)
+const Polynom& GBasis::operator[](int num) const
 {
     std::list<Polynom*>::const_iterator it(gBasis.begin());
     for (register unsigned i = Length()-1-num; i > 0; i--)
     {
-        it++;
+        ++it;
     }
-    return *it;
+    return **it;
 }
 
-unsigned GBasis::Length()
+unsigned GBasis::Length() const
 {
     return gBasis.size();
 }
@@ -295,7 +306,7 @@ std::ostream& operator<<(std::ostream& out, GBasis& gBasis)
 {
     for (register unsigned i = 0; i < gBasis.Length(); i++)
     {
-        out << '[' << i << "] = " << *gBasis[i] << '\n';
+        out << '[' << i << "] = " << gBasis[i] << '\n';
     }
 
     return out;
