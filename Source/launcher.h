@@ -4,7 +4,7 @@
 #include <list>
 #include <string>
 
-#include "involutive.h"
+#include "groebner_basis.h"
 #include "polynom.h"
 #include "timer.h"
 

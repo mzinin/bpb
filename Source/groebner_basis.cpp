@@ -1,8 +1,9 @@
 #include <iostream>
-#include "involutive.h"
-#include "timer.h"
-#include "settings_manager.h"
+
+#include "groebner_basis.h"
 #include "pcomparator.h"
+#include "settings_manager.h"
+#include "timer.h"
 
 Polynom* GroebnerBasis::NormalForm(const Triple* triple)
 {

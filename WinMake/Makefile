@@ -17,7 +17,7 @@ myginv.exe: myginv.res \
             myginv.obj \
             launcher.obj \
             version.obj \
-            involutive.obj \
+            groebner_basis.obj \
             qset.obj \
             tset.obj \
             janettree.obj \
@@ -37,7 +37,7 @@ myginv.exe: myginv.res \
             $(BINARY)\myginv.obj \
             $(BINARY)\launcher.obj \
             $(BINARY)\version.obj \
-            $(BINARY)\involutive.obj \
+            $(BINARY)\groebner_basis.obj \
             $(BINARY)\qset.obj \
             $(BINARY)\tset.obj \
             $(BINARY)\janettree.obj \
@@ -61,14 +61,14 @@ myginv.res: myginv.rc $(SOURCE)\version.h
 myginv.obj: $(SOURCE)\launcher.h $(SOURCE)\settings_manager.h
     $(CXX) $(CXXFLAGS) $(SOURCE)\myginv.cpp /Fo $(BINARY)\myginv.obj 2> NUL
 
-launcher.obj: $(SOURCE)\launcher.h $(SOURCE)\polynom.h $(SOURCE)\involutive.h $(SOURCE)\version.h $(SOURCE)\timer.h $(SOURCE)\settings_manager.h
+launcher.obj: $(SOURCE)\launcher.h $(SOURCE)\polynom.h $(SOURCE)\groebner_basis.h $(SOURCE)\version.h $(SOURCE)\timer.h $(SOURCE)\settings_manager.h
     $(CXX) $(CXXFLAGS) $(SOURCE)\launcher.cpp /Fo $(BINARY)\launcher.obj 2> NUL
 
 version.obj: $(SOURCE)\version.h
     $(CXX) $(CXXFLAGS) $(SOURCE)\version.cpp /Fo $(BINARY)\version.obj 2> NUL
 
-involutive.obj: $(SOURCE)\involutive.h $(SOURCE)\pcomparator.h $(SOURCE)\timer.h $(SOURCE)\tset.h $(SOURCE)\qset.h
-    $(CXX) $(CXXFLAGS) $(SOURCE)\involutive.cpp /Fo $(BINARY)\involutive.obj 2> NUL
+groebner_basis.obj: $(SOURCE)\groebner_basis.h $(SOURCE)\pcomparator.h $(SOURCE)\timer.h $(SOURCE)\tset.h $(SOURCE)\qset.h
+    $(CXX) $(CXXFLAGS) $(SOURCE)\groebner_basis.cpp /Fo $(BINARY)\groebner_basis.obj 2> NUL
 
 tset.obj: $(SOURCE)\tset.h $(SOURCE)\janettree.h
     $(CXX) $(CXXFLAGS) $(SOURCE)\tset.cpp /Fo $(BINARY)\tset.obj 2> NUL

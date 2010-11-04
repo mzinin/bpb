@@ -8,7 +8,7 @@ all: myginv
 myginv: myginv.o \
         launcher.o \
         version.o \
-        involutive.o \
+        groebner_basis.o \
         qset.o \
         tset.o \
         janettree.o \
@@ -26,7 +26,7 @@ myginv: myginv.o \
             $(BINARY)/myginv.o \
             $(BINARY)/launcher.o \
             $(BINARY)/version.o \
-            $(BINARY)/involutive.o \
+            $(BINARY)/groebner_basis.o \
             $(BINARY)/qset.o \
             $(BINARY)/tset.o \
             $(BINARY)/janettree.o \
@@ -46,14 +46,14 @@ myginv: myginv.o \
 myginv.o: $(SOURCE)/launcher.h
 	$(CXX) $(CXXFLAGS) $(SOURCE)/myginv.cpp -o $(BINARY)/myginv.o
 
-launcher.o: $(SOURCE)/launcher.h $(SOURCE)/polynom.h $(SOURCE)/involutive.h $(SOURCE)/version.h $(SOURCE)/timer.h
+launcher.o: $(SOURCE)/launcher.h $(SOURCE)/polynom.h $(SOURCE)/groebner_basis.h $(SOURCE)/version.h $(SOURCE)/timer.h
 	$(CXX) $(CXXFLAGS) $(SOURCE)/launcher.cpp -o $(BINARY)/launcher.o
 
 version.o: $(SOURCE)/version.h
 	$(CXX) $(CXXFLAGS) $(SOURCE)/version.cpp -o $(BINARY)/version.o
 
-involutive.o: $(SOURCE)/involutive.h $(SOURCE)/pcomparator.h $(SOURCE)/timer.h $(SOURCE)/tset.h $(SOURCE)/qset.h
-	$(CXX) $(CXXFLAGS) $(SOURCE)/involutive.cpp -o $(BINARY)/involutive.o
+groebner_basis.o: $(SOURCE)/groebner_basis.h $(SOURCE)/pcomparator.h $(SOURCE)/timer.h $(SOURCE)/tset.h $(SOURCE)/qset.h
+	$(CXX) $(CXXFLAGS) $(SOURCE)/groebner_basis.cpp -o $(BINARY)/groebner_basis.o
 
 tset.o: $(SOURCE)/tset.h $(SOURCE)/janettree.h
 	$(CXX) $(CXXFLAGS) $(SOURCE)/tset.cpp -o $(BINARY)/tset.o
