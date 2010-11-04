@@ -1,5 +1,8 @@
 #include <fstream>
 #include <sstream>
+#ifdef __linux__
+#include <memory>
+#endif // __linux__
 
 #include "launcher.h"
 #include "version.h"
@@ -65,7 +68,7 @@ Launcher::Launcher()
     , InitialSet()
     , InitialAnswer()
     , GroebnerBasis()
-    , Timer()
+    , GBCommonTimer()
 {
 }
 
@@ -153,9 +156,9 @@ bool Launcher::Run()
         return false;
     }
 
-    Timer.Start();
+    GBCommonTimer.Start();
     GroebnerBasis.Construct(InitialSet);
-    Timer.Stop();
+    GBCommonTimer.Stop();
 
     return true;
 }
@@ -168,7 +171,7 @@ void Launcher::PrintResult() const
     GroebnerBasis.PrintStatistics(std::cout);
 #endif // COLLECT_STATISTICS
 
-    std::cout << Timer << std::endl;
+    std::cout << GBCommonTimer << std::endl;
     if (CheckAnswer())
     {
         std::cout << "The answer is CORRECT" << std::endl;

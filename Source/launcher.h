@@ -16,7 +16,7 @@ private:
     std::list<Polynom*> InitialSet;
     std::list<Polynom*> InitialAnswer;
     GBasis GroebnerBasis;
-    Timer Timer;
+    Timer GBCommonTimer;
 
 public:
     Launcher();
