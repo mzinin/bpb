@@ -5,7 +5,23 @@ BINARY = .
 
 all: myginv
 
-myginv: myginv.o launcher.o version.o involutive.o qset.o tset.o janettree.o triple.o polynom.o monomOld.o monomLex.o monomDL.o monomDRL.o allocator.o variables.o timer.o
+myginv: myginv.o \
+        launcher.o \
+        version.o \
+        involutive.o \
+        qset.o \
+        tset.o \
+        janettree.o \
+        triple.o \
+        settings_manager.o \
+        polynom.o \
+        monomOld.o \
+        monomLex.o \
+        monomDL.o \
+        monomDRL.o \
+        allocator.o \
+        variables.o \
+        timer.o
 	$(CXX) \
             $(BINARY)/myginv.o \
             $(BINARY)/launcher.o \
@@ -15,6 +31,7 @@ myginv: myginv.o launcher.o version.o involutive.o qset.o tset.o janettree.o tri
             $(BINARY)/tset.o \
             $(BINARY)/janettree.o \
             $(BINARY)/triple.o \
+            $(BINARY)/settings_manager.o \
             $(BINARY)/polynom.o \
             $(BINARY)/monomOld.o \
             $(BINARY)/monomLex.o \
@@ -49,6 +66,9 @@ janettree.o: $(SOURCE)/janettree.h $(SOURCE)/triple.h
 
 triple.o: $(SOURCE)/triple.h $(SOURCE)/polynom.h
 	$(CXX) $(CXXFLAGS) $(SOURCE)/triple.cpp -o $(BINARY)/triple.o
+
+settings_manager.o: $(SOURCE)/settings_manager.h
+	$(CXX) $(CXXFLAGS) $(SOURCE)/settings_manager.cpp  -o $(BINARY)/settings_manager.o
 
 polynom.o: $(SOURCE)/polynom.h $(SOURCE)/monom.h $(SOURCE)/monomDRL.h $(SOURCE)/monomDL.h $(SOURCE)/monomLex.h $(SOURCE)/monomOld.h $(SOURCE)/allocator.h
 	$(CXX) $(CXXFLAGS) $(SOURCE)/polynom.cpp -o $(BINARY)/polynom.o
