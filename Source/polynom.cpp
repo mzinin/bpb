@@ -7,7 +7,7 @@ const Polynom& Polynom::operator+=(const Monom& newMonom)
     Monom** position = const_cast<Monom**>(Find(newMonom));
     Monom* tmpMonom;
 
-    if (position == NULL)
+    if (!position)
     {
         tmpMonom = new Monom(newMonom);
         tmpMonom->mNext = pListHead;
@@ -15,7 +15,7 @@ const Polynom& Polynom::operator+=(const Monom& newMonom)
     }
     else
     {
-        if (*position != NULL && **position == newMonom)
+        if (*position && **position == newMonom)
         {
             tmpMonom = *position;
             *position = (*position)->mNext;
@@ -37,13 +37,13 @@ const Polynom& Polynom::operator+=(const Monom& newMonom)
 
 const Polynom& Polynom::operator+=(const Polynom& anotherPolynom)
 {
-    if (anotherPolynom.pListHead != NULL)
+    if (anotherPolynom.pListHead)
     {
         Monom **iterator = &pListHead,
               *iteratorAnother = anotherPolynom.pListHead,
               *tmpMonom;
 
-        while (*iterator != NULL && iteratorAnother != NULL)
+        while (*iterator && iteratorAnother)
         {
             switch (Monom::Compare(**iterator, *iteratorAnother))
             {
@@ -66,7 +66,7 @@ const Polynom& Polynom::operator+=(const Polynom& anotherPolynom)
             }
         }
 
-        while (iteratorAnother != NULL)
+        while (iteratorAnother)
         {
             *iterator = new Monom(*iteratorAnother);
             iterator = &((*iterator)->mNext);
@@ -79,19 +79,19 @@ const Polynom& Polynom::operator+=(const Polynom& anotherPolynom)
 
 const Polynom& Polynom::operator*=(Monom::Integer var)
 {
-    if (pListHead != NULL)
+    if (pListHead)
     {
         Polynom polynomWithVar;
         Monom **iterator = &pListHead,
               **iteratorWithVar = &polynomWithVar.pListHead;
 
-        while (*iterator != NULL)
+        while (*iterator)
         {
             if ((**iterator)[var])
             {
                 *iteratorWithVar = *iterator;
                 *iterator = (*iterator)->mNext;
-                (*iteratorWithVar)->mNext = NULL;
+                (*iteratorWithVar)->mNext = 0;
                 iteratorWithVar = &((*iteratorWithVar)->mNext);
             }
             else
@@ -101,7 +101,7 @@ const Polynom& Polynom::operator*=(Monom::Integer var)
         }
 
         iterator = &pListHead;
-        while (*iterator != NULL)
+        while (*iterator)
         {
             **iterator *= var;
             iterator = &((*iterator)->mNext);
@@ -115,7 +115,7 @@ const Polynom& Polynom::operator*=(Monom::Integer var)
 
 const Polynom& Polynom::operator*=(const Monom& anotherMonom)
 {
-    if (pListHead != NULL)
+    if (pListHead)
     {
         for (register Monom::Integer i = 0; i < anotherMonom.DimIndepend(); ++i)
         {
@@ -130,11 +130,11 @@ const Polynom& Polynom::operator*=(const Monom& anotherMonom)
 
 const Polynom& Polynom::operator*=(const Polynom& anotherPolynom)
 {
-    if (pListHead != NULL)
+    if (pListHead)
     {
         Polynom *tmpPolynom, *tmpResult = new Polynom();
         Monom* iteratorAnother(anotherPolynom.pListHead);
-        while (iteratorAnother != NULL)
+        while (iteratorAnother)
         {
             tmpPolynom = new Polynom(*this);
             *tmpPolynom *= *iteratorAnother;
@@ -152,14 +152,14 @@ const Polynom& Polynom::operator*=(const Polynom& anotherPolynom)
 
 void Polynom::Reduction(const Polynom &anotherPolynom)
 {
-    if (pListHead != NULL && anotherPolynom.pListHead != NULL)
+    if (pListHead && anotherPolynom.pListHead)
     {
         Monom tmpMonom;
         Polynom* tmpPolynom;
         Monom* iterator(pListHead);
         const Monom& anotherLm(anotherPolynom.Lm());
 
-        while (iterator != NULL)
+        while (iterator)
         {
             if (iterator->IsDivisibleBy(anotherLm))
             {
@@ -176,11 +176,11 @@ void Polynom::Reduction(const Polynom &anotherPolynom)
             }
         }
 
-        if (pListHead != NULL)
+        if (pListHead)
         {
             Monom* iterator2(iterator);
             iterator = iterator->mNext;
-            while (iterator != NULL)
+            while (iterator)
             {
                 if (iterator->IsDivisibleBy(anotherLm))
                 {
@@ -203,14 +203,14 @@ void Polynom::Reduction(const Polynom &anotherPolynom)
 
 void Polynom::HeadReduction(const Polynom &anotherPolynom)
 {
-    if (pListHead != NULL && anotherPolynom.pListHead != NULL)
+    if (pListHead && anotherPolynom.pListHead)
     {
         Monom tmpMonom;
         Polynom* tmpPolynom;
         Monom* iterator(pListHead);
         const Monom& anotherLm(anotherPolynom.Lm());
 
-        while (iterator != NULL)
+        while (iterator)
         {
             if (iterator->IsDivisibleBy(anotherLm))
             {
@@ -235,7 +235,7 @@ void Polynom::MergeWith(Polynom& anotherPolynom)
           *iteratorAnother = anotherPolynom.pListHead,
           *tmpPointer;
 
-    while (*iterator != NULL && iteratorAnother != NULL)
+    while (*iterator && iteratorAnother)
     {
         switch (Monom::Compare(**iterator, *iteratorAnother))
         {
@@ -260,17 +260,17 @@ void Polynom::MergeWith(Polynom& anotherPolynom)
         }
     }
 
-    if (iteratorAnother != NULL)
+    if (iteratorAnother)
     {
         *iterator = iteratorAnother;
     }
 
-    anotherPolynom.pListHead = NULL;
+    anotherPolynom.pListHead = 0;
 }
 
 std::ostream& operator<<(std::ostream& out, const Polynom& a)
 {
-    if (a.pListHead == NULL)
+    if (!a.pListHead)
     {
         out << "0";
     }
@@ -279,7 +279,7 @@ std::ostream& operator<<(std::ostream& out, const Polynom& a)
         Monom* iteratorA(a.pListHead);
         out << *iteratorA;
         iteratorA = iteratorA->mNext;
-        while (iteratorA != NULL)
+        while (iteratorA)
         {
             out << " + " << *iteratorA;
             iteratorA = iteratorA->mNext;

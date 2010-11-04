@@ -33,7 +33,7 @@ Polynom* GroebnerBasis::NormalForm(const Triple* triple)
             }
             else
             {
-                involutiveDivisor = NULL;
+                involutiveDivisor = 0;
             }
         }
 
@@ -52,7 +52,7 @@ const Polynom* GroebnerBasis::FindR(const Polynom* polynom, const std::list<Poly
 {
     if (polynom->IsZero())
     {
-        return NULL;
+        return 0;
     }
 
     std::list<Polynom*>::const_iterator it(set.begin()), setEnd(set.end());
@@ -67,7 +67,7 @@ const Polynom* GroebnerBasis::FindR(const Polynom* polynom, const std::list<Poly
         ++it;
     }
 
-    return NULL;
+    return 0;
 }
 
 Polynom* GroebnerBasis::Reduce(Polynom* polynom, const std::list<Polynom*>& set)
@@ -118,7 +118,7 @@ void GroebnerBasis::ReduceSet()
                 }
                 else
                 {
-                    iteratorTmpPolySet++;
+                    ++iteratorTmpPolySet;
                 }
             }
             tmpPolySet.push_back(h);
@@ -156,14 +156,14 @@ void GroebnerBasis::ConstructInvolutiveBasis()
         newNormalForm = NormalForm(currentTriple);
 
         std::set<Monom::Integer> n;
-        const Triple* qanc = NULL;
+        const Triple* qanc(0);
         if (!newNormalForm->IsZero() && newNormalForm->Lm() == currentTriple->GetPolyLm())
         {
             n = currentTriple->GetNmp();
             qanc = currentTriple->GetAnc();
             if (qanc == currentTriple)
             {
-                qanc = NULL;
+                qanc = 0;
             }
         }
         delete currentTriple;
@@ -172,7 +172,7 @@ void GroebnerBasis::ConstructInvolutiveBasis()
         {
             if (GetSettingsManager().CollectStatistics)
             {
-                NonZeroReductions++;
+                ++NonZeroReductions;
             }
 
             std::list<Triple*> newProlongations;
@@ -282,7 +282,7 @@ void GroebnerBasis::Construct(const std::list<Polynom*>& set)
     while (i2 != IntermediateBasis.End())
     {
         GBasis.push_back(const_cast<Polynom*>((**i2).GetPoly()));
-        i2++;
+        ++i2;
     }
     ReduceSet();
 }
@@ -311,7 +311,7 @@ void GroebnerBasis::PrintStatistics(std::ostream& out) const
 
 std::ostream& operator<<(std::ostream& out, GroebnerBasis& groebnerBasis)
 {
-    for (register unsigned i = 0; i < groebnerBasis.Length(); i++)
+    for (register unsigned i = 0; i < groebnerBasis.Length(); ++i)
     {
         out << '[' << i << "] = " << groebnerBasis[i] << '\n';
     }

@@ -26,7 +26,7 @@ protected:
         void* operator new(size_t) { return vlnAllocator.allocate(); }
         void operator delete(void *ptr) { vlnAllocator.deallocate(ptr); }
 
-        VarsListNode(): value(0), next(NULL) {};
+        VarsListNode(): value(0), next(0) {};
         VarsListNode(Integer newValue, VarsListNode*& newNext):
                 value(newValue), next(newNext) {};
         ~VarsListNode() {};
@@ -89,9 +89,9 @@ public:
 
 inline MonomDRL::VarsListNode* MonomDRL::Find(const MonomDRL::Integer var) const
 {
-    if (mListHead == NULL || mListHead->value < var)
+    if (!mListHead || mListHead->value < var)
     {
-        return NULL;
+        return 0;
     }
 
     VarsListNode *previousPointer(mListHead), *currentPointer;
@@ -100,7 +100,7 @@ inline MonomDRL::VarsListNode* MonomDRL::Find(const MonomDRL::Integer var) const
     while ((middle = range >> 1) > 0)
     {
         currentPointer = previousPointer;
-        for (register Integer i = 0; i < middle; i++)
+        for (register Integer i = 0; i < middle; ++i)
         {
             currentPointer = currentPointer->next;
         }
@@ -122,14 +122,14 @@ inline MonomDRL::VarsListNode* MonomDRL::Find(const MonomDRL::Integer var) const
     return previousPointer;
 }
 
-inline MonomDRL::MonomDRL(): mListHead(NULL), mDegree(0), mNext(NULL)
+inline MonomDRL::MonomDRL(): mListHead(0), mDegree(0), mNext(0)
 {
 }
 
 inline MonomDRL::MonomDRL(const MonomDRL& anotherMonom):
-        mListHead(NULL), mDegree(anotherMonom.mDegree), mNext(NULL)
+        mListHead(0), mDegree(anotherMonom.mDegree), mNext(0)
 {
-    if (anotherMonom.mListHead == NULL)
+    if (!anotherMonom.mListHead)
     {
         return;
     }
@@ -137,7 +137,7 @@ inline MonomDRL::MonomDRL(const MonomDRL& anotherMonom):
     {
         VarsListNode **iterator = &mListHead,
                      *iteratorAnother = anotherMonom.mListHead;
-        while (iteratorAnother != NULL)
+        while (iteratorAnother)
         {
             *iterator = new VarsListNode();
             (*iterator)->value = iteratorAnother->value;
@@ -175,7 +175,7 @@ inline void MonomDRL::operator delete(void *ptr)
 
 inline MonomDRL::Integer MonomDRL::operator[](MonomDRL::Integer var) const
 {
-    if (mListHead == NULL || mListHead->value < var)
+    if (!mListHead || mListHead->value < var)
     {
         return 0;
     }
@@ -187,7 +187,7 @@ inline MonomDRL::Integer MonomDRL::operator[](MonomDRL::Integer var) const
     {
         middle = range >> 1;
         currentPointer = previousPointer;
-        for (register Integer i = 0; i < middle; i++)
+        for (register Integer i = 0; i < middle; ++i)
         {
             currentPointer = currentPointer->next;
         }
@@ -211,7 +211,7 @@ inline MonomDRL::Integer MonomDRL::operator[](MonomDRL::Integer var) const
 
 inline const MonomDRL& MonomDRL::operator=(const MonomDRL& anotherMonom)
 {
-    if (anotherMonom.mListHead == NULL)
+    if (!anotherMonom.mListHead)
     {
         SetOne();
     }
@@ -221,18 +221,18 @@ inline const MonomDRL& MonomDRL::operator=(const MonomDRL& anotherMonom)
 
         VarsListNode *iteratorAnother = anotherMonom.mListHead,
                      **iterator = &mListHead;
-        while (*iterator != NULL && iteratorAnother != NULL)
+        while (*iterator && iteratorAnother)
         {
             (*iterator)->value = iteratorAnother->value;
             iterator = &((*iterator)->next);
             iteratorAnother = iteratorAnother->next;
         }
 
-        if (*iterator != NULL)
+        if (*iterator)
         {
             VarsListNode *nodeToDelete = (*iterator)->next;
-            *iterator = NULL;
-            while (nodeToDelete != NULL)
+            *iterator = 0;
+            while (nodeToDelete)
             {
                 iteratorAnother = nodeToDelete;
                 nodeToDelete = nodeToDelete->next;
@@ -240,9 +240,9 @@ inline const MonomDRL& MonomDRL::operator=(const MonomDRL& anotherMonom)
             }
         }
 
-        if (iteratorAnother != NULL)
+        if (iteratorAnother)
         {
-            while (iteratorAnother != NULL)
+            while (iteratorAnother)
             {
                 *iterator = new VarsListNode();
                 (*iterator)->value = iteratorAnother->value;
@@ -258,23 +258,23 @@ inline const MonomDRL& MonomDRL::operator=(const MonomDRL& anotherMonom)
 inline const MonomDRL& MonomDRL::operator*=(Integer var)
 {
     //inserted variable is the only one
-    if (mListHead == NULL)
+    if (!mListHead)
     {
         mListHead = new VarsListNode();
         mListHead->value = var;
-        mDegree++;
+        ++mDegree;
     }
     else
     {
         VarsListNode* position = Find(var);
         //inserted variable is the eldest one
-        if (position == NULL)
+        if (!position)
         {
             position = new VarsListNode();
             position->value = var;
             position->next = mListHead;
             mListHead = position;
-            mDegree++;
+            ++mDegree;
         }
         //all other cases
         else if(position->value != var)
@@ -283,7 +283,7 @@ inline const MonomDRL& MonomDRL::operator*=(Integer var)
             newNode->value = var;
             newNode->next = position->next;
             position->next = newNode;
-            mDegree++;
+            ++mDegree;
         }
     }
 
@@ -292,16 +292,16 @@ inline const MonomDRL& MonomDRL::operator*=(Integer var)
 
 inline const MonomDRL& MonomDRL::operator*=(const MonomDRL& anotherMonom)
 {
-    if (mListHead == NULL)
+    if (!mListHead)
     {
         *this = anotherMonom;
     }
-    else if (anotherMonom.mListHead != NULL)
+    else if (anotherMonom.mListHead)
     {
         VarsListNode **iterator = &mListHead,
                      *anotherIterator = anotherMonom.mListHead;
 
-        while (*iterator != NULL && anotherIterator != NULL)
+        while (*iterator && anotherIterator)
         {
             if ((*iterator)->value == anotherIterator->value)
             {
@@ -318,18 +318,18 @@ inline const MonomDRL& MonomDRL::operator*=(const MonomDRL& anotherMonom)
                 newNode->value = anotherIterator->value;
                 newNode->next = *iterator;
                 *iterator = newNode;
-                mDegree++;
+                ++mDegree;
 
                 iterator = &(newNode->next);
                 anotherIterator = anotherIterator->next;
             }
         }
 
-        while (anotherIterator != NULL)
+        while (anotherIterator)
         {
             *iterator = new VarsListNode();
             (*iterator)->value = anotherIterator->value;
-            mDegree++;
+            ++mDegree;
 
             iterator = &((*iterator)->next);
             anotherIterator = anotherIterator->next;
@@ -352,9 +352,9 @@ inline void MonomDRL::SetProductOf(const MonomDRL& monomA, const MonomDRL& monom
                  *iteratorA = monomA.mListHead,
                  *iteratorB = monomB.mListHead;
 
-    while (iteratorA != NULL && iteratorB != NULL)
+    while (iteratorA && iteratorB)
     {
-        mDegree++;
+        ++mDegree;
         *iterator = new VarsListNode();
         if (iteratorA->value == iteratorB->value)
         {
@@ -375,18 +375,18 @@ inline void MonomDRL::SetProductOf(const MonomDRL& monomA, const MonomDRL& monom
         iterator = &((*iterator)->next);
     }
 
-    while (iteratorA != NULL)
+    while (iteratorA)
     {
-        mDegree++;
+        ++mDegree;
         *iterator = new VarsListNode();
         (*iterator)->value = iteratorA->value;
         iterator = &((*iterator)->next);
         iteratorA = iteratorA->next;
     }
 
-    while (iteratorB != NULL)
+    while (iteratorB)
     {
-        mDegree++;
+        ++mDegree;
         *iterator = new VarsListNode();
         (*iterator)->value = iteratorB->value;
         iterator = &((*iterator)->next);
@@ -399,7 +399,7 @@ inline const MonomDRL& MonomDRL::operator/=(const MonomDRL& anotherMonom)
     VarsListNode **iterator = &mListHead,
                  *anotherIterator = anotherMonom.mListHead;
 
-    while (*iterator != NULL && anotherIterator != NULL)
+    while (*iterator && anotherIterator)
     {
         if ((*iterator)->value == anotherIterator->value)
         {
@@ -425,7 +425,7 @@ inline void MonomDRL::SetQuotientOf(const MonomDRL& monomA, const MonomDRL& mono
                  *iteratorA = monomA.mListHead,
                  *iteratorB = monomB.mListHead;
 
-    while (iteratorA != NULL && iteratorB != NULL)
+    while (iteratorA && iteratorB)
     {
         if (iteratorA->value == iteratorB->value)
         {
@@ -434,7 +434,7 @@ inline void MonomDRL::SetQuotientOf(const MonomDRL& monomA, const MonomDRL& mono
         }
         else
         {
-            mDegree++;
+            ++mDegree;
             *iterator = new VarsListNode();
             (*iterator)->value = iteratorA->value;
             iterator = &((*iterator)->next);
@@ -445,9 +445,9 @@ inline void MonomDRL::SetQuotientOf(const MonomDRL& monomA, const MonomDRL& mono
         }
     }
 
-    while (iteratorA != NULL)
+    while (iteratorA)
     {
-        mDegree++;
+        ++mDegree;
         *iterator = new VarsListNode();
         (*iterator)->value = iteratorA->value;
         iterator = &((*iterator)->next);
@@ -458,10 +458,10 @@ inline void MonomDRL::SetQuotientOf(const MonomDRL& monomA, const MonomDRL& mono
 inline void MonomDRL::SetOne()
 {
     mDegree = 0;
-    if (mListHead != NULL)
+    if (mListHead)
     {
         VarsListNode* tmpNode;
-        while (mListHead != NULL)
+        while (mListHead)
         {
             tmpNode = mListHead;
             mListHead = mListHead->next;
@@ -474,7 +474,7 @@ inline bool MonomDRL::IsDivisibleBy(const MonomDRL& anotherMonom) const
 {
     VarsListNode *iterator = mListHead,
                  *anotherIterator = anotherMonom.mListHead;
-    while (iterator != NULL && anotherIterator != NULL)
+    while (iterator && anotherIterator)
     {
         if (iterator->value == anotherIterator->value)
         {
@@ -491,7 +491,7 @@ inline bool MonomDRL::IsDivisibleBy(const MonomDRL& anotherMonom) const
         }
     }
 
-    return anotherIterator == NULL;
+    return !anotherIterator;
 }
 
 inline bool MonomDRL::IsTrueDivisibleBy(const MonomDRL& anotherMonom) const
@@ -503,7 +503,7 @@ inline bool MonomDRL::IsTrueDivisibleBy(const MonomDRL& anotherMonom) const
 
     VarsListNode *iterator = mListHead,
                  *anotherIterator = anotherMonom.mListHead;
-    while (iterator != NULL && anotherIterator != NULL)
+    while (iterator && anotherIterator)
     {
         if (iterator->value == anotherIterator->value)
         {
@@ -520,7 +520,7 @@ inline bool MonomDRL::IsTrueDivisibleBy(const MonomDRL& anotherMonom) const
         }
     }
 
-    return anotherIterator == NULL;
+    return !anotherIterator;
 }
 
 inline bool MonomDRL::IsPommaretDivisibleBy(const MonomDRL& anotherMonom) const
@@ -540,7 +540,7 @@ inline bool MonomDRL::IsPommaretDivisibleBy(const MonomDRL& anotherMonom) const
     {
         iterator = iterator->next;
     }
-    while (iterator != NULL && anotherIterator != NULL)
+    while (iterator && anotherIterator)
     {
         if (iterator->value != anotherIterator->value)
         {
@@ -550,7 +550,7 @@ inline bool MonomDRL::IsPommaretDivisibleBy(const MonomDRL& anotherMonom) const
         anotherIterator = anotherIterator->next;
     }
 
-    return iterator == NULL && anotherIterator == NULL;
+    return !iterator && !anotherIterator;
 }
 
 inline bool MonomDRL::operator==(const MonomDRL& anotherMonom) const
@@ -563,7 +563,7 @@ inline bool MonomDRL::operator==(const MonomDRL& anotherMonom) const
     {
         VarsListNode *iterator = mListHead,
                      *anotherIterator = anotherMonom.mListHead;
-        while (anotherIterator != NULL)
+        while (anotherIterator)
         {
             if (iterator->value != anotherIterator->value)
             {
@@ -572,7 +572,7 @@ inline bool MonomDRL::operator==(const MonomDRL& anotherMonom) const
             iterator = iterator->next;
             anotherIterator = anotherIterator->next;
         }
-        return anotherIterator == NULL;
+        return !anotherIterator;
     }
 }
 
@@ -586,7 +586,7 @@ inline bool MonomDRL::operator!=(const MonomDRL& anotherMonom) const
     {
         VarsListNode *iterator = mListHead,
                      *anotherIterator = anotherMonom.mListHead;
-        while (anotherIterator != NULL)
+        while (anotherIterator)
         {
             if (iterator->value != anotherIterator->value)
             {
@@ -595,7 +595,7 @@ inline bool MonomDRL::operator!=(const MonomDRL& anotherMonom) const
             iterator = iterator->next;
             anotherIterator = anotherIterator->next;
         }
-        return anotherIterator != NULL;
+        return anotherIterator;
     }
 }
 
@@ -613,7 +613,7 @@ inline bool MonomDRL::operator<(const MonomDRL& anotherMonom) const
     {
         VarsListNode *iterator = mListHead,
                      *anotherIterator = anotherMonom.mListHead;
-        while (anotherIterator != NULL)
+        while (anotherIterator)
         {
             if (iterator->value < anotherIterator->value)
             {
@@ -644,7 +644,7 @@ inline bool MonomDRL::operator>(const MonomDRL& anotherMonom) const
     {
         VarsListNode *iterator = mListHead,
                      *anotherIterator = anotherMonom.mListHead;
-        while (anotherIterator != NULL)
+        while (anotherIterator)
         {
             if (iterator->value < anotherIterator->value)
             {
@@ -667,11 +667,11 @@ inline MonomDRL::Integer MonomDRL::GcdDegree(const MonomDRL& monomA, const Monom
     VarsListNode *iteratorA = monomA.mListHead,
                  *iteratorB = monomB.mListHead;
 
-    while (iteratorA != NULL && iteratorB != NULL)
+    while (iteratorA && iteratorB)
     {
         if (iteratorA->value == iteratorB->value)
         {
-            gcd++;
+            ++gcd;
             iteratorA = iteratorA->next;
             iteratorB = iteratorB->next;
         }
@@ -693,9 +693,9 @@ inline MonomDRL::Integer MonomDRL::LcmDegree(const MonomDRL& monomA, const Monom
     VarsListNode *iteratorA = monomA.mListHead,
                  *iteratorB = monomB.mListHead;
 
-    while (iteratorA != NULL && iteratorB != NULL)
+    while (iteratorA && iteratorB)
     {
-        lcm++;
+        ++lcm;
         if (iteratorA->value == iteratorB->value)
         {
             iteratorA = iteratorA->next;
@@ -711,15 +711,15 @@ inline MonomDRL::Integer MonomDRL::LcmDegree(const MonomDRL& monomA, const Monom
         }
     }
 
-    while (iteratorA != NULL)
+    while (iteratorA)
     {
-        lcm++;
+        ++lcm;
         iteratorA = iteratorA->next;
     }
 
-    while (iteratorB != NULL)
+    while (iteratorB)
     {
-        lcm++;
+        ++lcm;
         iteratorB = iteratorB->next;
     }
 
@@ -733,11 +733,11 @@ inline void MonomDRL::SetGcdOf(const MonomDRL& monomA, const MonomDRL& monomB)
                  *iteratorA = monomA.mListHead,
                  *iteratorB = monomB.mListHead;
 
-    while (iteratorA != NULL && iteratorB != NULL)
+    while (iteratorA && iteratorB)
     {
         if (iteratorA->value == iteratorB->value)
         {
-            mDegree++;
+            ++mDegree;
             *iterator = new VarsListNode();
             (*iterator)->value = iteratorA->value;
             iterator = &((*iterator)->next);
@@ -763,7 +763,7 @@ inline void MonomDRL::SetLcmOf(const MonomDRL& monomA, const MonomDRL& monomB)
 
 inline MonomDRL::Integer MonomDRL::FirstMultiVar() const
 {
-    if (mListHead == NULL)
+    if (!mListHead)
     {
         return 0;
     }
@@ -777,7 +777,7 @@ inline std::set<MonomDRL::Integer> MonomDRL::GetVariablesSet() const
 {
     std::set<Integer> result;
     VarsListNode *iterator = mListHead;
-    while (iterator != NULL)
+    while (iterator)
     {
         result.insert(iterator->value);
         iterator = iterator->next;

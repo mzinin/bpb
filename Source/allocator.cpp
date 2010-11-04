@@ -40,7 +40,7 @@ void Allocator::getMem()
 Allocator::Allocator(const size_t n):
     mTSize((n+sizeof(void*)-1)/sizeof(void*)),
     mPageSize(memoryPageSize/(sizeof(void*)*(n+sizeof(void*)-1)/sizeof(void*))),
-    mFree(NULL)
+    mFree(0)
 {
 }
 

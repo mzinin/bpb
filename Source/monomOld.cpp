@@ -4,11 +4,11 @@ void MonomOld::AddVariable(const char *var)
 {
     if (mIndepend->Add(var))
     {
-        mDimIndepend++;
+        ++mDimIndepend;
     }
     if (One[0] == 0)
     {
-        for (int i=0; i<64; i++)
+        for (int i=0; i<64; ++i)
         {
             One[i] = 1;
             One[i] = One[i] << i;

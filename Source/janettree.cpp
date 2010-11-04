@@ -8,7 +8,7 @@ JanetTree::~JanetTree()
 
 const Triple* JanetTree::Find(const Monom& monom) const
 {
-    const Triple* trpl = NULL;
+    const Triple* trpl(0);
 
     if (jRoot)
     {
@@ -33,7 +33,7 @@ const Triple* JanetTree::Find(const Monom& monom) const
                 {
                     break;
                 }
-                var++;
+                ++var;
                 j.StepVariable();
             }
             else
@@ -53,7 +53,7 @@ void JanetTree::Delete(const Triple *trpl)
     Monom::Integer var = 0, vet = 0;
     if (j.IsNextDegree() && j.IsNextVariable())
     {
-        vet++;
+        ++vet;
     }
 
     do
@@ -63,17 +63,17 @@ void JanetTree::Delete(const Triple *trpl)
             j.StepDegree();
             if (j.IsNextDegree() && j.IsNextVariable())
             {
-                vet++;
+                ++vet;
             }
         }
 
         if (j.NextVariable())
         {
-            var++;
+            ++var;
             j.StepVariable();
             if (j.IsNextDegree() && j.IsNextVariable())
             {
-                vet++;
+                ++vet;
             }
         }
         else
@@ -128,7 +128,7 @@ void JanetTree::Delete(const Triple *trpl)
             }
         }
 
-        var++;
+        ++var;
         j.StepVariable();
         if (j.IsNextDegree() && j.IsNextVariable())
         {
@@ -167,7 +167,7 @@ void JanetTree::Insert(Triple* trpl)
     Monom::Integer d = trpl->GetPolyLm().Degree();
     JanetTree::Iterator j(jRoot);
 
-    if (jRoot == NULL)
+    if (!jRoot)
     {
         j.Build(d, 0, trpl);
     }
@@ -189,7 +189,7 @@ void JanetTree::Insert(Triple* trpl)
             else if (j.Degree() == trpl->GetPolyLm()[var])
             {
                 d -= trpl->GetPolyLm()[var];
-                var++;
+                ++var;
                 j.StepVariable();
             }
             else

@@ -42,7 +42,7 @@ public:
 
     MonomOld() { memset(this, 0, sizeof(MonomOld)); }
     MonomOld(const MonomOld& a) { memcpy(this, &a, sizeof(MonomOld)); }
-    ~MonomOld() { mNext = NULL; };
+    ~MonomOld() { mNext = 0; };
 
     void* operator new(size_t) { return sAllocator.allocate(); }
     void operator delete(void *ptr) { sAllocator.deallocate(ptr); }
@@ -114,7 +114,7 @@ inline const MonomOld& MonomOld::operator*=(short var)
     if (!(exp & One[var]))
     {
         exp |= One[var];
-        mTotalDegree++;
+        ++mTotalDegree;
     }
     return *this;
 }
@@ -124,9 +124,9 @@ inline const MonomOld& MonomOld::operator/=(const MonomOld& anotherMonom)
     exp ^= anotherMonom.exp;
     unsigned short *s = (unsigned short*)&exp;
     mTotalDegree = Data[*s][DEGREE];
-    for (register int i=1; i<4; i++)
+    for (register int i=1; i<4; ++i)
     {
-        s++;
+        ++s;
         mTotalDegree += Data[*s][DEGREE];
     }
     return *this;
@@ -137,9 +137,9 @@ inline const MonomOld& MonomOld::operator*=(const MonomOld& anotherMonom)
     exp |= anotherMonom.exp;
     unsigned short *s = (unsigned short*)&exp;
     mTotalDegree = Data[*s][DEGREE];
-    for (int i=1; i<4; i++)
+    for (int i=1; i<4; ++i)
     {
-        s++;
+        ++s;
         mTotalDegree += Data[*s][DEGREE];
     }
     return *this;
@@ -151,9 +151,9 @@ inline void MonomOld::SetProductOf(const MonomOld& monomA, short var)
     exp |= One[var];
     unsigned short *s = (unsigned short*)&exp;
     mTotalDegree = Data[*s][DEGREE];
-    for (int i=1; i<4; i++)
+    for (int i=1; i<4; ++i)
     {
-        s++;
+        ++s;
         mTotalDegree += Data[*s][DEGREE];
     }
 }
@@ -163,9 +163,9 @@ inline void MonomOld::SetProductOf(const MonomOld& monomA, const MonomOld& monom
     exp = monomA.exp | monomB.exp;
     unsigned short *s = (unsigned short*)&exp;
     mTotalDegree = Data[*s][DEGREE];
-    for (int i=1; i<4; i++)
+    for (int i=1; i<4; ++i)
     {
-        s++;
+        ++s;
         mTotalDegree += Data[*s][DEGREE];
     }
 }
@@ -216,8 +216,8 @@ inline bool MonomOld::IsPommaretDivisibleBy(const MonomOld& anotherMonom) const
     while (i < 4)
     {
         if (*iterD) break;
-        iterD++;
-        i++;
+        ++iterD;
+        ++i;
     }
 
     int j = 3;
@@ -254,9 +254,9 @@ inline short MonomOld::GcdDegree(const MonomOld& monomA, const MonomOld& monomB)
     unsigned long d(monomA.exp & monomB.exp);
     unsigned short *s = (unsigned short*)&d;
     short r = Data[*s][DEGREE];
-    for (register int i=1; i<4; i++)
+    for (register int i=1; i<4; ++i)
     {
-        s++;
+        ++s;
         r += Data[*s][DEGREE];
     }
     return r;
@@ -267,9 +267,9 @@ inline short MonomOld::LcmDegree(const MonomOld& monomA, const MonomOld& monomB)
     unsigned long d(monomA.exp | monomB.exp);
     unsigned short *s = (unsigned short*)&d;
     short r = Data[*s][DEGREE];
-    for (register int i=1; i<4; i++)
+    for (register int i=1; i<4; ++i)
     {
-        s++;
+        ++s;
         r += Data[*s][DEGREE];
     }
     return r;
@@ -280,9 +280,9 @@ inline void MonomOld::SetGcdOf(const MonomOld& monomA, const MonomOld& monomB)
     exp = monomA.exp & monomB.exp;
     unsigned short *s = (unsigned short*)&exp;
     mTotalDegree = Data[*s][DEGREE];
-    for (register int i=1; i<4; i++)
+    for (register int i=1; i<4; ++i)
     {
-        s++;
+        ++s;
         mTotalDegree += Data[*s][DEGREE];
     }
 }
@@ -292,9 +292,9 @@ inline void MonomOld::SetLcmOf(const MonomOld& monomA, const MonomOld& monomB)
     exp = monomA.exp | monomB.exp;
     unsigned short *s = (unsigned short*)&exp;
     mTotalDegree = Data[*s][DEGREE];
-    for (register int i=1; i<4; i++)
+    for (register int i=1; i<4; ++i)
     {
-        s++;
+        ++s;
         mTotalDegree += Data[*s][DEGREE];
     }
 }
@@ -381,7 +381,7 @@ inline short MonomOld::FirstMultiVar() const
         while (tmp > 0)
         {
             tmp = tmp >> 1;
-            result++;
+            ++result;
         }
         return result;
     }

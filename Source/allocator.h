@@ -57,7 +57,7 @@ inline Allocator::~Allocator()
 
 inline void* Allocator::allocate()
 {
-    if (mFree == NULL)
+    if (!mFree)
     {
         getMem();
     }

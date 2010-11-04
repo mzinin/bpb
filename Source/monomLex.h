@@ -26,7 +26,7 @@ protected:
         void* operator new(size_t) { return vlnAllocator.allocate(); }
         void operator delete(void *ptr) { vlnAllocator.deallocate(ptr); }
 
-        VarsListNode(): value(0), next(NULL) {};
+        VarsListNode(): value(0), next(0) {};
         VarsListNode(Integer newValue, VarsListNode*& newNext):
                 value(newValue), next(newNext) {};
         ~VarsListNode() {};
@@ -89,9 +89,9 @@ public:
 
 inline MonomLex::VarsListNode* MonomLex::Find(const MonomLex::Integer var) const
 {
-    if (mListHead == NULL || mListHead->value > var)
+    if (!mListHead || mListHead->value > var)
     {
-        return NULL;
+        return 0;
     }
 
     VarsListNode *previousPointer(mListHead), *currentPointer;
@@ -100,7 +100,7 @@ inline MonomLex::VarsListNode* MonomLex::Find(const MonomLex::Integer var) const
     while ((middle = range >> 1) > 0)
     {
         currentPointer = previousPointer;
-        for (register Integer i = 0; i < middle; i++)
+        for (register Integer i = 0; i < middle; ++i)
         {
             currentPointer = currentPointer->next;
         }
@@ -122,14 +122,14 @@ inline MonomLex::VarsListNode* MonomLex::Find(const MonomLex::Integer var) const
     return previousPointer;
 }
 
-inline MonomLex::MonomLex(): mListHead(NULL), mDegree(0), mNext(NULL)
+inline MonomLex::MonomLex(): mListHead(0), mDegree(0), mNext(0)
 {
 }
 
 inline MonomLex::MonomLex(const MonomLex& anotherMonom):
-        mListHead(NULL), mDegree(anotherMonom.mDegree), mNext(NULL)
+        mListHead(0), mDegree(anotherMonom.mDegree), mNext(0)
 {
-    if (anotherMonom.mListHead == NULL)
+    if (!anotherMonom.mListHead)
     {
         return;
     }
@@ -137,7 +137,7 @@ inline MonomLex::MonomLex(const MonomLex& anotherMonom):
     {
         VarsListNode **iterator = &mListHead,
                      *iteratorAnother = anotherMonom.mListHead;
-        while (iteratorAnother != NULL)
+        while (iteratorAnother)
         {
             *iterator = new VarsListNode();
             (*iterator)->value = iteratorAnother->value;
@@ -175,7 +175,7 @@ inline void MonomLex::operator delete(void *ptr)
 
 inline MonomLex::Integer MonomLex::operator[](MonomLex::Integer var) const
 {
-    if (mListHead == NULL || mListHead->value > var)
+    if (!mListHead || mListHead->value > var)
     {
         return 0;
     }
@@ -187,7 +187,7 @@ inline MonomLex::Integer MonomLex::operator[](MonomLex::Integer var) const
     {
         middle = range >> 1;
         currentPointer = previousPointer;
-        for (register Integer i = 0; i < middle; i++)
+        for (register Integer i = 0; i < middle; ++i)
         {
             currentPointer = currentPointer->next;
         }
@@ -211,7 +211,7 @@ inline MonomLex::Integer MonomLex::operator[](MonomLex::Integer var) const
 
 inline const MonomLex& MonomLex::operator=(const MonomLex& anotherMonom)
 {
-    if (anotherMonom.mListHead == NULL)
+    if (!anotherMonom.mListHead)
     {
         SetOne();
     }
@@ -221,18 +221,18 @@ inline const MonomLex& MonomLex::operator=(const MonomLex& anotherMonom)
 
         VarsListNode *iteratorAnother = anotherMonom.mListHead,
                      **iterator = &mListHead;
-        while (*iterator != NULL && iteratorAnother != NULL)
+        while (*iterator && iteratorAnother)
         {
             (*iterator)->value = iteratorAnother->value;
             iterator = &((*iterator)->next);
             iteratorAnother = iteratorAnother->next;
         }
 
-        if (*iterator != NULL)
+        if (*iterator)
         {
             VarsListNode *nodeToDelete = (*iterator)->next;
-            *iterator = NULL;
-            while (nodeToDelete != NULL)
+            *iterator = 0;
+            while (nodeToDelete)
             {
                 iteratorAnother = nodeToDelete;
                 nodeToDelete = nodeToDelete->next;
@@ -240,9 +240,9 @@ inline const MonomLex& MonomLex::operator=(const MonomLex& anotherMonom)
             }
         }
 
-        if (iteratorAnother != NULL)
+        if (iteratorAnother)
         {
-            while (iteratorAnother != NULL)
+            while (iteratorAnother)
             {
                 *iterator = new VarsListNode();
                 (*iterator)->value = iteratorAnother->value;
@@ -258,23 +258,23 @@ inline const MonomLex& MonomLex::operator=(const MonomLex& anotherMonom)
 inline const MonomLex& MonomLex::operator*=(Integer var)
 {
     //inserted variable is the only one
-    if (mListHead == NULL)
+    if (!mListHead)
     {
         mListHead = new VarsListNode();
         mListHead->value = var;
-        mDegree++;
+        ++mDegree;
     }
     else
     {
         VarsListNode* position = Find(var);
         //inserted variable is the eldest one
-        if (position == NULL)
+        if (!position)
         {
             position = new VarsListNode();
             position->value = var;
             position->next = mListHead;
             mListHead = position;
-            mDegree++;
+            ++mDegree;
         }
         //all other cases
         else if(position->value != var)
@@ -283,7 +283,7 @@ inline const MonomLex& MonomLex::operator*=(Integer var)
             newNode->value = var;
             newNode->next = position->next;
             position->next = newNode;
-            mDegree++;
+            ++mDegree;
         }
     }
 
@@ -292,16 +292,16 @@ inline const MonomLex& MonomLex::operator*=(Integer var)
 
 inline const MonomLex& MonomLex::operator*=(const MonomLex& anotherMonom)
 {
-    if (mListHead == NULL)
+    if (!mListHead)
     {
         *this = anotherMonom;
     }
-    else if (anotherMonom.mListHead != NULL)
+    else if (anotherMonom.mListHead)
     {
         VarsListNode **iterator = &mListHead,
                      *anotherIterator = anotherMonom.mListHead;
 
-        while (*iterator != NULL && anotherIterator != NULL)
+        while (*iterator && anotherIterator)
         {
             if ((*iterator)->value == anotherIterator->value)
             {
@@ -318,18 +318,18 @@ inline const MonomLex& MonomLex::operator*=(const MonomLex& anotherMonom)
                 newNode->value = anotherIterator->value;
                 newNode->next = *iterator;
                 *iterator = newNode;
-                mDegree++;
+                ++mDegree;
 
                 iterator = &(newNode->next);
                 anotherIterator = anotherIterator->next;
             }
         }
 
-        while (anotherIterator != NULL)
+        while (anotherIterator)
         {
             *iterator = new VarsListNode();
             (*iterator)->value = anotherIterator->value;
-            mDegree++;
+            ++mDegree;
 
             iterator = &((*iterator)->next);
             anotherIterator = anotherIterator->next;
@@ -352,9 +352,9 @@ inline void MonomLex::SetProductOf(const MonomLex& monomA, const MonomLex& monom
                  *iteratorA = monomA.mListHead,
                  *iteratorB = monomB.mListHead;
 
-    while (iteratorA != NULL && iteratorB != NULL)
+    while (iteratorA && iteratorB)
     {
-        mDegree++;
+        ++mDegree;
         *iterator = new VarsListNode();
         if (iteratorA->value == iteratorB->value)
         {
@@ -375,18 +375,18 @@ inline void MonomLex::SetProductOf(const MonomLex& monomA, const MonomLex& monom
         iterator = &((*iterator)->next);
     }
 
-    while (iteratorA != NULL)
+    while (iteratorA)
     {
-        mDegree++;
+        ++mDegree;
         *iterator = new VarsListNode();
         (*iterator)->value = iteratorA->value;
         iterator = &((*iterator)->next);
         iteratorA = iteratorA->next;
     }
 
-    while (iteratorB != NULL)
+    while (iteratorB)
     {
-        mDegree++;
+        ++mDegree;
         *iterator = new VarsListNode();
         (*iterator)->value = iteratorB->value;
         iterator = &((*iterator)->next);
@@ -399,7 +399,7 @@ inline const MonomLex& MonomLex::operator/=(const MonomLex& anotherMonom)
     VarsListNode **iterator = &mListHead,
                  *anotherIterator = anotherMonom.mListHead;
 
-    while (*iterator != NULL && anotherIterator != NULL)
+    while (*iterator && anotherIterator)
     {
         if ((*iterator)->value == anotherIterator->value)
         {
@@ -425,7 +425,7 @@ inline void MonomLex::SetQuotientOf(const MonomLex& monomA, const MonomLex& mono
                  *iteratorA = monomA.mListHead,
                  *iteratorB = monomB.mListHead;
 
-    while (iteratorA != NULL && iteratorB != NULL)
+    while (iteratorA && iteratorB)
     {
         if (iteratorA->value == iteratorB->value)
         {
@@ -434,7 +434,7 @@ inline void MonomLex::SetQuotientOf(const MonomLex& monomA, const MonomLex& mono
         }
         else
         {
-            mDegree++;
+            ++mDegree;
             *iterator = new VarsListNode();
             (*iterator)->value = iteratorA->value;
             iterator = &((*iterator)->next);
@@ -445,9 +445,9 @@ inline void MonomLex::SetQuotientOf(const MonomLex& monomA, const MonomLex& mono
         }
     }
 
-    while (iteratorA != NULL)
+    while (iteratorA)
     {
-        mDegree++;
+        ++mDegree;
         *iterator = new VarsListNode();
         (*iterator)->value = iteratorA->value;
         iterator = &((*iterator)->next);
@@ -458,10 +458,10 @@ inline void MonomLex::SetQuotientOf(const MonomLex& monomA, const MonomLex& mono
 inline void MonomLex::SetOne()
 {
     mDegree = 0;
-    if (mListHead != NULL)
+    if (mListHead)
     {
         VarsListNode* tmpNode;
-        while (mListHead != NULL)
+        while (mListHead)
         {
             tmpNode = mListHead;
             mListHead = mListHead->next;
@@ -474,7 +474,7 @@ inline bool MonomLex::IsDivisibleBy(const MonomLex& anotherMonom) const
 {
     VarsListNode *iterator(mListHead),
                  *anotherIterator(anotherMonom.mListHead);
-    while (iterator != NULL && anotherIterator != NULL)
+    while (iterator && anotherIterator)
     {
         if (iterator->value == anotherIterator->value)
         {
@@ -491,7 +491,7 @@ inline bool MonomLex::IsDivisibleBy(const MonomLex& anotherMonom) const
         }
     }
 
-    return anotherIterator == NULL;
+    return !anotherIterator;
 }
 
 inline bool MonomLex::IsTrueDivisibleBy(const MonomLex& anotherMonom) const
@@ -503,7 +503,7 @@ inline bool MonomLex::IsTrueDivisibleBy(const MonomLex& anotherMonom) const
 
     VarsListNode *iterator(mListHead),
                  *anotherIterator(anotherMonom.mListHead);
-    while (iterator != NULL && anotherIterator != NULL)
+    while (iterator && anotherIterator)
     {
         if (iterator->value == anotherIterator->value)
         {
@@ -520,7 +520,7 @@ inline bool MonomLex::IsTrueDivisibleBy(const MonomLex& anotherMonom) const
         }
     }
 
-    return anotherIterator == NULL;
+    return !anotherIterator;
 }
 
 inline bool MonomLex::IsPommaretDivisibleBy(const MonomLex& anotherMonom) const
@@ -536,7 +536,7 @@ inline bool MonomLex::IsPommaretDivisibleBy(const MonomLex& anotherMonom) const
 
     VarsListNode *iterator(mListHead),
                  *anotherIterator(anotherMonom.mListHead);
-    while (iterator != NULL && anotherIterator != NULL)
+    while (iterator && anotherIterator)
     {
         if (iterator->value != anotherIterator->value)
         {
@@ -546,7 +546,7 @@ inline bool MonomLex::IsPommaretDivisibleBy(const MonomLex& anotherMonom) const
         anotherIterator = anotherIterator->next;
     }
 
-    return anotherIterator == NULL;
+    return !anotherIterator;
 }
 
 inline bool MonomLex::operator==(const MonomLex& anotherMonom) const
@@ -559,7 +559,7 @@ inline bool MonomLex::operator==(const MonomLex& anotherMonom) const
     {
         VarsListNode *iterator(mListHead),
                      *anotherIterator(anotherMonom.mListHead);
-        while (anotherIterator != NULL)
+        while (anotherIterator)
         {
             if (iterator->value != anotherIterator->value)
             {
@@ -568,7 +568,7 @@ inline bool MonomLex::operator==(const MonomLex& anotherMonom) const
             iterator = iterator->next;
             anotherIterator = anotherIterator->next;
         }
-        return anotherIterator == NULL;
+        return !anotherIterator;
     }
 }
 
@@ -582,7 +582,7 @@ inline bool MonomLex::operator!=(const MonomLex& anotherMonom) const
     {
         VarsListNode *iterator(mListHead),
                      *anotherIterator(anotherMonom.mListHead);
-        while (anotherIterator != NULL)
+        while (anotherIterator)
         {
             if (iterator->value != anotherIterator->value)
             {
@@ -591,7 +591,7 @@ inline bool MonomLex::operator!=(const MonomLex& anotherMonom) const
             iterator = iterator->next;
             anotherIterator = anotherIterator->next;
         }
-        return anotherIterator != NULL;
+        return anotherIterator;
     }
 }
 
@@ -599,7 +599,7 @@ inline bool MonomLex::operator<(const MonomLex& anotherMonom) const
 {
     VarsListNode *iterator(mListHead),
                  *anotherIterator(anotherMonom.mListHead);
-    while (anotherIterator != NULL && iterator != NULL)
+    while (anotherIterator && iterator)
     {
         if (iterator->value < anotherIterator->value)
         {
@@ -612,21 +612,14 @@ inline bool MonomLex::operator<(const MonomLex& anotherMonom) const
         iterator = iterator->next;
         anotherIterator = anotherIterator->next;
     }
-    if (anotherIterator != NULL)
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
+    return anotherIterator;
 }
 
 inline bool MonomLex::operator>(const MonomLex& anotherMonom) const
 {
     VarsListNode *iterator(mListHead),
                  *anotherIterator(anotherMonom.mListHead);
-    while (anotherIterator != NULL && iterator != NULL)
+    while (anotherIterator && iterator)
     {
         if (iterator->value < anotherIterator->value)
         {
@@ -639,14 +632,7 @@ inline bool MonomLex::operator>(const MonomLex& anotherMonom) const
         iterator = iterator->next;
         anotherIterator = anotherIterator->next;
     }
-    if (iterator != NULL)
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
+    return iterator;
 }
 
 inline MonomLex::Integer MonomLex::GcdDegree(const MonomLex& monomA, const MonomLex& monomB)
@@ -655,11 +641,11 @@ inline MonomLex::Integer MonomLex::GcdDegree(const MonomLex& monomA, const Monom
     VarsListNode *iteratorA(monomA.mListHead),
                  *iteratorB(monomB.mListHead);
 
-    while (iteratorA != NULL && iteratorB != NULL)
+    while (iteratorA && iteratorB)
     {
         if (iteratorA->value == iteratorB->value)
         {
-            gcd++;
+            ++gcd;
             iteratorA = iteratorA->next;
             iteratorB = iteratorB->next;
         }
@@ -681,9 +667,9 @@ inline MonomLex::Integer MonomLex::LcmDegree(const MonomLex& monomA, const Monom
     VarsListNode *iteratorA(monomA.mListHead),
                  *iteratorB(monomB.mListHead);
 
-    while (iteratorA != NULL && iteratorB != NULL)
+    while (iteratorA && iteratorB)
     {
-        lcm++;
+        ++lcm;
         if (iteratorA->value == iteratorB->value)
         {
             iteratorA = iteratorA->next;
@@ -699,15 +685,15 @@ inline MonomLex::Integer MonomLex::LcmDegree(const MonomLex& monomA, const Monom
         }
     }
 
-    while (iteratorA != NULL)
+    while (iteratorA)
     {
-        lcm++;
+        ++lcm;
         iteratorA = iteratorA->next;
     }
 
-    while (iteratorB != NULL)
+    while (iteratorB)
     {
-        lcm++;
+        ++lcm;
         iteratorB = iteratorB->next;
     }
 
@@ -721,11 +707,11 @@ inline void MonomLex::SetGcdOf(const MonomLex& monomA, const MonomLex& monomB)
                  *iteratorA = monomA.mListHead,
                  *iteratorB = monomB.mListHead;
 
-    while (iteratorA != NULL && iteratorB != NULL)
+    while (iteratorA && iteratorB)
     {
         if (iteratorA->value == iteratorB->value)
         {
-            mDegree++;
+            ++mDegree;
             *iterator = new VarsListNode();
             (*iterator)->value = iteratorA->value;
             iterator = &((*iterator)->next);
@@ -751,13 +737,13 @@ inline void MonomLex::SetLcmOf(const MonomLex& monomA, const MonomLex& monomB)
 
 inline MonomLex::Integer MonomLex::FirstMultiVar() const
 {
-    if (mListHead == NULL)
+    if (!mListHead)
     {
         return 0;
     }
 
     VarsListNode* iterator(mListHead);
-    while (iterator->next != NULL)
+    while (iterator->next)
     {
         iterator = iterator->next;
     }
@@ -768,7 +754,7 @@ inline std::set<MonomLex::Integer> MonomLex::GetVariablesSet() const
 {
     std::set<Integer> result;
     VarsListNode *iterator = mListHead;
-    while (iterator != NULL)
+    while (iterator)
     {
         result.insert(iterator->value);
         iterator = iterator->next;

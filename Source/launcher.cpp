@@ -220,7 +220,7 @@ bool Launcher::CheckAnswer() const
         for (; iterAnswerList != InitialAnswer.end(); ++iterAnswerList)
         {
             bool foundMatch = false;
-            for (register unsigned i = 0; i < GBasis.Length(); i++)
+            for (register unsigned i = 0; i < GBasis.Length(); ++i)
             {
                 if (GBasis[i] == **iterAnswerList)
                 {

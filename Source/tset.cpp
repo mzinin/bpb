@@ -40,7 +40,7 @@ TSet::iterator TSet::Erase(TSet::iterator it)
         std::set<Monom::Integer> deletedVarSet = (**it).GetPolyLm().GetVariablesSet();
         for (std::set<Monom::Integer>::const_iterator i = deletedVarSet.begin(); i != deletedVarSet.end(); ++i)
         {
-        --deletedVarCountMap[*i];
+            --deletedVarCountMap[*i];
         }
     }
 
@@ -61,7 +61,7 @@ void TSet::PushBack(Triple* newTriple)
         std::set<Monom::Integer> addedVarSet = newTriple->GetPolyLm().GetVariablesSet();
         for (std::set<Monom::Integer>::const_iterator i = addedVarSet.begin(); i != addedVarSet.end(); ++i)
         {
-        ++addedVarCountMap[*i];
+            ++addedVarCountMap[*i];
         }
     }
 }

@@ -4,7 +4,7 @@ void MonomLex::AddVariable(const char *var)
 {
     if (mIndepend->Add(var))
     {
-        mDimIndepend++;
+        ++mDimIndepend;
     }
 }
 
@@ -66,7 +66,7 @@ std::istream& operator>>(std::istream& in, MonomLex& a)
 
 std::ostream& operator<<(std::ostream& out, const MonomLex& a)
 {
-    if (a.mListHead == NULL)
+    if (!a.mListHead)
     {
         out << "1";
     }
@@ -75,7 +75,7 @@ std::ostream& operator<<(std::ostream& out, const MonomLex& a)
         MonomLex::VarsListNode* iteratorA(a.mListHead);
         out << a.mIndepend->Variable(iteratorA->value);
         iteratorA = iteratorA->next;
-        while (iteratorA != NULL)
+        while (iteratorA)
         {
             out << "*" << a.mIndepend->Variable(iteratorA->value);
             iteratorA = iteratorA->next;
@@ -89,7 +89,7 @@ int MonomLex::Compare(const MonomLex& monomA, const MonomLex& monomB)
 {
     VarsListNode *iteratorA(monomA.mListHead),
                  *iteratorB(monomB.mListHead);
-    while (iteratorA != NULL && iteratorB != NULL)
+    while (iteratorA && iteratorB)
     {
         if (iteratorA->value < iteratorB->value)
         {

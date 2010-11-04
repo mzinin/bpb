@@ -1,10 +1,10 @@
 #include "triple.h"
 
 Triple::Triple(Polynom *initialPolynom)
-    : lm(NULL)
-    , poly(NULL)
-    , anc(NULL)
-    , wanc(NULL)
+    : lm(0)
+    , poly(0)
+    , anc(0)
+    , wanc(0)
     , nmp()
     , var(-1)
 {
@@ -19,10 +19,10 @@ Triple::Triple(Polynom *initialPolynom
              , const std::set<Monom::Integer>& initialNmp
              , const Triple* weakAncestor
              , Monom::Integer nmVar)
-    : lm(NULL)
-    , poly(NULL)
-    , anc(NULL)
-    , wanc(NULL)
+    : lm(0)
+    , poly(0)
+    , anc(0)
+    , wanc(0)
     , nmp()
     , var(nmVar)
 {

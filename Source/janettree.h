@@ -13,7 +13,7 @@ protected:
         Node* nNextDegree;
         Node* nNextVar;
 
-        Node(Monom::Integer deg): nDegree(deg), nTriple(NULL), nNextDegree(NULL), nNextVar(NULL) {}
+        Node(Monom::Integer deg): nDegree(deg), nTriple(0), nNextDegree(0), nNextVar(0) {}
         ~Node() {}
     };
 
@@ -25,7 +25,7 @@ protected:
 
         void StepDegree() { i = i->nNextDegree; }
         void StepVariable() { i = i->nNextVar; }
-        operator bool() const { return (i != NULL); }
+        operator bool() const { return i; }
         ConstIterator NextDegree() const { return i->nNextDegree; }
         ConstIterator NextVariable() const { return i->nNextVar; }
         bool IsNextDegree() const { return i->nNextDegree; }
@@ -43,7 +43,7 @@ protected:
 
         void StepDegree() { i = &(*i)->nNextDegree; }
         void StepVariable() { i = &(*i)->nNextVar; }
-        operator bool() const { return (*i != NULL); }
+        operator bool() const { return *i; }
         ConstIterator NextDegree() const { return (*i)->nNextDegree; }
         ConstIterator NextVariable() const { return (*i)->nNextVar; }
         bool IsNextDegree() const { return (*i)->nNextDegree; }
@@ -60,7 +60,7 @@ protected:
     Node* jRoot;
 
 public:
-    JanetTree(): jRoot(NULL) {};
+    JanetTree(): jRoot(0) {};
     ~JanetTree();
 
     const Triple* Find(const Monom& monom) const;
@@ -86,7 +86,7 @@ inline void JanetTree::Iterator::Build(Monom::Integer d, Monom::Integer var, Tri
     while(d > trpl->GetPolyLm()[var])
     {
         d -= trpl->GetPolyLm()[var];
-        var++;
+        ++var;
         j->nNextVar = new JanetTree::Node(trpl->GetPolyLm()[var]);
         j = j->nNextVar;
     }
