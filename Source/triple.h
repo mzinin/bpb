@@ -2,6 +2,7 @@
 #define TRIPLE_H
 
 #include <set>
+
 #include "polynom.h"
 
 class Triple
@@ -13,9 +14,6 @@ private:
     const Triple* wanc;
     std::set<Monom::Integer> nmp;
     const Monom::Integer var;
-#ifdef USE_REAL_MINSTRATEGY
-    const Monom::Integer hiddenDegree;
-#endif
 
     static Allocator tAllocator;
 
@@ -23,14 +21,10 @@ public:
     Triple(Polynom* initialPolynom);
 
     Triple(Polynom* initialPolynom
-          ,const Triple* initialAncestor
-          ,const std::set<Monom::Integer>& initialNmp
-          ,const Triple* weakAncestor
-          ,Monom::Integer nmVar
-#ifdef USE_REAL_MINSTRATEGY
-          ,Monom::Integer hDegree = 0
-#endif
-          );
+         , const Triple* initialAncestor
+         , const std::set<Monom::Integer>& initialNmp
+         , const Triple* weakAncestor
+         , Monom::Integer nmVar);
 
     ~Triple();
 
@@ -107,18 +101,7 @@ inline void Triple::operator delete(void *ptr)
 
 inline bool Triple::Compare(const Triple* a, const Triple* b)
 {
-#ifdef USE_REAL_MINSTRATEGY
-    static Monom::Integer aDegree;
-    static Monom::Integer bDegree;
-    aDegree = a->GetPolyLm().Degree() + a->hiddenDegree;
-    bDegree = b->GetPolyLm().Degree() + b->hiddenDegree;
-    if (aDegree > bDegree)
-        return true;
-    else if (aDegree < bDegree)
-        return false;
-    else
-#endif
-        return *a->lm > *b->lm;
+    return *a->lm > *b->lm;
 }
 
 #endif // TRIPLE_H

@@ -15,7 +15,7 @@ private:
     std::string InputFileName;
     std::list<Polynom*> InitialSet;
     std::list<Polynom*> InitialAnswer;
-    GBasis GroebnerBasis;
+    GroebnerBasis GBasis;
     Timer GBCommonTimer;
 
 public:

@@ -68,9 +68,7 @@ public:
     void Delete(const Triple *trpl);
     void Clear();
 
-#ifdef USE_NOVA_INVOLUTION
-    std::set<Monom::Integer> NMulti(const Triple* triple) const;
-#endif
+    std::set<Monom::Integer> NonMulti(const Triple* triple) const;
 };
 
 

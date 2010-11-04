@@ -211,8 +211,7 @@ void JanetTree::Clear()
     }
 }
 
-#ifdef USE_NOVA_INVOLUTION
-std::set<Monom::Integer> JanetTree::NMulti(const Triple* triple) const
+std::set<Monom::Integer> JanetTree::NonMulti(const Triple* triple) const
 {
     std::set<Monom::Integer> result;
 
@@ -245,4 +244,3 @@ std::set<Monom::Integer> JanetTree::NMulti(const Triple* triple) const
 
     return result;
 }
-#endif

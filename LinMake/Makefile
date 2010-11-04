@@ -53,16 +53,16 @@ triple.o: $(SOURCE)/triple.h $(SOURCE)/polynom.h
 polynom.o: $(SOURCE)/polynom.h $(SOURCE)/monom.h $(SOURCE)/monomDRL.h $(SOURCE)/monomDL.h $(SOURCE)/monomLex.h $(SOURCE)/monomOld.h $(SOURCE)/allocator.h
 	$(CXX) $(CXXFLAGS) $(SOURCE)/polynom.cpp -o $(BINARY)/polynom.o
 
-monomDRL.o: $(SOURCE)/monomDRL.h $(SOURCE)/variables.h $(SOURCE)/allocator.h $(SOURCE)/definitions.h
+monomDRL.o: $(SOURCE)/monomDRL.h $(SOURCE)/variables.h $(SOURCE)/allocator.h
 	$(CXX) $(CXXFLAGS) $(SOURCE)/monomDRL.cpp -o $(BINARY)/monomDRL.o
 
-monomDL.o: $(SOURCE)/monomDL.h $(SOURCE)/variables.h $(SOURCE)/allocator.h $(SOURCE)/definitions.h
+monomDL.o: $(SOURCE)/monomDL.h $(SOURCE)/variables.h $(SOURCE)/allocator.h
 	$(CXX) $(CXXFLAGS) $(SOURCE)/monomDL.cpp  -o $(BINARY)/monomDL.o
 
-monomLex.o: $(SOURCE)/monomLex.h $(SOURCE)/variables.h $(SOURCE)/allocator.h $(SOURCE)/definitions.h
+monomLex.o: $(SOURCE)/monomLex.h $(SOURCE)/variables.h $(SOURCE)/allocator.h
 	$(CXX) $(CXXFLAGS) $(SOURCE)/monomLex.cpp -o $(BINARY)/monomLex.o
 
-monomOld.o: $(SOURCE)/monomOld.h $(SOURCE)/variables.h $(SOURCE)/allocator.h $(SOURCE)/definitions.h
+monomOld.o: $(SOURCE)/monomOld.h $(SOURCE)/variables.h $(SOURCE)/allocator.h
 	$(CXX) $(CXXFLAGS) $(SOURCE)/monomOld.cpp -o $(BINARY)/monomOld.o
 
 allocator.o: $(SOURCE)/allocator.h $(SOURCE)/util.h

@@ -5,15 +5,15 @@
 #include <list>
 #include <algorithm>
 
-class QSET
+class QSet
 {
 private:
     std::list<Triple*> tripleList;
 
 public:
-    QSET();
-    QSET(const std::list<Polynom*>& basis);
-    ~QSET();
+    QSet();
+    QSet(const std::list<Polynom*>& basis);
+    ~QSet();
 
     void Insert(std::list<Polynom*>& addList);
     void Insert(std::list<Triple*>& addList);
@@ -26,12 +26,12 @@ public:
     void DeleteDescendants(const Triple* ancestor);
 };
 
-inline bool QSET::Empty() const
+inline bool QSet::Empty() const
 {
     return tripleList.empty();
 }
 
-inline std::size_t QSET::Size() const
+inline std::size_t QSet::Size() const
 {
     return tripleList.size();
 }

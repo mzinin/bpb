@@ -5,7 +5,6 @@
 
 #include "variables.h"
 #include "allocator.h"
-#include "definitions.h"
 #include <set>
 
 class MonomLex
@@ -84,9 +83,7 @@ public:
     void SetLcmOf(const MonomLex& monomA, const MonomLex& monomB);
 
     Integer FirstMultiVar() const;
-#ifdef USE_NOVA_INVOLUTION
     std::set<Integer> GetVariablesSet() const;
-#endif
 };
 
 
@@ -767,7 +764,6 @@ inline MonomLex::Integer MonomLex::FirstMultiVar() const
     return iterator->value;
 }
 
-#ifdef USE_NOVA_INVOLUTION
 inline std::set<MonomLex::Integer> MonomLex::GetVariablesSet() const
 {
     std::set<Integer> result;
@@ -779,6 +775,5 @@ inline std::set<MonomLex::Integer> MonomLex::GetVariablesSet() const
     }
     return result;
 }
-#endif
 
 #endif // MONOMDRL_H

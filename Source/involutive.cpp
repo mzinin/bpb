@@ -1,33 +1,34 @@
 #include <iostream>
 #include "involutive.h"
 #include "timer.h"
+#include "settings_manager.h"
 #include "pcomparator.h"
 
-Polynom* GBasis::NormalForm(const Triple* p)
+Polynom* GroebnerBasis::NormalForm(const Triple* triple)
 {
     Polynom *h, *q;
-    const Triple  *involutiveDivisor;
+    const Triple* involutiveDivisor;
     q = new Polynom();
 
-    if (p->GetVar() == -1)
+    if (triple->GetVar() == -1)
     {
-        h = new Polynom(*p->GetPoly());
+        h = new Polynom(*triple->GetPoly());
     }
     else
     {
-        h = new Polynom(*p->GetWAnc()->GetPoly());
-        (*h) *= p->GetVar();
+        h = new Polynom(*triple->GetWAnc()->GetPoly());
+        (*h) *= triple->GetVar();
     }
 
     while (!h->IsZero())
     {
-        involutiveDivisor = tSet.Find(h->Lm());
+        involutiveDivisor = IntermediateBasis.Find(h->Lm());
         while (involutiveDivisor)
         {
             h->HeadReduction(*involutiveDivisor->GetPoly());
             if (!h->IsZero())
             {
-                involutiveDivisor = tSet.Find(h->Lm());
+                involutiveDivisor = IntermediateBasis.Find(h->Lm());
             }
             else
             {
@@ -46,62 +47,61 @@ Polynom* GBasis::NormalForm(const Triple* p)
     return q;
 }
 
-const Polynom* GBasis::FindR(const Polynom* p, const std::list<Polynom*>& Q)
+const Polynom* GroebnerBasis::FindR(const Polynom* polynom, const std::list<Polynom*>& set)
 {
-    if (p->IsZero())
+    if (polynom->IsZero())
     {
         return NULL;
     }
 
-    std::list<Polynom*>::const_iterator iq(Q.begin()), qEnd(Q.end());
-    const Monom& plm = p->Lm();
+    std::list<Polynom*>::const_iterator it(set.begin()), setEnd(set.end());
+    const Monom& plm = polynom->Lm();
 
-    while (iq != qEnd)
+    while (it != setEnd)
     {
-        if (plm.IsDivisibleBy((**iq).Lm()) )
+        if (plm.IsDivisibleBy((**it).Lm()))
         {
-            return *iq;
+            return *it;
         }
-        iq++;
+        ++it;
     }
 
     return NULL;
 }
 
-Polynom* GBasis::Reduce(Polynom* p, const std::list<Polynom*>& Q)
+Polynom* GroebnerBasis::Reduce(Polynom* polynom, const std::list<Polynom*>& set)
 {
-    Polynom* result;
+    Polynom* result = new Polynom();
     const Polynom* currentReducer;
-    result = new Polynom();
 
-    while (!p->IsZero())
+    while (!polynom->IsZero())
     {
-        currentReducer = FindR(p, Q);
+        currentReducer = FindR(polynom, set);
         while (currentReducer)
         {
-            p->Reduction(*currentReducer);
-            currentReducer = FindR(p, Q);
+            polynom->Reduction(*currentReducer);
+            currentReducer = FindR(polynom, set);
         }
-        if (!p->IsZero())
+        if (!polynom->IsZero())
         {
-            (*result) += p->Lm();
-            p->RidOfLm();
+            (*result) += polynom->Lm();
+            polynom->RidOfLm();
         }
     }
 
-    p = result;
+    polynom = result;
     return result;
 }
 
-void GBasis::ReduceSet()
+void GroebnerBasis::ReduceSet()
 {
     std::list<Polynom*> tmpPolySet;
-    gBasis.sort(PointerMoreComparator<Polynom>());
+    GBasis.sort(PointerMoreComparator<Polynom>());
 
-    while (!gBasis.empty())
+    while (!GBasis.empty())
     {
-        Polynom* h = gBasis.front();
-        gBasis.pop_front();
+        Polynom* h = GBasis.front();
+        GBasis.pop_front();
         h = Reduce(h, tmpPolySet);
 
         if (!h->IsZero())
@@ -112,7 +112,7 @@ void GBasis::ReduceSet()
             {
                 if ((**iteratorTmpPolySet).Lm().IsDivisibleBy(hLm))
                 {
-                    gBasis.push_back(*iteratorTmpPolySet);
+                    GBasis.push_back(*iteratorTmpPolySet);
                     iteratorTmpPolySet = tmpPolySet.erase(iteratorTmpPolySet);
                 }
                 else
@@ -140,18 +140,18 @@ void GBasis::ReduceSet()
         }
     }
 
-    gBasis = tmpPolySet;
+    GBasis = tmpPolySet;
 }
 
-void GBasis::ConstructInvolutiveBasis()
+void GroebnerBasis::ConstructInvolutiveBasis()
 {
-    TSET::iterator tit(tSet.Begin());
+    TSet::iterator tit(IntermediateBasis.Begin());
     Polynom* newNormalForm;
     Triple* currentTriple;
 
-    while (!qSet.Empty())
+    while (!ProlongationsSet.Empty())
     {
-        currentTriple = qSet.Get();
+        currentTriple = ProlongationsSet.Get();
         newNormalForm = NormalForm(currentTriple);
 
         std::set<Monom::Integer> n;
@@ -169,22 +169,25 @@ void GBasis::ConstructInvolutiveBasis()
 
         if (!newNormalForm->IsZero())
         {
-#ifdef COLLECT_STATISTICS
-            nonZeroReductions++;
-#endif // COLLECT_STATISTICS
-            std::list<Triple*> additionalToQSet;
-            tit = tSet.Begin();
+            if (GetSettingsManager().CollectStatistics)
+            {
+                NonZeroReductions++;
+            }
 
-            while (tit != tSet.End())
+            std::list<Triple*> newProlongations;
+            tit = IntermediateBasis.Begin();
+
+            while (tit != IntermediateBasis.End())
             {
                 if ((**tit).GetPolyLm().IsTrueDivisibleBy(newNormalForm->Lm()))
                 {
-#ifdef USE_NOVA_INVOLUTION
-                    (**tit).SetNmp(std::set<Monom::Integer>());
-#endif // USE_NOVA_INVOLUTION
-                    qSet.DeleteDescendants(*tit);
-                    additionalToQSet.push_back(*tit);
-                    tit = tSet.Erase(tit);
+                    if (GetSettingsManager().UseNovaInvolution)
+                    {
+                        (**tit).SetNmp(std::set<Monom::Integer>());
+                    }
+                    ProlongationsSet.DeleteDescendants(*tit);
+                    newProlongations.push_back(*tit);
+                    tit = IntermediateBasis.Erase(tit);
                 }
                 else
                 {
@@ -192,25 +195,31 @@ void GBasis::ConstructInvolutiveBasis()
                 }
             }
 
-            tSet.PushBack(new Triple(newNormalForm, qanc, n, 0, -1));
+            IntermediateBasis.PushBack(new Triple(newNormalForm, qanc, n, 0, -1));
             if (!newNormalForm->Degree())
             {
                 return;
             }
 
-#ifdef USE_NOVA_INVOLUTION
-            tit = tSet.Begin();
-            for (; tit != tSet.End(); ++tit)
+            if (GetSettingsManager().UseNovaInvolution)
             {
-                tSet.CollectNonMultiProlongations(tit, additionalToQSet);
+                tit = IntermediateBasis.Begin();
+                for (; tit != IntermediateBasis.End(); ++tit)
+                {
+                    IntermediateBasis.CollectNonMultiProlongations(tit, newProlongations);
+                }
             }
-#else
-            tSet.CollectNonMultiProlongations(--tSet.End(), additionalToQSet);
-#endif // USE_NOVA_INVOLUTION
-#ifdef COLLECT_STATISTICS
-            nonMultiProlongations += additionalToQSet.size();
-#endif // COLLECT_STATISTICS
-            qSet.Insert(additionalToQSet);
+            else
+            {
+                IntermediateBasis.CollectNonMultiProlongations(--IntermediateBasis.End(), newProlongations);
+            }
+
+            if (GetSettingsManager().CollectStatistics)
+            {
+                NonMultiProlongations += newProlongations.size();
+            }
+
+            ProlongationsSet.Insert(newProlongations);
         }
         else
         {
@@ -219,68 +228,67 @@ void GBasis::ConstructInvolutiveBasis()
     }
 }
 
-GBasis::GBasis()
-    : gBasis()
-    , qSet()
-    , tSet()
-#ifdef COLLECT_STATISTICS
-    , nonMultiProlongations(0)
-    , nonZeroReductions(0)
-#endif // COLLECT_STATISTICS
+GroebnerBasis::GroebnerBasis()
+    : GBasis()
+    , IntermediateBasis()
+    , ProlongationsSet()
+    , NonMultiProlongations(0)
+    , NonZeroReductions(0)
 {
 }
 
-GBasis::~GBasis()
+GroebnerBasis::~GroebnerBasis()
 {
     Reset();
 }
 
-void GBasis::Reset()
+void GroebnerBasis::Reset()
 {
-    tSet.Clear();
-    qSet.Clear();
-    gBasis.clear();
-#ifdef COLLECT_STATISTICS
-    nonMultiProlongations = 0;
-    nonZeroReductions = 0;
-#endif // COLLECT_STATISTICS
+    IntermediateBasis.Clear();
+    ProlongationsSet.Clear();
+    GBasis.clear();
+    NonMultiProlongations = 0;
+    NonZeroReductions = 0;
 }
 
-void GBasis::Construct(const std::list<Polynom*>& set)
+void GroebnerBasis::Construct(const std::list<Polynom*>& set)
 {
     Reset();
-    gBasis = set;
+    GBasis = set;
 
-#ifdef USE_NOVA_INVOLUTION
-    std::list<Polynom*>::const_iterator i1 = set.begin();
-    for (; i1 != set.end(); ++i1)
+    if (GetSettingsManager().UseNovaInvolution)
     {
-        for (register Monom::Integer var = 0; var < Monom::DimIndepend(); ++var)
+        std::list<Polynom*>::const_iterator i1 = set.begin();
+        for (; i1 != set.end(); ++i1)
         {
-            gBasis.push_back(new Polynom(**i1));
-            (*gBasis.back()) *= var;
+            for (register Monom::Integer var = 0; var < Monom::DimIndepend(); ++var)
+            {
+                GBasis.push_back(new Polynom(**i1));
+                (*GBasis.back()) *= var;
+            }
         }
     }
-#endif
+
     ReduceSet();
 
-    qSet.Insert(gBasis);
-    gBasis.clear();
-    ConstructInvolutiveBasis();
-    qSet.Clear();
+    ProlongationsSet.Insert(GBasis);
+    GBasis.clear();
 
-    TSET::const_iterator i2(tSet.Begin());
-    while(i2 != tSet.End())
+    ConstructInvolutiveBasis();
+    ProlongationsSet.Clear();
+
+    TSet::const_iterator i2(IntermediateBasis.Begin());
+    while (i2 != IntermediateBasis.End())
     {
-        gBasis.push_back(const_cast<Polynom*>((**i2).GetPoly()));
+        GBasis.push_back(const_cast<Polynom*>((**i2).GetPoly()));
         i2++;
     }
     ReduceSet();
 }
 
-const Polynom& GBasis::operator[](int num) const
+const Polynom& GroebnerBasis::operator[](int num) const
 {
-    std::list<Polynom*>::const_iterator it(gBasis.begin());
+    std::list<Polynom*>::const_iterator it(GBasis.begin());
     for (register unsigned i = Length()-1-num; i > 0; i--)
     {
         ++it;
@@ -288,25 +296,23 @@ const Polynom& GBasis::operator[](int num) const
     return **it;
 }
 
-unsigned GBasis::Length() const
+unsigned GroebnerBasis::Length() const
 {
-    return gBasis.size();
+    return GBasis.size();
 }
 
-#ifdef COLLECT_STATISTICS
-void GBasis::PrintStatistics(std::ostream& out) const
+void GroebnerBasis::PrintStatistics(std::ostream& out) const
 {
-    out << "Non-Multiple Prolongations considered: " << nonMultiProlongations << std::endl;
-    out << "Non-Zero Reductions made: " << nonZeroReductions << std::endl;
-    out << "Zero Reductions made: " << nonMultiProlongations - nonZeroReductions << std::endl;
+    out << "Non-Multiple Prolongations considered: " << NonMultiProlongations << std::endl;
+    out << "Non-Zero Reductions made: " << NonZeroReductions << std::endl;
+    out << "Zero Reductions made: " << NonMultiProlongations - NonZeroReductions << std::endl;
 }
-#endif // COLLECT_STATISTICS
 
-std::ostream& operator<<(std::ostream& out, GBasis& gBasis)
+std::ostream& operator<<(std::ostream& out, GroebnerBasis& groebnerBasis)
 {
-    for (register unsigned i = 0; i < gBasis.Length(); i++)
+    for (register unsigned i = 0; i < groebnerBasis.Length(); i++)
     {
-        out << '[' << i << "] = " << gBasis[i] << '\n';
+        out << '[' << i << "] = " << groebnerBasis[i] << '\n';
     }
 
     return out;

@@ -6,10 +6,9 @@
 #include <map>
 #include <algorithm>
 
-class TSET
+class TSet
 {
 private:
-#ifdef USE_NOVA_INVOLUTION
     typedef std::map<Monom::Integer, unsigned> VarCountMap;
     struct FullDegreeInfo
     {
@@ -17,9 +16,8 @@ private:
         VarCountMap VCMap;
     };
     typedef std::map<Monom::Integer, FullDegreeInfo> FullDegreeInfoMap;
-
     FullDegreeInfoMap degreeInfos;
-#endif
+
     std::list<Triple*> tripleList;
     JanetTree jTree;
 
@@ -27,8 +25,8 @@ public:
     typedef std::list<Triple*>::iterator iterator;
     typedef std::list<Triple*>::const_iterator const_iterator;
 
-    TSET();
-    ~TSET();
+    TSet();
+    ~TSet();
 
     iterator Begin();
     const_iterator Begin() const;
@@ -44,44 +42,41 @@ public:
     Triple* const Back() const;
 
     void CollectNonMultiProlongations(iterator& iterator, std::list<Triple*>& set);
-
-#ifdef USE_NOVA_INVOLUTION
     std::set<Monom::Integer> NonMultiNova(const Triple* triple);
-#endif
 };
 
 
-inline const Triple* TSET::Find(const Monom& monom) const
+inline const Triple* TSet::Find(const Monom& monom) const
 {
     return jTree.Find(monom);
 }
 
-inline TSET::iterator TSET::Begin()
+inline TSet::iterator TSet::Begin()
 {
     return tripleList.begin();
 }
 
-inline TSET::const_iterator TSET::Begin() const
+inline TSet::const_iterator TSet::Begin() const
 {
     return tripleList.begin();
 }
 
-inline TSET::iterator TSET::End()
+inline TSet::iterator TSet::End()
 {
     return tripleList.end();
 }
 
-inline TSET::const_iterator TSET::End() const
+inline TSet::const_iterator TSet::End() const
 {
     return tripleList.end();
 }
 
-inline std::size_t TSET::Size() const
+inline std::size_t TSet::Size() const
 {
     return tripleList.size();
 }
 
-inline Triple* const TSET::Back() const
+inline Triple* const TSet::Back() const
 {
     return tripleList.back();
 }

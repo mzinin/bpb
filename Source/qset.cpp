@@ -1,10 +1,10 @@
 #include "qset.h"
 
-QSET::QSET(): tripleList()
+QSet::QSet(): tripleList()
 {
 }
 
-QSET::QSET(const std::list<Polynom*>& basis): tripleList()
+QSet::QSet(const std::list<Polynom*>& basis): tripleList()
 {
     std::list<Polynom*>::const_iterator itBasis(basis.begin());
     while (itBasis != basis.end())
@@ -15,12 +15,12 @@ QSET::QSET(const std::list<Polynom*>& basis): tripleList()
     tripleList.sort(Triple::Compare);
 }
 
-QSET::~QSET()
+QSet::~QSet()
 {
     Clear();
 }
 
-void QSET::Insert(std::list<Polynom*>& addList)
+void QSet::Insert(std::list<Polynom*>& addList)
 {
     std::list<Polynom*>::const_iterator itBasis(addList.begin());
     while ( itBasis != addList.end() )
@@ -31,20 +31,20 @@ void QSET::Insert(std::list<Polynom*>& addList)
     tripleList.sort(Triple::Compare);
 }
 
-void QSET::Insert(std::list<Triple*>& addList)
+void QSet::Insert(std::list<Triple*>& addList)
 {
     addList.sort(Triple::Compare);
     tripleList.merge(addList, Triple::Compare);
 }
 
-Triple* QSET::Get()
+Triple* QSet::Get()
 {
     Triple* result = tripleList.back();
     tripleList.pop_back();
     return result;
 }
 
-void QSET::Clear()
+void QSet::Clear()
 {
     std::list<Triple*>::iterator it(tripleList.begin());
     while (it != tripleList.end())
@@ -55,7 +55,7 @@ void QSET::Clear()
     tripleList.clear();
 }
 
-void QSET::DeleteDescendants(const Triple* ancestor)
+void QSet::DeleteDescendants(const Triple* ancestor)
 {
     std::list<Triple*>::iterator it(tripleList.begin());
     while ( it != tripleList.end() )

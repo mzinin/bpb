@@ -3,35 +3,31 @@
 #include "tset.h"
 #include "qset.h"
 
-class GBasis
+class GroebnerBasis
 {
 private:
-    std::list<Polynom*> gBasis;
-    TSET tSet;
-    QSET qSet;
-#ifdef COLLECT_STATISTICS
-    unsigned long nonMultiProlongations;
-    unsigned long nonZeroReductions;
-#endif // COLLECT_STATISTICS
+    std::list<Polynom*> GBasis;
+    TSet IntermediateBasis;
+    QSet ProlongationsSet;
+    unsigned long NonMultiProlongations;
+    unsigned long NonZeroReductions;
 
 public:
-    GBasis();
-    ~GBasis();
-    void Construct(const std::list<Polynom*>& set);
+    GroebnerBasis();
+    ~GroebnerBasis();
 
-    const Polynom& operator[](int num) const;
+    void Construct(const std::list<Polynom*>& set);
+    void PrintStatistics(std::ostream& out) const;
+
+    const Polynom& operator[](int number) const;
     unsigned Length() const;
 
-#ifdef COLLECT_STATISTICS
-    void PrintStatistics(std::ostream& out) const;
-#endif // COLLECT_STATISTICS
-
-    friend std::ostream& operator<<(std::ostream& out, GBasis& gBasis);
+    friend std::ostream& operator<<(std::ostream& out, GroebnerBasis& groebnerBasis);
 
 private:
-    Polynom* NormalForm(const Triple* p);
-    const Polynom* FindR(const Polynom* p, const std::list<Polynom*>& Q);
-    Polynom* Reduce(Polynom* p, const std::list<Polynom*>& Q);
+    Polynom* NormalForm(const Triple* triple);
+    const Polynom* FindR(const Polynom* polynom, const std::list<Polynom*>& set);
+    Polynom* Reduce(Polynom* polynom, const std::list<Polynom*>& set);
     void ReduceSet();
     void ConstructInvolutiveBasis();
     void Reset();

@@ -8,7 +8,6 @@
 
 #include "variables.h"
 #include "allocator.h"
-#include "definitions.h"
 
 class MonomOld
 {
@@ -80,9 +79,7 @@ public:
     friend std::ostream& operator<<(std::ostream& out, const MonomOld& a);
 
     Integer FirstMultiVar() const;
-#ifdef USE_NOVA_INVOLUTION
     std::set<Integer> GetVariablesSet() const;
-#endif
 };
 
 inline const MonomOld& MonomOld::operator=(const MonomOld& anotherMonom)
@@ -390,7 +387,6 @@ inline short MonomOld::FirstMultiVar() const
     }
 }
 
-#ifdef USE_NOVA_INVOLUTION
 inline std::set<MonomOld::Integer> MonomOld::GetVariablesSet() const
 {
     std::set<Integer> result;
@@ -401,8 +397,6 @@ inline std::set<MonomOld::Integer> MonomOld::GetVariablesSet() const
             result.insert(i);
         }
     }
-    return result;
 }
-#endif
 
 #endif // MONOMOLD_H

@@ -13,7 +13,24 @@ BINARY = .\
 
 all: myginv.exe
 
-myginv.exe: myginv.res myginv.obj launcher.obj version.obj involutive.obj qset.obj tset.obj janettree.obj triple.obj polynom.obj monomOld.obj monomLex.obj monomDL.obj monomDRL.obj allocator.obj variables.obj timer.obj
+myginv.exe: myginv.res \
+            myginv.obj \
+            launcher.obj \
+            version.obj \
+            involutive.obj \
+            qset.obj \
+            tset.obj \
+            janettree.obj \
+            triple.obj \
+            settings_manager.obj \
+            polynom.obj \
+            monomOld.obj \
+            monomLex.obj \
+            monomDL.obj \
+            monomDRL.obj \
+            allocator.obj \
+            variables.obj \
+            timer.obj
     @del $(BINARY)\*.exe 2> NUL
     $(LINK) $(LINKFLAGS) /OUT:$(BINARY)\myginv.exe \
             $(BINARY)\myginv.res \
@@ -25,6 +42,7 @@ myginv.exe: myginv.res myginv.obj launcher.obj version.obj involutive.obj qset.o
             $(BINARY)\tset.obj \
             $(BINARY)\janettree.obj \
             $(BINARY)\triple.obj \
+            $(BINARY)\settings_manager.obj \
             $(BINARY)\polynom.obj \
             $(BINARY)\monomOld.obj \
             $(BINARY)\monomLex.obj \
@@ -40,10 +58,10 @@ myginv.exe: myginv.res myginv.obj launcher.obj version.obj involutive.obj qset.o
 myginv.res: myginv.rc $(SOURCE)\version.h
     $(RC) /fo myginv.res myginv.rc 2> NUL
 
-myginv.obj: $(SOURCE)\launcher.h
+myginv.obj: $(SOURCE)\launcher.h $(SOURCE)\settings_manager.h
     $(CXX) $(CXXFLAGS) $(SOURCE)\myginv.cpp /Fo $(BINARY)\myginv.obj 2> NUL
 
-launcher.obj: $(SOURCE)\launcher.h $(SOURCE)\polynom.h $(SOURCE)\involutive.h $(SOURCE)\version.h $(SOURCE)\timer.h
+launcher.obj: $(SOURCE)\launcher.h $(SOURCE)\polynom.h $(SOURCE)\involutive.h $(SOURCE)\version.h $(SOURCE)\timer.h $(SOURCE)\settings_manager.h
     $(CXX) $(CXXFLAGS) $(SOURCE)\launcher.cpp /Fo $(BINARY)\launcher.obj 2> NUL
 
 version.obj: $(SOURCE)\version.h
@@ -64,19 +82,22 @@ janettree.obj: $(SOURCE)\janettree.h $(SOURCE)\triple.h
 triple.obj: $(SOURCE)\triple.h $(SOURCE)\polynom.h
     $(CXX) $(CXXFLAGS) $(SOURCE)\triple.cpp /Fo $(BINARY)\triple.obj 2> NUL
 
+settings_manager.obj: $(SOURCE)\settings_manager.h
+    $(CXX) $(CXXFLAGS) $(SOURCE)\settings_manager.cpp /Fo $(BINARY)\settings_manager.obj 2> NUL
+
 polynom.obj: $(SOURCE)\polynom.h $(SOURCE)\monom.h $(SOURCE)\monomDRL.h $(SOURCE)\monomDL.h $(SOURCE)\monomLex.h $(SOURCE)\monomOld.h $(SOURCE)\allocator.h
     $(CXX) $(CXXFLAGS) $(SOURCE)\polynom.cpp /Fo $(BINARY)\polynom.obj 2> NUL
 
-monomDRL.obj: $(SOURCE)\monomDRL.h $(SOURCE)\variables.h $(SOURCE)\allocator.h $(SOURCE)\definitions.h
+monomDRL.obj: $(SOURCE)\monomDRL.h $(SOURCE)\variables.h $(SOURCE)\allocator.h
     $(CXX) $(CXXFLAGS) $(SOURCE)\monomDRL.cpp /Fo $(BINARY)\monomDRL.obj 2> NUL
 
-monomDL.obj: $(SOURCE)\monomDL.h $(SOURCE)\variables.h $(SOURCE)\allocator.h $(SOURCE)\definitions.h
+monomDL.obj: $(SOURCE)\monomDL.h $(SOURCE)\variables.h $(SOURCE)\allocator.h
     $(CXX) $(CXXFLAGS) $(SOURCE)\monomDL.cpp /Fo $(BINARY)\monomDL.obj 2> NUL
 
-monomLex.obj: $(SOURCE)\monomLex.h $(SOURCE)\variables.h $(SOURCE)\allocator.h $(SOURCE)\definitions.h
+monomLex.obj: $(SOURCE)\monomLex.h $(SOURCE)\variables.h $(SOURCE)\allocator.h
     $(CXX) $(CXXFLAGS) $(SOURCE)\monomLex.cpp /Fo $(BINARY)\monomLex.obj 2> NUL
 
-monomOld.obj: $(SOURCE)\monomOld.h $(SOURCE)\variables.h $(SOURCE)\allocator.h $(SOURCE)\definitions.h
+monomOld.obj: $(SOURCE)\monomOld.h $(SOURCE)\variables.h $(SOURCE)\allocator.h
     $(CXX) $(CXXFLAGS) $(SOURCE)\monomOld.cpp /Fo $(BINARY)\monomOld.obj 2> NUL
 
 allocator.obj: $(SOURCE)\allocator.h $(SOURCE)\util.h
