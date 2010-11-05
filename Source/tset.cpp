@@ -1,9 +1,10 @@
 #include "tset.h"
 #include "settings_manager.h"
 
-TSet::TSet(): tripleList()
-            , jTree()
-            , degreeInfos()
+TSet::TSet()
+    : TripleList()
+    , JTree()
+    , DegreeInfos()
 {
 }
 
@@ -14,29 +15,29 @@ TSet::~TSet()
 
 void TSet::Clear()
 {
-    jTree.Clear();
+    JTree.Clear();
 
     if (GetSettingsManager().UseNovaInvolution)
     {
-        degreeInfos.clear();
+        DegreeInfos.clear();
     }
 
-    iterator it(tripleList.begin());
-    while (it != tripleList.end())
+    Iterator it(TripleList.begin());
+    while (it != TripleList.end())
     {
         delete *it;
         ++it;
     }
-    tripleList.clear();
+    TripleList.clear();
 }
 
-TSet::iterator TSet::Erase(TSet::iterator it)
+TSet::Iterator TSet::Erase(TSet::Iterator it)
 {
     if (GetSettingsManager().UseNovaInvolution)
     {
         Monom::Integer degree = (**it).GetPolyLm().Degree();
-        degreeInfos[degree].JTree.Delete(*it);
-        VarCountMap& deletedVarCountMap = degreeInfos[degree].VCMap;
+        DegreeInfos[degree].JTree.Delete(*it);
+        VarCountMap& deletedVarCountMap = DegreeInfos[degree].VCMap;
         std::set<Monom::Integer> deletedVarSet = (**it).GetPolyLm().GetVariablesSet();
         for (std::set<Monom::Integer>::const_iterator i = deletedVarSet.begin(); i != deletedVarSet.end(); ++i)
         {
@@ -44,20 +45,20 @@ TSet::iterator TSet::Erase(TSet::iterator it)
         }
     }
 
-    jTree.Delete(*it);
-    return tripleList.erase(it);
+    JTree.Delete(*it);
+    return TripleList.erase(it);
 }
 
 void TSet::PushBack(Triple* newTriple)
 {
-    tripleList.push_back(newTriple);
-    jTree.Insert(newTriple);
+    TripleList.push_back(newTriple);
+    JTree.Insert(newTriple);
 
     if (GetSettingsManager().UseNovaInvolution)
     {
         Monom::Integer degree = newTriple->GetPolyLm().Degree();
-        degreeInfos[degree].JTree.Insert(newTriple);
-        VarCountMap& addedVarCountMap = degreeInfos[degree].VCMap;
+        DegreeInfos[degree].JTree.Insert(newTriple);
+        VarCountMap& addedVarCountMap = DegreeInfos[degree].VCMap;
         std::set<Monom::Integer> addedVarSet = newTriple->GetPolyLm().GetVariablesSet();
         for (std::set<Monom::Integer>::const_iterator i = addedVarSet.begin(); i != addedVarSet.end(); ++i)
         {
@@ -66,9 +67,9 @@ void TSet::PushBack(Triple* newTriple)
     }
 }
 
-void TSet::CollectNonMultiProlongations(TSet::iterator& iterator, std::list<Triple*>& set)
+void TSet::CollectNonMultiProlongations(TSet::Iterator& iterator, std::list<Triple*>& set)
 {
-    if (iterator == tripleList.end() || !(*iterator))
+    if (iterator == TripleList.end() || !(*iterator))
     {
         return;
     }
@@ -129,7 +130,7 @@ void TSet::CollectNonMultiProlongations(TSet::iterator& iterator, std::list<Trip
 std::set<Monom::Integer> TSet::NonMultiNova(const Triple* triple)
 {
     Monom::Integer degree = triple->GetPolyLm().Degree();
-    std::set<Monom::Integer> nmulti = degreeInfos[degree].JTree.NonMulti(triple);
+    std::set<Monom::Integer> nmulti = DegreeInfos[degree].JTree.NonMulti(triple);
 
     for (Monom::Integer var = 0; var < Monom::DimIndepend(); ++var)
     {
@@ -141,7 +142,7 @@ std::set<Monom::Integer> TSet::NonMultiNova(const Triple* triple)
         Monom::Integer i = degree;
         for (Monom::Integer i = degree; i > 0; --i)
         {
-            if (degreeInfos[i-1].VCMap[var])
+            if (DegreeInfos[i-1].VCMap[var])
                 break;
         }
 

@@ -25,34 +25,45 @@
 
 class Timer
 {
-	static double sHZ;
+private:
+    static double Hz;
 
-	double mUserTime;
-	double mSysTime;
-	double mRealTime;
+    double UserTime;
+    double SysTime;
+    double RealTime;
 
-	double mUserElapsed;
-	double mSysElapsed;
-	double mRealElapsed;
+    double UserElapsed;
+    double SysElapsed;
+    double RealElapsed;
 
 public:
-	Timer():
-      mUserTime(0.0),
-      mSysTime(0.0),
-      mRealTime(0.0),
-      mUserElapsed(0.0),
-      mSysElapsed(0.0),
-      mRealElapsed(0.0) {}
+    Timer();
+    ~Timer();
 
-	void Start();
-	void Continue();
-	void Stop();
+    void Start();
+    void Continue();
+    void Stop();
 
-	double userTime() const { return mUserElapsed; }
-	double sysTime() const { return mSysElapsed; }
-	double realTime() const { return mRealElapsed; }
+    double GetUserTime() const;
+    double GetSysTime() const;
+    double GetRealTime() const;
 
-	friend std::ostream& operator<<(std::ostream& out, const Timer &a);
+    friend std::ostream& operator<<(std::ostream& out, const Timer &timer);
 };
+
+inline double Timer::GetUserTime() const
+{
+    return UserElapsed;
+}
+
+inline double Timer::GetSysTime() const
+{
+    return SysElapsed;
+}
+
+inline double Timer::GetRealTime() const
+{
+    return RealElapsed;
+}
 
 #endif // TIMER_H

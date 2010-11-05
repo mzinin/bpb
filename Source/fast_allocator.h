@@ -18,30 +18,47 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#include "allocator.h"
+#ifndef FAST_ALLOCATOR_H
+#define FAST_ALLOCATOR_H
 
-void Allocator::getMem()
+class FastAllocator
 {
-    ++sMaxMemory;
-    void **beg = (void**)imalloc(memoryPageSize),
-         **end = beg + mTSize*(mPageSize-1),
-         **tmp;
+private:
+    const size_t MemoryPageSize;
+    const size_t TSize;
+    const size_t PageSize;
+    void**       FreeBlock;
+    static unsigned long UsedMemory;
 
-    *((void***)end) = mFree;
-    mFree = (void**)beg;
-    do
+public:
+    static unsigned long GetUsedMemory();
+
+    FastAllocator(const size_t blockSize);
+    ~FastAllocator();
+
+    void* Allocate();
+    void Free(void* pointer);
+
+private:
+    void ExpandMemory();
+};
+
+inline void* FastAllocator::Allocate()
+{
+    if (!FreeBlock)
     {
-        tmp = beg + mTSize;
-        *((void***)beg) = tmp;
-        beg = tmp;
-    } while(beg < end);
+        ExpandMemory();
+    }
+
+    void* pointer = static_cast<void*>(FreeBlock);
+    FreeBlock = static_cast<void**>(*FreeBlock);
+    return pointer;
 }
 
-Allocator::Allocator(const size_t n):
-    mTSize((n+sizeof(void*)-1)/sizeof(void*)),
-    mPageSize(memoryPageSize/(sizeof(void*)*(n+sizeof(void*)-1)/sizeof(void*))),
-    mFree(0)
+inline void FastAllocator::Free(void* pointer)
 {
+    *(static_cast<void***>(pointer)) = FreeBlock;
+    FreeBlock = static_cast<void**>(pointer);
 }
 
-int Allocator::sMaxMemory = 0;
+#endif // FAST_ALLOCATOR_H

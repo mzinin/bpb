@@ -6,6 +6,7 @@
 #include <memory>
 #endif // __linux__
 
+#include "fast_allocator.h"
 #include "launcher.h"
 #include "settings_manager.h"
 #include "version.h"
@@ -196,6 +197,8 @@ void Launcher::PrintResult() const
     {
         GBasis.PrintStatistics(std::cout);
     }
+
+    std::cout << "Memory used: " << FastAllocator::GetUsedMemory() << std::endl;
 
     std::cout << GBCommonTimer << std::endl;
     if (CheckAnswer())

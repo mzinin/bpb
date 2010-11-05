@@ -16,69 +16,69 @@ private:
         VarCountMap VCMap;
     };
     typedef std::map<Monom::Integer, FullDegreeInfo> FullDegreeInfoMap;
-    FullDegreeInfoMap degreeInfos;
+    FullDegreeInfoMap DegreeInfos;
 
-    std::list<Triple*> tripleList;
-    JanetTree jTree;
+    std::list<Triple*> TripleList;
+    JanetTree JTree;
 
 public:
-    typedef std::list<Triple*>::iterator iterator;
-    typedef std::list<Triple*>::const_iterator const_iterator;
+    typedef std::list<Triple*>::iterator Iterator;
+    typedef std::list<Triple*>::const_iterator ConstIterator;
 
     TSet();
     ~TSet();
 
-    iterator Begin();
-    const_iterator Begin() const;
-    iterator End();
-    const_iterator End() const;
+    Iterator Begin();
+    ConstIterator Begin() const;
+    Iterator End();
+    ConstIterator End() const;
 
     void Clear();
-    iterator Erase(iterator it);
+    Iterator Erase(Iterator it);
     void PushBack(Triple* newTriple);
     std::size_t Size() const;
 
     const Triple* Find(const Monom& monom) const;
     Triple* const Back() const;
 
-    void CollectNonMultiProlongations(iterator& iterator, std::list<Triple*>& set);
+    void CollectNonMultiProlongations(Iterator& iterator, std::list<Triple*>& set);
     std::set<Monom::Integer> NonMultiNova(const Triple* triple);
 };
 
 
 inline const Triple* TSet::Find(const Monom& monom) const
 {
-    return jTree.Find(monom);
+    return JTree.Find(monom);
 }
 
-inline TSet::iterator TSet::Begin()
+inline TSet::Iterator TSet::Begin()
 {
-    return tripleList.begin();
+    return TripleList.begin();
 }
 
-inline TSet::const_iterator TSet::Begin() const
+inline TSet::ConstIterator TSet::Begin() const
 {
-    return tripleList.begin();
+    return TripleList.begin();
 }
 
-inline TSet::iterator TSet::End()
+inline TSet::Iterator TSet::End()
 {
-    return tripleList.end();
+    return TripleList.end();
 }
 
-inline TSet::const_iterator TSet::End() const
+inline TSet::ConstIterator TSet::End() const
 {
-    return tripleList.end();
+    return TripleList.end();
 }
 
 inline std::size_t TSet::Size() const
 {
-    return tripleList.size();
+    return TripleList.size();
 }
 
 inline Triple* const TSet::Back() const
 {
-    return tripleList.back();
+    return TripleList.back();
 }
 
 #endif // TSET_H

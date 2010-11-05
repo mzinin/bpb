@@ -10,8 +10,8 @@ const Polynom& Polynom::operator+=(const Monom& newMonom)
     if (!position)
     {
         tmpMonom = new Monom(newMonom);
-        tmpMonom->mNext = pListHead;
-        pListHead = tmpMonom;
+        tmpMonom->mNext = MonomListHead;
+        MonomListHead = tmpMonom;
     }
     else
     {
@@ -23,9 +23,6 @@ const Polynom& Polynom::operator+=(const Monom& newMonom)
         }
         else
         {
-            //tmpMonom = new Monom(newMonom);
-            //tmpMonom->mNext = *position;
-            //*position = tmpMonom;
             tmpMonom = new Monom(newMonom);
             tmpMonom->mNext = (*position)->mNext;
             (*position)->mNext = tmpMonom;
@@ -37,10 +34,10 @@ const Polynom& Polynom::operator+=(const Monom& newMonom)
 
 const Polynom& Polynom::operator+=(const Polynom& anotherPolynom)
 {
-    if (anotherPolynom.pListHead)
+    if (anotherPolynom.MonomListHead)
     {
-        Monom **iterator = &pListHead,
-              *iteratorAnother = anotherPolynom.pListHead,
+        Monom **iterator = &MonomListHead,
+              *iteratorAnother = anotherPolynom.MonomListHead,
               *tmpMonom;
 
         while (*iterator && iteratorAnother)
@@ -79,11 +76,11 @@ const Polynom& Polynom::operator+=(const Polynom& anotherPolynom)
 
 const Polynom& Polynom::operator*=(Monom::Integer var)
 {
-    if (pListHead)
+    if (MonomListHead)
     {
         Polynom polynomWithVar;
-        Monom **iterator = &pListHead,
-              **iteratorWithVar = &polynomWithVar.pListHead;
+        Monom **iterator = &MonomListHead,
+              **iteratorWithVar = &polynomWithVar.MonomListHead;
 
         while (*iterator)
         {
@@ -100,7 +97,7 @@ const Polynom& Polynom::operator*=(Monom::Integer var)
             }
         }
 
-        iterator = &pListHead;
+        iterator = &MonomListHead;
         while (*iterator)
         {
             **iterator *= var;
@@ -115,7 +112,7 @@ const Polynom& Polynom::operator*=(Monom::Integer var)
 
 const Polynom& Polynom::operator*=(const Monom& anotherMonom)
 {
-    if (pListHead)
+    if (MonomListHead)
     {
         for (register Monom::Integer i = 0; i < anotherMonom.DimIndepend(); ++i)
         {
@@ -130,10 +127,10 @@ const Polynom& Polynom::operator*=(const Monom& anotherMonom)
 
 const Polynom& Polynom::operator*=(const Polynom& anotherPolynom)
 {
-    if (pListHead)
+    if (MonomListHead)
     {
         Polynom *tmpPolynom, *tmpResult = new Polynom();
-        Monom* iteratorAnother(anotherPolynom.pListHead);
+        Monom* iteratorAnother(anotherPolynom.MonomListHead);
         while (iteratorAnother)
         {
             tmpPolynom = new Polynom(*this);
@@ -143,8 +140,8 @@ const Polynom& Polynom::operator*=(const Polynom& anotherPolynom)
             iteratorAnother = iteratorAnother->mNext;
         }
         SetZero();
-        pListHead = tmpResult->pListHead;
-        tmpResult->pListHead = 0;
+        MonomListHead = tmpResult->MonomListHead;
+        tmpResult->MonomListHead = 0;
         delete tmpResult;
     }
     return *this;
@@ -152,11 +149,11 @@ const Polynom& Polynom::operator*=(const Polynom& anotherPolynom)
 
 void Polynom::Reduction(const Polynom &anotherPolynom)
 {
-    if (pListHead && anotherPolynom.pListHead)
+    if (MonomListHead && anotherPolynom.MonomListHead)
     {
         Monom tmpMonom;
         Polynom* tmpPolynom;
-        Monom* iterator(pListHead);
+        Monom* iterator(MonomListHead);
         const Monom& anotherLm(anotherPolynom.Lm());
 
         while (iterator)
@@ -168,7 +165,7 @@ void Polynom::Reduction(const Polynom &anotherPolynom)
                 *tmpPolynom *= tmpMonom;
                 MergeWith(*tmpPolynom);
                 delete tmpPolynom;
-                iterator = pListHead;
+                iterator = MonomListHead;
             }
             else
             {
@@ -176,7 +173,7 @@ void Polynom::Reduction(const Polynom &anotherPolynom)
             }
         }
 
-        if (pListHead)
+        if (MonomListHead)
         {
             Monom* iterator2(iterator);
             iterator = iterator->mNext;
@@ -203,11 +200,11 @@ void Polynom::Reduction(const Polynom &anotherPolynom)
 
 void Polynom::HeadReduction(const Polynom &anotherPolynom)
 {
-    if (pListHead && anotherPolynom.pListHead)
+    if (MonomListHead && anotherPolynom.MonomListHead)
     {
         Monom tmpMonom;
         Polynom* tmpPolynom;
-        Monom* iterator(pListHead);
+        Monom* iterator(MonomListHead);
         const Monom& anotherLm(anotherPolynom.Lm());
 
         while (iterator)
@@ -219,7 +216,7 @@ void Polynom::HeadReduction(const Polynom &anotherPolynom)
                 *tmpPolynom *= tmpMonom;
                 MergeWith(*tmpPolynom);
                 delete tmpPolynom;
-                iterator = pListHead;
+                iterator = MonomListHead;
             }
             else
             {
@@ -231,8 +228,8 @@ void Polynom::HeadReduction(const Polynom &anotherPolynom)
 
 void Polynom::MergeWith(Polynom& anotherPolynom)
 {
-    Monom **iterator = &pListHead,
-          *iteratorAnother = anotherPolynom.pListHead,
+    Monom **iterator = &MonomListHead,
+          *iteratorAnother = anotherPolynom.MonomListHead,
           *tmpPointer;
 
     while (*iterator && iteratorAnother)
@@ -265,18 +262,18 @@ void Polynom::MergeWith(Polynom& anotherPolynom)
         *iterator = iteratorAnother;
     }
 
-    anotherPolynom.pListHead = 0;
+    anotherPolynom.MonomListHead = 0;
 }
 
-std::ostream& operator<<(std::ostream& out, const Polynom& a)
+std::ostream& operator<<(std::ostream& out, const Polynom& polynom)
 {
-    if (!a.pListHead)
+    if (!polynom.MonomListHead)
     {
         out << "0";
     }
     else
     {
-        Monom* iteratorA(a.pListHead);
+        Monom* iteratorA(polynom.MonomListHead);
         out << *iteratorA;
         iteratorA = iteratorA->mNext;
         while (iteratorA)
@@ -368,9 +365,9 @@ void Polynom::Bracket(std::istream& in)
     }
 }
 
-std::istream& operator>>(std::istream& in, Polynom& a)
+std::istream& operator>>(std::istream& in, Polynom& polynom)
 {
-    a.Additive(in);
+    polynom.Additive(in);
     return in;
 }
 
@@ -381,4 +378,4 @@ std::string Polynom::ToString() const
     return tmpStream.str();
 }
 
-Allocator Polynom::pAllocator(sizeof(Polynom));
+FastAllocator Polynom::Allocator(sizeof(Polynom));

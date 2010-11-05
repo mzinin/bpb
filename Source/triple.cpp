@@ -1,17 +1,17 @@
 #include "triple.h"
 
 Triple::Triple(Polynom *initialPolynom)
-    : lm(0)
-    , poly(0)
-    , anc(0)
-    , wanc(0)
-    , nmp()
-    , var(-1)
+    : Lm(0)
+    , Poly(0)
+    , Anc(0)
+    , Wanc(0)
+    , Nmp()
+    , Var(-1)
 {
-    poly = initialPolynom;
-    lm = &poly->Lm();
-    anc = this;
-    nmp = std::set<Monom::Integer>();
+    Poly = initialPolynom;
+    Lm = &Poly->Lm();
+    Anc = this;
+    Nmp = std::set<Monom::Integer>();
 }
 
 Triple::Triple(Polynom *initialPolynom
@@ -19,42 +19,42 @@ Triple::Triple(Polynom *initialPolynom
              , const std::set<Monom::Integer>& initialNmp
              , const Triple* weakAncestor
              , Monom::Integer nmVar)
-    : lm(0)
-    , poly(0)
-    , anc(0)
-    , wanc(0)
-    , nmp()
-    , var(nmVar)
+    : Lm(0)
+    , Poly(0)
+    , Anc(0)
+    , Wanc(0)
+    , Nmp()
+    , Var(nmVar)
 {
-    if (var == -1)
+    if (Var == -1)
     {
-        poly = initialPolynom;
+        Poly = initialPolynom;
         if (initialAncestor)
         {
-            anc = initialAncestor;
+            Anc = initialAncestor;
         }
         else
         {
-            anc = this;
+            Anc = this;
         }
     }
     else
     {
-        poly = new Polynom();
+        Poly = new Polynom();
         Monom tmpMonom(initialPolynom->Lm());
-        (*poly) += tmpMonom;
+        (*Poly) += tmpMonom;
 
-        anc = initialAncestor;
-        wanc = weakAncestor;
+        Anc = initialAncestor;
+        Wanc = weakAncestor;
     }
 
-    lm = &poly->Lm();
-    nmp = initialNmp;
+    Lm = &Poly->Lm();
+    Nmp = initialNmp;
 }
 
 Triple::~Triple()
 {
-    delete poly;
+    delete Poly;
 }
 
-Allocator Triple::tAllocator(sizeof(Triple));
+FastAllocator Triple::Allocator(sizeof(Triple));

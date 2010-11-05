@@ -46,7 +46,6 @@ std::istream& operator>>(std::istream& in, MonomOld& a)
                 if (in.fail() || deg < 0)
                 {
                     in.setstate(std::ios::failbit);
-                    IMESSAGE("expected 'degree >= 0'");
                 }
             }
             a *= var;
@@ -114,7 +113,7 @@ std::ostream& operator<<(std::ostream& out, const MonomOld& a)
 }
 
 Variables* MonomOld::mIndepend = new Variables();
-Allocator MonomOld::sAllocator(sizeof(MonomOld));
+FastAllocator MonomOld::Allocator(sizeof(MonomOld));
 unsigned long MonomOld::Zero[64], MonomOld::One[64];
 short MonomOld::mDimIndepend;
 

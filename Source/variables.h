@@ -4,7 +4,6 @@
 #include <cstring>
 #include <iostream>
 #include <vector>
-#include "util.h"
 
 class Variables
 {
@@ -13,45 +12,45 @@ public:
     typedef std::vector<const char*>::const_iterator ConstIterator;
 
 private:
-    Vector mVector;
+    Vector VariablesNames;
 
 public:
-    Variables(): mVector() {}
+    Variables();
     ~Variables();
 
-    bool Add(const char *var);
-    int Find(const char *var) const;
+    bool Add(const char* var);
+    int Find(const char* var) const;
     int Read(std::istream& in) const;
 
-    int Dim() const;
+    int Size() const;
     ConstIterator Begin() const;
     ConstIterator End() const;
-    const char* Variable(int varNumber) const;
+    const char* Variable(int variableNumber) const;
 };
 
 
-inline int Variables::Dim() const
+inline int Variables::Size() const
 {
-    return mVector.size();
+    return VariablesNames.size();
 }
 
 inline Variables::ConstIterator Variables::Begin() const
 {
-    return mVector.begin();
+    return VariablesNames.begin();
 }
 
 inline Variables::ConstIterator Variables::End() const
 {
-    return mVector.end();
+    return VariablesNames.end();
 }
 
-inline const char* Variables::Variable(int varNumber) const
+inline const char* Variables::Variable(int variableNumber) const
 {
-    if (varNumber >= Dim())
+    if (variableNumber >= Size())
     {
-        varNumber = 0;
+        variableNumber = 0;
     }
-    return mVector[varNumber];
+    return VariablesNames[variableNumber];
 }
 
 #endif // IVARIABLES_H

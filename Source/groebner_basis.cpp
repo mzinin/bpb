@@ -146,7 +146,7 @@ void GroebnerBasis::ReduceSet()
 
 void GroebnerBasis::ConstructInvolutiveBasis()
 {
-    TSet::iterator tit(IntermediateBasis.Begin());
+    TSet::Iterator tit(IntermediateBasis.Begin());
     Polynom* newNormalForm;
     Triple* currentTriple;
 
@@ -278,7 +278,7 @@ void GroebnerBasis::Construct(const std::list<Polynom*>& set)
     ConstructInvolutiveBasis();
     ProlongationsSet.Clear();
 
-    TSet::const_iterator i2(IntermediateBasis.Begin());
+    TSet::ConstIterator i2(IntermediateBasis.Begin());
     while (i2 != IntermediateBasis.End())
     {
         GBasis.push_back(const_cast<Polynom*>((**i2).GetPoly()));

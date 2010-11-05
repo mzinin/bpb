@@ -8,7 +8,7 @@
 class QSet
 {
 private:
-    std::list<Triple*> tripleList;
+    std::list<Triple*> TripleList;
 
 public:
     QSet();
@@ -28,12 +28,12 @@ public:
 
 inline bool QSet::Empty() const
 {
-    return tripleList.empty();
+    return TripleList.empty();
 }
 
 inline std::size_t QSet::Size() const
 {
-    return tripleList.size();
+    return TripleList.size();
 }
 
 #endif // QSET_H

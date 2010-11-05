@@ -4,7 +4,7 @@
 #include <iostream>
 
 #include "variables.h"
-#include "allocator.h"
+#include "fast_allocator.h"
 #include <set>
 
 class MonomLex
@@ -14,17 +14,17 @@ public:
 
 protected:
     static Integer mDimIndepend;
-    static Allocator mAllocator;
+    static FastAllocator Allocator;
     static Variables* mIndepend;
 
     struct VarsListNode
     {
         Integer value;
         VarsListNode *next;
-        static Allocator vlnAllocator;
+        static FastAllocator Allocator;
 
-        void* operator new(size_t) { return vlnAllocator.allocate(); }
-        void operator delete(void *ptr) { vlnAllocator.deallocate(ptr); }
+        void* operator new(size_t) { return Allocator.Allocate(); }
+        void operator delete(void *ptr) { Allocator.Free(ptr); }
 
         VarsListNode(): value(0), next(0) {};
         VarsListNode(Integer newValue, VarsListNode*& newNext):
@@ -165,12 +165,12 @@ inline MonomLex::Integer MonomLex::Degree() const
 
 inline void* MonomLex::operator new(std::size_t)
 {
-    return mAllocator.allocate();
+    return Allocator.Allocate();
 }
 
 inline void MonomLex::operator delete(void *ptr)
 {
-    mAllocator.deallocate(ptr);
+    Allocator.Free(ptr);
 }
 
 inline MonomLex::Integer MonomLex::operator[](MonomLex::Integer var) const

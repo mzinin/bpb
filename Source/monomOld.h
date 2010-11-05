@@ -7,7 +7,7 @@
 #include <set>
 
 #include "variables.h"
-#include "allocator.h"
+#include "fast_allocator.h"
 
 class MonomOld
 {
@@ -19,7 +19,7 @@ protected:
     unsigned long exp;
 
     static Integer mDimIndepend;
-    static Allocator sAllocator;
+    static FastAllocator Allocator;
     static unsigned long Zero[64], One[64];
     static unsigned short Data[][4];
 
@@ -44,8 +44,8 @@ public:
     MonomOld(const MonomOld& a) { memcpy(this, &a, sizeof(MonomOld)); }
     ~MonomOld() { mNext = 0; };
 
-    void* operator new(size_t) { return sAllocator.allocate(); }
-    void operator delete(void *ptr) { sAllocator.deallocate(ptr); }
+    void* operator new(size_t) { return Allocator.Allocate(); }
+    void operator delete(void *ptr) { Allocator.Free(ptr); }
 
     Integer Degree() const;
 

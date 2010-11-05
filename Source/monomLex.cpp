@@ -37,7 +37,6 @@ std::istream& operator>>(std::istream& in, MonomLex& a)
                 if (in.fail() || deg < 0)
                 {
                     in.setstate(std::ios::failbit);
-                    IMESSAGE("expected 'degree >= 0'");
                 }
             }
             a *= var;
@@ -118,6 +117,6 @@ int MonomLex::Compare(const MonomLex& monomA, const MonomLex& monomB)
 }
 
 Variables* MonomLex::mIndepend = new Variables();
-Allocator MonomLex::mAllocator(sizeof(MonomLex));
-Allocator MonomLex::VarsListNode::vlnAllocator(sizeof(MonomLex::VarsListNode));
+FastAllocator MonomLex::Allocator(sizeof(MonomLex));
+FastAllocator MonomLex::VarsListNode::Allocator(sizeof(MonomLex::VarsListNode));
 MonomLex::Integer MonomLex::mDimIndepend = 0;

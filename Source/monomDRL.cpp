@@ -38,7 +38,6 @@ std::istream& operator>>(std::istream& in, MonomDRL& a)
                 if (in.fail() || deg < 0)
                 {
                     in.setstate(std::ios::failbit);
-                    IMESSAGE("expected 'degree >= 0'");
                 }
             }
             a *= var;
@@ -118,6 +117,6 @@ int MonomDRL::Compare(const MonomDRL& monomA, const MonomDRL& monomB)
 }
 
 Variables* MonomDRL::mIndepend = new Variables();
-Allocator MonomDRL::mAllocator(sizeof(MonomDRL));
-Allocator MonomDRL::VarsListNode::vlnAllocator(sizeof(MonomDRL::VarsListNode));
+FastAllocator MonomDRL::Allocator(sizeof(MonomDRL));
+FastAllocator MonomDRL::VarsListNode::Allocator(sizeof(MonomDRL::VarsListNode));
 MonomDRL::Integer MonomDRL::mDimIndepend = 0;

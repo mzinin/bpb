@@ -19,7 +19,7 @@ myginv: myginv.o \
         monomLex.o \
         monomDL.o \
         monomDRL.o \
-        allocator.o \
+        fast_allocator.o \
         variables.o \
         timer.o
 	$(CXX) \
@@ -37,7 +37,7 @@ myginv: myginv.o \
             $(BINARY)/monomLex.o \
             $(BINARY)/monomDL.o \
             $(BINARY)/monomDRL.o \
-            $(BINARY)/allocator.o \
+            $(BINARY)/fast_allocator.o \
             $(BINARY)/variables.o \
             $(BINARY)/timer.o \
             -o $(BINARY)/myginv
@@ -64,31 +64,31 @@ qset.o: $(SOURCE)/qset.h $(SOURCE)/triple.h
 janettree.o: $(SOURCE)/janettree.h $(SOURCE)/triple.h
 	$(CXX) $(CXXFLAGS) $(SOURCE)/janettree.cpp -o $(BINARY)/janettree.o
 
-triple.o: $(SOURCE)/triple.h $(SOURCE)/polynom.h
+triple.o: $(SOURCE)/triple.h $(SOURCE)/polynom.h $(SOURCE)/fast_allocator.h
 	$(CXX) $(CXXFLAGS) $(SOURCE)/triple.cpp -o $(BINARY)/triple.o
 
 settings_manager.o: $(SOURCE)/settings_manager.h
 	$(CXX) $(CXXFLAGS) $(SOURCE)/settings_manager.cpp  -o $(BINARY)/settings_manager.o
 
-polynom.o: $(SOURCE)/polynom.h $(SOURCE)/monom.h $(SOURCE)/monomDRL.h $(SOURCE)/monomDL.h $(SOURCE)/monomLex.h $(SOURCE)/monomOld.h $(SOURCE)/allocator.h
+polynom.o: $(SOURCE)/polynom.h $(SOURCE)/monom.h $(SOURCE)/monomDRL.h $(SOURCE)/monomDL.h $(SOURCE)/monomLex.h $(SOURCE)/monomOld.h $(SOURCE)/fast_allocator.h
 	$(CXX) $(CXXFLAGS) $(SOURCE)/polynom.cpp -o $(BINARY)/polynom.o
 
-monomDRL.o: $(SOURCE)/monomDRL.h $(SOURCE)/variables.h $(SOURCE)/allocator.h
+monomDRL.o: $(SOURCE)/monomDRL.h $(SOURCE)/variables.h $(SOURCE)/fast_allocator.h
 	$(CXX) $(CXXFLAGS) $(SOURCE)/monomDRL.cpp -o $(BINARY)/monomDRL.o
 
-monomDL.o: $(SOURCE)/monomDL.h $(SOURCE)/variables.h $(SOURCE)/allocator.h
+monomDL.o: $(SOURCE)/monomDL.h $(SOURCE)/variables.h $(SOURCE)/fast_allocator.h
 	$(CXX) $(CXXFLAGS) $(SOURCE)/monomDL.cpp  -o $(BINARY)/monomDL.o
 
-monomLex.o: $(SOURCE)/monomLex.h $(SOURCE)/variables.h $(SOURCE)/allocator.h
+monomLex.o: $(SOURCE)/monomLex.h $(SOURCE)/variables.h $(SOURCE)/fast_allocator.h
 	$(CXX) $(CXXFLAGS) $(SOURCE)/monomLex.cpp -o $(BINARY)/monomLex.o
 
-monomOld.o: $(SOURCE)/monomOld.h $(SOURCE)/variables.h $(SOURCE)/allocator.h
+monomOld.o: $(SOURCE)/monomOld.h $(SOURCE)/variables.h $(SOURCE)/fast_allocator.h
 	$(CXX) $(CXXFLAGS) $(SOURCE)/monomOld.cpp -o $(BINARY)/monomOld.o
 
-allocator.o: $(SOURCE)/allocator.h $(SOURCE)/util.h
-	$(CXX) $(CXXFLAGS) $(SOURCE)/allocator.cpp -o $(BINARY)/allocator.o
+fast_allocator.o: $(SOURCE)/fast_allocator.h
+	$(CXX) $(CXXFLAGS) $(SOURCE)/fast_allocator.cpp -o $(BINARY)/fast_allocator.o
 
-variables.o: $(SOURCE)/variables.h $(SOURCE)/util.h
+variables.o: $(SOURCE)/variables.h
 	$(CXX) $(CXXFLAGS) $(SOURCE)/variables.cpp -o $(BINARY)/variables.o
 
 timer.o: $(SOURCE)/timer.h

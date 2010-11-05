@@ -8,101 +8,231 @@ class JanetTree
 protected:
     struct Node
     {
-        Monom::Integer nDegree;
-        Triple* nTriple;
-        Node* nNextDegree;
-        Node* nNextVar;
+        Monom::Integer Degree;
+        Triple* Triple;
+        Node* NextDegree;
+        Node* NextVariable;
 
-        Node(Monom::Integer deg): nDegree(deg), nTriple(0), nNextDegree(0), nNextVar(0) {}
-        ~Node() {}
+        Node(Monom::Integer degree);
+        ~Node();
     };
 
     class ConstIterator
     {
-        Node* i;
-    public:
-        ConstIterator(Node* n): i(n) {}
+    private:
+        Node* CurrentNode;
 
-        void StepDegree() { i = i->nNextDegree; }
-        void StepVariable() { i = i->nNextVar; }
-        operator bool() const { return i; }
-        ConstIterator NextDegree() const { return i->nNextDegree; }
-        ConstIterator NextVariable() const { return i->nNextVar; }
-        bool IsNextDegree() const { return i->nNextDegree; }
-        bool IsNextVariable() const { return i->nNextVar; }
-        const Triple* GetTriple() const { return i->nTriple; }
-        Monom::Integer Degree() const { return i->nDegree; }
+    public:
+        ConstIterator(Node* node);
+        ~ConstIterator();
+
+        void StepNextDegree();
+        void StepNextVariable();
+        operator bool() const;
+        ConstIterator GetNextDegree() const;
+        ConstIterator GetNextVariable() const;
+        bool HasNextDegree() const;
+        bool HasNextVariable() const;
+        const Triple* GetTriple() const;
+        Monom::Integer GetDegree() const;
     };
 
     class Iterator
     {
-        Node** i;
+    private:
+        Node** CurrentNode;
 
     public:
-        Iterator(Node* &n): i(&n) {}
+        Iterator(Node* &node);
+        ~Iterator();
 
-        void StepDegree() { i = &(*i)->nNextDegree; }
-        void StepVariable() { i = &(*i)->nNextVar; }
-        operator bool() const { return *i; }
-        ConstIterator NextDegree() const { return (*i)->nNextDegree; }
-        ConstIterator NextVariable() const { return (*i)->nNextVar; }
-        bool IsNextDegree() const { return (*i)->nNextDegree; }
-        bool IsNextVariable() const { return (*i)->nNextVar; }
-        operator ConstIterator() const { return *i; }
-        Triple*& GetTriple() const { return (*i)->nTriple; }
-        Monom::Integer Degree() const { return (*i)->nDegree; }
-        void Build(Monom::Integer d, Monom::Integer var, Triple *trpl);
+        void StepNextDegree();
+        void StepNextVariable();
+        operator bool() const;
+        ConstIterator GetNextDegree() const;
+        ConstIterator GetNextVariable() const;
+        bool HasNextDegree() const;
+        bool HasNextVariable() const;
+        operator ConstIterator() const;
+        Triple*& GetTriple() const;
+        Monom::Integer GetDegree() const;
+        void Build(Monom::Integer degree, Monom::Integer var, Triple *triple);
         void Delete();
         void Exclude();
         void Clear();
     };
 
-    Node* jRoot;
+    Node* Root;
 
 public:
-    JanetTree(): jRoot(0) {};
+    JanetTree();
     ~JanetTree();
 
     const Triple* Find(const Monom& monom) const;
-    void Insert(Triple *trpl);
-    void Delete(const Triple *trpl);
+    void Insert(Triple *triple);
+    void Delete(const Triple *triple);
     void Clear();
 
     std::set<Monom::Integer> NonMulti(const Triple* triple) const;
 };
 
 
-inline void JanetTree::Iterator::Delete()
+inline JanetTree::Node::Node(Monom::Integer degree)
+    : Degree(degree)
+    , Triple(0)
+    , NextDegree(0)
+    , NextVariable(0)
 {
-    Node* tmp = *i;
-    *i = tmp->nNextDegree;
-    delete tmp;
 }
 
-inline void JanetTree::Iterator::Build(Monom::Integer d, Monom::Integer var, Triple *trpl)
+inline JanetTree::Node::~Node()
 {
-    Node* r =  new JanetTree::Node(trpl->GetPolyLm()[var]);
-    Node* j = r;
-    while(d > trpl->GetPolyLm()[var])
-    {
-        d -= trpl->GetPolyLm()[var];
-        ++var;
-        j->nNextVar = new JanetTree::Node(trpl->GetPolyLm()[var]);
-        j = j->nNextVar;
-    }
-    j->nTriple = trpl;
+}
 
-    r->nNextDegree = *i;
-    *i = r;
+inline JanetTree::ConstIterator::ConstIterator(Node* node)
+    : CurrentNode(node)
+{
+}
+
+inline JanetTree::ConstIterator::~ConstIterator()
+{
+}
+
+inline void JanetTree::ConstIterator::StepNextDegree()
+{
+    CurrentNode = CurrentNode->NextDegree;
+}
+
+inline void JanetTree::ConstIterator::StepNextVariable()
+{
+    CurrentNode = CurrentNode->NextVariable;
+}
+
+inline JanetTree::ConstIterator::operator bool() const
+{
+    return CurrentNode;
+}
+
+inline JanetTree::ConstIterator JanetTree::ConstIterator::GetNextDegree() const
+{
+    return CurrentNode->NextDegree;
+}
+
+inline JanetTree::ConstIterator JanetTree::ConstIterator::GetNextVariable() const
+{
+    return CurrentNode->NextVariable;
+}
+
+inline bool JanetTree::ConstIterator::HasNextDegree() const
+{
+    return CurrentNode->NextDegree;
+}
+
+inline bool JanetTree::ConstIterator::HasNextVariable() const
+{
+    return CurrentNode->NextVariable;
+}
+
+inline const Triple* JanetTree::ConstIterator::GetTriple() const
+{
+    return CurrentNode->Triple;
+}
+
+inline Monom::Integer JanetTree::ConstIterator::GetDegree() const
+{
+    return CurrentNode->Degree;
+}
+
+inline JanetTree::Iterator::Iterator(Node* &node)
+    : CurrentNode(&node)
+{
+}
+
+inline JanetTree::Iterator::~Iterator()
+{
+}
+
+inline void JanetTree::Iterator::StepNextDegree()
+{
+    CurrentNode = &(*CurrentNode)->NextDegree;
+}
+
+inline void JanetTree::Iterator::StepNextVariable()
+{
+    CurrentNode = &(*CurrentNode)->NextVariable;
+}
+
+inline JanetTree::Iterator::operator bool() const
+{
+    return *CurrentNode;
+}
+
+inline JanetTree::ConstIterator JanetTree::Iterator::GetNextDegree() const
+{
+    return (*CurrentNode)->NextDegree;
+}
+
+inline JanetTree::ConstIterator JanetTree::Iterator::GetNextVariable() const
+{
+    return (*CurrentNode)->NextVariable;
+}
+
+inline bool JanetTree::Iterator::HasNextDegree() const
+{
+    return (*CurrentNode)->NextDegree;
+}
+
+inline bool JanetTree::Iterator::HasNextVariable() const
+{
+    return (*CurrentNode)->NextVariable;
+}
+
+inline JanetTree::Iterator::operator JanetTree::ConstIterator() const
+{
+    return *CurrentNode;
+}
+
+inline Triple*& JanetTree::Iterator::GetTriple() const
+{
+    return (*CurrentNode)->Triple;
+}
+
+inline Monom::Integer JanetTree::Iterator::GetDegree() const
+{
+    return (*CurrentNode)->Degree;
+}
+
+inline void JanetTree::Iterator::Build(Monom::Integer degree, Monom::Integer var, Triple *triple)
+{
+    Node* r =  new JanetTree::Node(triple->GetPolyLm()[var]);
+    Node* j = r;
+    while(degree > triple->GetPolyLm()[var])
+    {
+        degree -= triple->GetPolyLm()[var];
+        ++var;
+        j->NextVariable = new JanetTree::Node(triple->GetPolyLm()[var]);
+        j = j->NextVariable;
+    }
+    j->Triple = triple;
+
+    r->NextDegree = *CurrentNode;
+    *CurrentNode = r;
+}
+
+inline void JanetTree::Iterator::Delete()
+{
+    Node* tmp = *CurrentNode;
+    *CurrentNode = tmp->NextDegree;
+    delete tmp;
 }
 
 inline void JanetTree::Iterator::Clear()
 {
-    while (NextDegree())
+    while (HasNextDegree())
     {
-        if ((*i)->nNextVar)
+        if ((*CurrentNode)->NextVariable)
         {
-            JanetTree::Iterator((*i)->nNextVar).Clear();
+            JanetTree::Iterator((*CurrentNode)->NextVariable).Clear();
         }
         Delete();
     }

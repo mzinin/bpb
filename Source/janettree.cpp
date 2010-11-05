@@ -1,79 +1,86 @@
 #include "janettree.h"
 
+JanetTree::JanetTree()
+    : Root(0)
+{
+}
+
 JanetTree::~JanetTree()
 {
     Clear();
-    delete jRoot;
+    delete Root;
 }
 
 const Triple* JanetTree::Find(const Monom& monom) const
 {
-    const Triple* trpl(0);
+    const Triple* triple(0);
 
-    if (jRoot)
+    if (Root)
     {
-        ConstIterator j(jRoot);
-        Monom::Integer d = monom.Degree();
+        ConstIterator nodeIterator(Root);
+        Monom::Integer degree = monom.Degree();
         Monom::Integer var = 0;
         do
         {
-            if (j.Degree() != monom[var] && j.IsNextDegree())
+            if (nodeIterator.GetDegree() != monom[var] && nodeIterator.HasNextDegree())
             {
-                j.StepDegree();
+                nodeIterator.StepNextDegree();
             }
 
-            if (j.Degree() != monom[var])
+            if (nodeIterator.GetDegree() != monom[var])
             {
                 break;
             }
-            else if (j.IsNextVariable())
+            else if (nodeIterator.HasNextVariable())
             {
-                d -= monom[var];
-                if (d == 0)
+                degree -= monom[var];
+                if (!degree)
                 {
                     break;
                 }
                 ++var;
-                j.StepVariable();
+                nodeIterator.StepNextVariable();
             }
             else
             {
-                trpl = j.GetTriple();
+                triple = nodeIterator.GetTriple();
                 break;
             }
         } while(true);
     }
-    return trpl;
+    return triple;
 }
 
-void JanetTree::Delete(const Triple *trpl)
+void JanetTree::Delete(const Triple *triple)
 {
-    Iterator j(jRoot);
-    //подсчет ветвлений
-    Monom::Integer var = 0, vet = 0;
-    if (j.IsNextDegree() && j.IsNextVariable())
+    Iterator nodeIterator(Root);
+    //count bifurcations
+    Monom::Integer var = 0;
+    unsigned bifurcations = 0;
+
+    if (nodeIterator.HasNextDegree() && nodeIterator.HasNextVariable())
     {
-        ++vet;
+        ++bifurcations;
     }
 
     do
     {
-        while(j.Degree() < trpl->GetPolyLm()[var])
+        while(nodeIterator.GetDegree() < triple->GetPolyLm()[var])
         {
-            j.StepDegree();
-            if (j.IsNextDegree() && j.IsNextVariable())
+            nodeIterator.StepNextDegree();
+            if (nodeIterator.HasNextDegree() && nodeIterator.HasNextVariable())
             {
-                ++vet;
+                ++bifurcations;
             }
         }
 
-        if (j.NextVariable())
+        if (nodeIterator.HasNextVariable())
         {
             ++var;
-            j.StepVariable();
-            if (j.IsNextDegree() && j.IsNextVariable())
+            nodeIterator.StepNextVariable();
+            if (nodeIterator.HasNextDegree() && nodeIterator.HasNextVariable())
             {
-                ++vet;
+                ++bifurcations;
             }
         }
         else
@@ -82,20 +89,20 @@ void JanetTree::Delete(const Triple *trpl)
         }
     } while(true);
 
-    //собственно удаление
-    j = jRoot;
+    //deletion
+    nodeIterator = Root;
     var = 0;
     bool varDirection = false;
 
-    if (j.IsNextDegree() && j.IsNextVariable())
+    if (nodeIterator.HasNextDegree() && nodeIterator.HasNextVariable())
     {
-        vet--;
+        bifurcations--;
     }
-    if (vet == 0)
+    if (!bifurcations)
     {
-        if (j.Degree() < trpl->GetPolyLm()[var])
+        if (nodeIterator.GetDegree() < triple->GetPolyLm()[var])
         {
-            j.StepDegree();
+            nodeIterator.StepNextDegree();
         }
         else
         {
@@ -103,22 +110,22 @@ void JanetTree::Delete(const Triple *trpl)
         }
     }
 
-    while (vet > 0)
+    while (bifurcations > 0)
     {
-        while(j.Degree() < trpl->GetPolyLm()[var] && vet > 0)
+        while(nodeIterator.GetDegree() < triple->GetPolyLm()[var] && bifurcations > 0)
         {
-            j.StepDegree();
-            if (j.IsNextDegree() && j.IsNextVariable())
+            nodeIterator.StepNextDegree();
+            if (nodeIterator.HasNextDegree() && nodeIterator.HasNextVariable())
             {
-                vet--;
+                bifurcations--;
             }
         }
 
-        if (vet==0)
+        if (!bifurcations)
         {
-            if (j.Degree() < trpl->GetPolyLm()[var])
+            if (nodeIterator.GetDegree() < triple->GetPolyLm()[var])
             {
-                j.StepDegree();
+                nodeIterator.StepNextDegree();
                 break;
             }
             else
@@ -129,16 +136,16 @@ void JanetTree::Delete(const Triple *trpl)
         }
 
         ++var;
-        j.StepVariable();
-        if (j.IsNextDegree() && j.IsNextVariable())
+        nodeIterator.StepNextVariable();
+        if (nodeIterator.HasNextDegree() && nodeIterator.HasNextVariable())
         {
-            vet--;
+            bifurcations--;
         }
-        if (vet==0)
+        if (!bifurcations)
         {
-            if (j.Degree() < trpl->GetPolyLm()[var])
+            if (nodeIterator.GetDegree() < triple->GetPolyLm()[var])
             {
-                j.StepDegree();
+                nodeIterator.StepNextDegree();
                 break;
             }
             else
@@ -151,51 +158,51 @@ void JanetTree::Delete(const Triple *trpl)
 
     if (varDirection)
     {
-        Iterator j1 = j;
-        j1.StepVariable();
-        j1.Clear();
-        j.Delete();
+        Iterator tmpIterator = nodeIterator;
+        tmpIterator.StepNextVariable();
+        tmpIterator.Clear();
+        nodeIterator.Delete();
     }
     else
     {
-        j.Clear();
+        nodeIterator.Clear();
     }
 }
 
-void JanetTree::Insert(Triple* trpl)
+void JanetTree::Insert(Triple* triple)
 {
-    Monom::Integer d = trpl->GetPolyLm().Degree();
-    JanetTree::Iterator j(jRoot);
+    Monom::Integer degree = triple->GetPolyLm().Degree();
+    JanetTree::Iterator nodeIterator(Root);
 
-    if (!jRoot)
+    if (!Root)
     {
-        j.Build(d, 0, trpl);
+        nodeIterator.Build(degree, 0, triple);
     }
     else
     {
         Monom::Integer var = 0;
         do
         {
-            while(j.Degree() < trpl->GetPolyLm()[var] && j.IsNextDegree())
+            while(nodeIterator.GetDegree() < triple->GetPolyLm()[var] && nodeIterator.HasNextDegree())
             {
-                j.StepDegree();
+                nodeIterator.StepNextDegree();
             }
 
-            if (j.Degree() > trpl->GetPolyLm()[var])
+            if (nodeIterator.GetDegree() > triple->GetPolyLm()[var])
             {
-                j.Build(d, var, trpl);
+                nodeIterator.Build(degree, var, triple);
                 break;
             }
-            else if (j.Degree() == trpl->GetPolyLm()[var])
+            else if (nodeIterator.GetDegree() == triple->GetPolyLm()[var])
             {
-                d -= trpl->GetPolyLm()[var];
+                degree -= triple->GetPolyLm()[var];
                 ++var;
-                j.StepVariable();
+                nodeIterator.StepNextVariable();
             }
             else
             {
-                j.StepDegree();
-                j.Build(d, var, trpl);
+                nodeIterator.StepNextDegree();
+                nodeIterator.Build(degree, var, triple);
                 break;
             }
         } while(true);
@@ -204,10 +211,10 @@ void JanetTree::Insert(Triple* trpl)
 
 void JanetTree::Clear()
 {
-    if (jRoot)
+    if (Root)
     {
-        JanetTree::Iterator j(jRoot);
-        j.Clear();
+        JanetTree::Iterator nodeIterator(Root);
+        nodeIterator.Clear();
     }
 }
 
@@ -215,25 +222,25 @@ std::set<Monom::Integer> JanetTree::NonMulti(const Triple* triple) const
 {
     std::set<Monom::Integer> result;
 
-    if (jRoot)
+    if (Root)
     {
-        ConstIterator j(jRoot);
+        ConstIterator nodeIterator(Root);
         Monom::Integer var = 0;
         do
         {
-            while (j.Degree() < triple->GetPolyLm()[var])
+            while (nodeIterator.GetDegree() < triple->GetPolyLm()[var])
             {
-                j.StepDegree();
+                nodeIterator.StepNextDegree();
             }
-            if (j.IsNextDegree())
+            if (nodeIterator.HasNextDegree())
             {
                 result.insert(var);
             }
 
             ++var;
-            if (j.IsNextVariable())
+            if (nodeIterator.HasNextVariable())
             {
-                j.StepVariable();
+                nodeIterator.StepNextVariable();
             }
             else
             {

@@ -1,27 +1,53 @@
-#include <cctype>
+#include <iostream>
+
 #include "variables.h"
+
+namespace
+{
+    int ReadVariable(std::istream& in, const char* var)
+    {
+        in >> std::ws;
+        int commonLength = 0;
+        int i = 0;
+        while (var[i] && var[i] == in.get())
+        {
+            ++i;
+            ++commonLength;
+        }
+        if (var[i])
+        {
+            commonLength = 0;
+        }
+        return commonLength;
+    }
+}
+
+Variables::Variables()
+    : VariablesNames()
+{
+}
 
 Variables::~Variables()
 {
-    for (register unsigned i = 0; i < mVector.size(); ++i)
+    for (register unsigned i = 0; i < Size(); ++i)
     {
-        delete mVector[i];
+        delete VariablesNames[i];
     }
-    mVector.clear();
+    VariablesNames.clear();
 }
 
-bool Variables::Add(const char *var)
+bool Variables::Add(const char* var)
 {
-    int n = strlen(var);
-    char *name = new char[n+1];
+    int varLength = strlen(var);
+    char *name = new char[varLength + 1];
     int k = 0;
-    while (k < n && isspace(var[k]))
+    while (k < varLength && isspace(var[k]))
     {
         ++k;
     }
 
     int i = 0;
-    while (k < n && !isspace(var[k]))
+    while (k < varLength && !isspace(var[k]))
     {
         name[i] = var[k];
         ++i;
@@ -35,89 +61,72 @@ bool Variables::Add(const char *var)
     }
     else
     {
-        mVector.push_back(name);
+        VariablesNames.push_back(name);
         return true;
     }
 }
 
 int Variables::Find(const char *var) const
 {
-    int r = 0;
-    ConstIterator i(mVector.begin());
-    while (i != mVector.end() && strcmp(*i, var) != 0)
+    int position = 0;
+    ConstIterator i(VariablesNames.begin());
+    while (i != VariablesNames.end() && strcmp(*i, var) != 0)
     {
         ++i;
-        ++r;
+        ++position;
     }
 
-    if (i == mVector.end())
+    if (i == VariablesNames.end())
     {
-        r = -1;
+        position = -1;
     }
 
-    return r;
-}
-
-static int ReadVariable(std::istream& in, const char *var)
-{
-    in >> std::ws;
-    int r = 0;
-    int i = 0;
-    while (var[i] && var[i] == in.get())
-    {
-        ++i;
-        ++r;
-    }
-    if (var[i])
-    {
-        r = 0;
-    }
-    return r;
+    return position;
 }
 
 int Variables::Read(std::istream& in) const
 {
-   std::streampos posbeg = in.tellg(), posend;
-   int varCurrent = 0, var = -1;
-   int lenCurrent, len;
-   ConstIterator i = mVector.begin();
-   while (i != mVector.end())
+   std::streampos startPosition = in.tellg(), endPosition = 0;
+   int currentVariable = 0, foundVariable = -1;
+   int currentCommonLength = 0, maxCommonLength = 0;
+   ConstIterator i = VariablesNames.begin();
+   while (i != VariablesNames.end())
    {
-        in.seekg(posbeg);
-        lenCurrent = ReadVariable(in, *i);
-        if (lenCurrent > 0)
+        in.seekg(startPosition);
+        currentCommonLength = ReadVariable(in, *i);
+        if (currentCommonLength > 0)
         {
-            var = varCurrent;
-            len = lenCurrent;
-            posend = in.tellg();
+            foundVariable = currentVariable;
+            maxCommonLength = currentCommonLength;
+            endPosition = in.tellg();
             break;
         }
-        ++varCurrent;
+        ++currentVariable;
         ++i;
    }
 
-    while (i != mVector.end())
+    while (i != VariablesNames.end())
     {
-        in.seekg(posbeg);
-        lenCurrent = ReadVariable(in, *i);
-        if (lenCurrent > len)
+        in.seekg(startPosition);
+        currentCommonLength = ReadVariable(in, *i);
+        if (currentCommonLength > maxCommonLength)
         {
-            var = varCurrent;
-            len = lenCurrent;
-            posend = in.tellg();
+            foundVariable = currentVariable;
+            maxCommonLength = currentCommonLength;
+            endPosition = in.tellg();
         }
-        ++varCurrent;
+        ++currentVariable;
         ++i;
     }
 
-    if (var >= 0)
+    if (foundVariable >= 0)
     {
-        in.seekg(posend);
+        in.seekg(endPosition);
     }
     else
     {
-        in.seekg(posbeg);
+        in.seekg(startPosition);
     }
 
-    return var;
+    return foundVariable;
 }

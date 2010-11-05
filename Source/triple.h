@@ -3,19 +3,20 @@
 
 #include <set>
 
+#include "fast_allocator.h"
 #include "polynom.h"
 
 class Triple
 {
 private:
-    const Monom* lm;
-    Polynom* poly;
-    const Triple* anc;
-    const Triple* wanc;
-    std::set<Monom::Integer> nmp;
-    const Monom::Integer var;
+    const Monom* Lm;
+    Polynom* Poly;
+    const Triple* Anc;
+    const Triple* Wanc;
+    std::set<Monom::Integer> Nmp;
+    const Monom::Integer Var;
 
-    static Allocator tAllocator;
+    static FastAllocator Allocator;
 
 public:
     Triple(Polynom* initialPolynom);
@@ -46,62 +47,62 @@ public:
 
 inline const Polynom* Triple::GetPoly() const
 {
-    return poly;
+    return Poly;
 }
 
 inline const Monom& Triple::GetPolyLm() const
 {
-    return *lm;
+    return *Lm;
 }
 
 inline const Triple* Triple::GetAnc() const
 {
-    return anc;
+    return Anc;
 }
 
 inline const Triple* Triple::GetWAnc() const
 {
-    return wanc;
+    return Wanc;
 }
 
 inline Monom::Integer Triple::GetVar() const
 {
-    return var;
+    return Var;
 }
 
 inline const std::set<Monom::Integer>& Triple::GetNmp() const
 {
-    return nmp;
+    return Nmp;
 }
 
 inline void Triple::SetNmp(const std::set<Monom::Integer>& newNmp)
 {
-    nmp = newNmp;
+    Nmp = newNmp;
 }
 
 inline void Triple::SetNmp(Monom::Integer var)
 {
-    nmp.insert(var);
+    Nmp.insert(var);
 }
 
 inline bool Triple::TestNmp(Monom::Integer var) const
 {
-    return nmp.count(var);
+    return Nmp.count(var);
 }
 
 inline void* Triple::operator new(std::size_t)
 {
-    return tAllocator.allocate();
+    return Allocator.Allocate();
 }
 
 inline void Triple::operator delete(void *ptr)
 {
-    tAllocator.deallocate(ptr);
+    Allocator.Free(ptr);
 }
 
 inline bool Triple::Compare(const Triple* a, const Triple* b)
 {
-    return *a->lm > *b->lm;
+    return *a->Lm > *b->Lm;
 }
 
 #endif // TRIPLE_H
