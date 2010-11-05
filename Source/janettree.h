@@ -9,7 +9,7 @@ protected:
     struct Node
     {
         Monom::Integer Degree;
-        Triple* Triple;
+        Triple* CurrentTriple;
         Node* NextDegree;
         Node* NextVariable;
 
@@ -79,7 +79,7 @@ public:
 
 inline JanetTree::Node::Node(Monom::Integer degree)
     : Degree(degree)
-    , Triple(0)
+    , CurrentTriple(0)
     , NextDegree(0)
     , NextVariable(0)
 {
@@ -135,7 +135,7 @@ inline bool JanetTree::ConstIterator::HasNextVariable() const
 
 inline const Triple* JanetTree::ConstIterator::GetTriple() const
 {
-    return CurrentNode->Triple;
+    return CurrentNode->CurrentTriple;
 }
 
 inline Monom::Integer JanetTree::ConstIterator::GetDegree() const
@@ -194,7 +194,7 @@ inline JanetTree::Iterator::operator JanetTree::ConstIterator() const
 
 inline Triple*& JanetTree::Iterator::GetTriple() const
 {
-    return (*CurrentNode)->Triple;
+    return (*CurrentNode)->CurrentTriple;
 }
 
 inline Monom::Integer JanetTree::Iterator::GetDegree() const
@@ -213,7 +213,7 @@ inline void JanetTree::Iterator::Build(Monom::Integer degree, Monom::Integer var
         j->NextVariable = new JanetTree::Node(triple->GetPolyLm()[var]);
         j = j->NextVariable;
     }
-    j->Triple = triple;
+    j->CurrentTriple = triple;
 
     r->NextDegree = *CurrentNode;
     *CurrentNode = r;
