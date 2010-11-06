@@ -103,7 +103,7 @@ monomOld.obj: $(SOURCE)\monomOld.h $(SOURCE)\variables.h $(SOURCE)\fast_allocato
 fast_allocator.obj: $(SOURCE)\fast_allocator.h
     $(CXX) $(CXXFLAGS) $(SOURCE)\fast_allocator.cpp /Fo $(BINARY)\fast_allocator.obj 2> NUL
 
-variables.obj: $(SOURCE)\variables.h $(SOURCE)\util.h
+variables.obj: $(SOURCE)\variables.h
     $(CXX) $(CXXFLAGS) $(SOURCE)\variables.cpp /Fo $(BINARY)\variables.obj 2> NUL
 
 timer.obj: $(SOURCE)\timer.h
