@@ -6,7 +6,6 @@
 
 #include "groebner_basis.h"
 #include "polynom.h"
-#include "timer.h"
 
 class Launcher
 {
@@ -16,7 +15,6 @@ private:
     std::list<Polynom*> InitialSet;
     std::list<Polynom*> InitialAnswer;
     GroebnerBasis GBasis;
-    Timer GBCommonTimer;
 
 public:
     Launcher();

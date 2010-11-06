@@ -8,6 +8,7 @@
 
 #include "fast_allocator.h"
 #include "launcher.h"
+#include "resource_counter.h"
 #include "settings_manager.h"
 #include "version.h"
 
@@ -21,6 +22,8 @@ namespace
     const char STATISTICS_LONG_KEY[]  = "--collect-statistics";
     const char NOVA_INVOLUTION_SHORT_KEY[] = "-n";
     const char NOVA_INVOLUTION_LONG_KEY[]  = "--nova-involution";
+    const char PRINT_ANSWER_SHORT_KEY[] = "-a";
+    const char PRINT_ANSWER_LONG_KEY[]  = "--print-answer";
 }
 
 void Launcher::PrintUsage() const
@@ -31,7 +34,8 @@ void Launcher::PrintUsage() const
 
     std::cout << "Options:" << std::endl;
     std::cout << "    " << STATISTICS_SHORT_KEY << ", " << std::setw(25) << std::left << STATISTICS_LONG_KEY << " - collect and print out statistics;" << std::endl;
-    std::cout << "    " << NOVA_INVOLUTION_SHORT_KEY << ", " << std::setw(25) << std::left << NOVA_INVOLUTION_LONG_KEY << " - use Nova involutive division instead of Pommaret one;" << std::endl << std::endl;
+    std::cout << "    " << NOVA_INVOLUTION_SHORT_KEY << ", " << std::setw(25) << std::left << NOVA_INVOLUTION_LONG_KEY << " - use Nova involutive division instead of Pommaret one;" << std::endl;
+    std::cout << "    " << PRINT_ANSWER_SHORT_KEY << ", " << std::setw(25) << std::left << PRINT_ANSWER_LONG_KEY << " - print out constructed Groebner Basis;" << std::endl << std::endl;
 
     std::cout << "Keys:" << std::endl;
     std::cout << "    " << VERSION_SHORT_KEY << ", " << std::setw(12) << std::left << VERSION_LONG_KEY << " - print version;" << std::endl;
@@ -47,12 +51,12 @@ bool Launcher::AnalizeArguments(int argc, char *argv[])
 {
     if (argc == 1)
     {
-        std::cerr << "Arguments are missing." << std::endl;
+        std::cerr << "Arguments are missing." << std::endl << std::endl;
         PrintUsage();
         return false;
     }
 
-    for (register int i = 1; i < argc-1; ++i)
+    for (register int i = 1; i < argc; ++i)
     {
         if (!strcmp(argv[i], VERSION_SHORT_KEY) || !strcmp(argv[i], VERSION_LONG_KEY))
         {
@@ -76,6 +80,15 @@ bool Launcher::AnalizeArguments(int argc, char *argv[])
             GetSettingsManager().UseNovaInvolution = true;
             continue;
         }
+        else if (!strcmp(argv[i], PRINT_ANSWER_SHORT_KEY) || !strcmp(argv[i], PRINT_ANSWER_LONG_KEY))
+        {
+            GetSettingsManager().PrintAnswer = true;
+            continue;
+        }
+        else if (i == argc - 1)
+        {
+            InputFileName = argv[i];
+        }
         else
         {
             std::cerr << "Unknown option or key: '" << argv[i] << "'." << std::endl << std::endl;
@@ -84,7 +97,6 @@ bool Launcher::AnalizeArguments(int argc, char *argv[])
         }
     }
 
-    InputFileName = argv[argc - 1];
     return true;
 }
 
@@ -94,7 +106,6 @@ Launcher::Launcher()
     , InitialSet()
     , InitialAnswer()
     , GBasis()
-    , GBCommonTimer()
 {
 }
 
@@ -182,25 +193,29 @@ bool Launcher::Run()
         return false;
     }
 
-    GBCommonTimer.Start();
+    GetResourceCounter().GroebnerBasisTimer.Start();
     GBasis.Construct(InitialSet);
-    GBCommonTimer.Stop();
+    GetResourceCounter().GroebnerBasisTimer.Stop();
 
     return true;
 }
 
 void Launcher::PrintResult() const
 {
-    //std::cout << GBasis << std::endl;
-    std::cout << "Size: " << GBasis.Length() << std::endl;
-    if (GetSettingsManager().CollectStatistics)
+    if (GetSettingsManager().PrintAnswer)
     {
-        GBasis.PrintStatistics(std::cout);
+        std::cout << GBasis << std::endl;
     }
 
-    std::cout << "Memory used: " << FastAllocator::GetUsedMemory() << std::endl;
+    if (GetSettingsManager().CollectStatistics)
+    {
+        GetResourceCounter().PrintFullStatistics(std::cout);
+    }
+    else
+    {
+        GetResourceCounter().PrintBriefStatistics(std::cout);
+    }
 
-    std::cout << GBCommonTimer << std::endl;
     if (CheckAnswer())
     {
         std::cout << "The answer is CORRECT" << std::endl;

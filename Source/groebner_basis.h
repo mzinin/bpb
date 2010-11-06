@@ -1,7 +1,8 @@
 #include <list>
 #include <algorithm>
-#include "tset.h"
+
 #include "qset.h"
+#include "tset.h"
 
 class GroebnerBasis
 {
@@ -9,20 +10,17 @@ private:
     std::list<Polynom*> GBasis;
     TSet IntermediateBasis;
     QSet ProlongationsSet;
-    unsigned long NonMultiProlongations;
-    unsigned long NonZeroReductions;
 
 public:
     GroebnerBasis();
     ~GroebnerBasis();
 
     void Construct(const std::list<Polynom*>& set);
-    void PrintStatistics(std::ostream& out) const;
 
     const Polynom& operator[](int number) const;
     unsigned Length() const;
 
-    friend std::ostream& operator<<(std::ostream& out, GroebnerBasis& groebnerBasis);
+    friend std::ostream& operator<<(std::ostream& out, const GroebnerBasis& groebnerBasis);
 
 private:
     Polynom* NormalForm(const Triple* triple);

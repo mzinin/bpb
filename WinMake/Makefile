@@ -23,6 +23,7 @@ myginv.exe: myginv.res \
             janettree.obj \
             triple.obj \
             settings_manager.obj \
+            resource_counter.obj \
             polynom.obj \
             monomOld.obj \
             monomLex.obj \
@@ -43,6 +44,7 @@ myginv.exe: myginv.res \
             $(BINARY)\janettree.obj \
             $(BINARY)\triple.obj \
             $(BINARY)\settings_manager.obj \
+            $(BINARY)\resource_counter.obj \
             $(BINARY)\polynom.obj \
             $(BINARY)\monomOld.obj \
             $(BINARY)\monomLex.obj \
@@ -61,13 +63,13 @@ myginv.res: myginv.rc $(SOURCE)\version.h
 myginv.obj: $(SOURCE)\launcher.h $(SOURCE)\settings_manager.h
     $(CXX) $(CXXFLAGS) $(SOURCE)\myginv.cpp /Fo $(BINARY)\myginv.obj 2> NUL
 
-launcher.obj: $(SOURCE)\launcher.h $(SOURCE)\polynom.h $(SOURCE)\groebner_basis.h $(SOURCE)\version.h $(SOURCE)\timer.h $(SOURCE)\settings_manager.h
+launcher.obj: $(SOURCE)\groebner_basis.h $(SOURCE)\polynom.h $(SOURCE)\fast_allocator.h  $(SOURCE)\launcher.h $(SOURCE)\resource_counter.h $(SOURCE)\settings_manager.h $(SOURCE)\version.h
     $(CXX) $(CXXFLAGS) $(SOURCE)\launcher.cpp /Fo $(BINARY)\launcher.obj 2> NUL
 
 version.obj: $(SOURCE)\version.h
     $(CXX) $(CXXFLAGS) $(SOURCE)\version.cpp /Fo $(BINARY)\version.obj 2> NUL
 
-groebner_basis.obj: $(SOURCE)\groebner_basis.h $(SOURCE)\pcomparator.h $(SOURCE)\timer.h $(SOURCE)\tset.h $(SOURCE)\qset.h
+groebner_basis.obj: $(SOURCE)\qset.h $(SOURCE)\tset.h $(SOURCE)\groebner_basis.h $(SOURCE)\pcomparator.h $(SOURCE)\resource_counter.h $(SOURCE)\settings_manager.h
     $(CXX) $(CXXFLAGS) $(SOURCE)\groebner_basis.cpp /Fo $(BINARY)\groebner_basis.obj 2> NUL
 
 tset.obj: $(SOURCE)\tset.h $(SOURCE)\janettree.h
@@ -84,6 +86,9 @@ triple.obj: $(SOURCE)\triple.h $(SOURCE)\polynom.h $(SOURCE)\fast_allocator.h
 
 settings_manager.obj: $(SOURCE)\settings_manager.h
     $(CXX) $(CXXFLAGS) $(SOURCE)\settings_manager.cpp /Fo $(BINARY)\settings_manager.obj 2> NUL
+
+resource_counter.obj: $(SOURCE)\timer.h $(SOURCE)\fast_allocator.h $(SOURCE)\resource_counter.h
+    $(CXX) $(CXXFLAGS) $(SOURCE)\resource_counter.cpp /Fo $(BINARY)\resource_counter.obj 2> NUL
 
 polynom.obj: $(SOURCE)\polynom.h $(SOURCE)\monom.h $(SOURCE)\monomDRL.h $(SOURCE)\monomDL.h $(SOURCE)\monomLex.h $(SOURCE)\monomOld.h $(SOURCE)\fast_allocator.h
     $(CXX) $(CXXFLAGS) $(SOURCE)\polynom.cpp /Fo $(BINARY)\polynom.obj 2> NUL

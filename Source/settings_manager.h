@@ -7,6 +7,10 @@ public:
     bool CollectStatistics;
     bool UseNovaInvolution;
     bool ConstructBasis;
+    bool PrintAnswer;
+
+public:
+    ~SettingsManager();
 
 private:
     SettingsManager();

@@ -2,8 +2,8 @@
 
 #include "groebner_basis.h"
 #include "pcomparator.h"
+#include "resource_counter.h"
 #include "settings_manager.h"
-#include "timer.h"
 
 Polynom* GroebnerBasis::NormalForm(const Triple* triple)
 {
@@ -172,7 +172,7 @@ void GroebnerBasis::ConstructInvolutiveBasis()
         {
             if (GetSettingsManager().CollectStatistics)
             {
-                ++NonZeroReductions;
+                ++GetResourceCounter().NonZeroReductions;
             }
 
             std::list<Triple*> newProlongations;
@@ -217,7 +217,7 @@ void GroebnerBasis::ConstructInvolutiveBasis()
 
             if (GetSettingsManager().CollectStatistics)
             {
-                NonMultiProlongations += newProlongations.size();
+                GetResourceCounter().NonMultiProlongations += newProlongations.size();
             }
 
             ProlongationsSet.Insert(newProlongations);
@@ -233,8 +233,6 @@ GroebnerBasis::GroebnerBasis()
     : GBasis()
     , IntermediateBasis()
     , ProlongationsSet()
-    , NonMultiProlongations(0)
-    , NonZeroReductions(0)
 {
 }
 
@@ -248,8 +246,8 @@ void GroebnerBasis::Reset()
     IntermediateBasis.Clear();
     ProlongationsSet.Clear();
     GBasis.clear();
-    NonMultiProlongations = 0;
-    NonZeroReductions = 0;
+    GetResourceCounter().NonMultiProlongations = 0;
+    GetResourceCounter().NonZeroReductions = 0;
 }
 
 void GroebnerBasis::Construct(const std::list<Polynom*>& set)
@@ -302,14 +300,7 @@ unsigned GroebnerBasis::Length() const
     return GBasis.size();
 }
 
-void GroebnerBasis::PrintStatistics(std::ostream& out) const
-{
-    out << "Non-Multiple Prolongations considered: " << NonMultiProlongations << std::endl;
-    out << "Non-Zero Reductions made: " << NonZeroReductions << std::endl;
-    out << "Zero Reductions made: " << NonMultiProlongations - NonZeroReductions << std::endl;
-}
-
-std::ostream& operator<<(std::ostream& out, GroebnerBasis& groebnerBasis)
+std::ostream& operator<<(std::ostream& out, const GroebnerBasis& groebnerBasis)
 {
     for (register unsigned i = 0; i < groebnerBasis.Length(); ++i)
     {

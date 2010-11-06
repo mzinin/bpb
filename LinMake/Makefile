@@ -14,6 +14,7 @@ myginv: myginv.o \
         janettree.o \
         triple.o \
         settings_manager.o \
+        resource_counter.o \
         polynom.o \
         monomOld.o \
         monomLex.o \
@@ -32,6 +33,7 @@ myginv: myginv.o \
             $(BINARY)/janettree.o \
             $(BINARY)/triple.o \
             $(BINARY)/settings_manager.o \
+            $(BINARY)/resource_counter.o \
             $(BINARY)/polynom.o \
             $(BINARY)/monomOld.o \
             $(BINARY)/monomLex.o \
@@ -46,13 +48,13 @@ myginv: myginv.o \
 myginv.o: $(SOURCE)/launcher.h
 	$(CXX) $(CXXFLAGS) $(SOURCE)/myginv.cpp -o $(BINARY)/myginv.o
 
-launcher.o: $(SOURCE)/launcher.h $(SOURCE)/polynom.h $(SOURCE)/groebner_basis.h $(SOURCE)/version.h $(SOURCE)/timer.h
+launcher.o: $(SOURCE)/groebner_basis.h $(SOURCE)/polynom.h $(SOURCE)/fast_allocator.h $(SOURCE)/launcher.h $(SOURCE)/resource_counter.h $(SOURCE)/settings_manager.h $(SOURCE)/version.h
 	$(CXX) $(CXXFLAGS) $(SOURCE)/launcher.cpp -o $(BINARY)/launcher.o
 
 version.o: $(SOURCE)/version.h
 	$(CXX) $(CXXFLAGS) $(SOURCE)/version.cpp -o $(BINARY)/version.o
 
-groebner_basis.o: $(SOURCE)/groebner_basis.h $(SOURCE)/pcomparator.h $(SOURCE)/timer.h $(SOURCE)/tset.h $(SOURCE)/qset.h
+groebner_basis.o: $(SOURCE)/qset.h $(SOURCE)/tset.h $(SOURCE)/groebner_basis.h $(SOURCE)/pcomparator.h $(SOURCE)/resource_counter.h $(SOURCE)/settings_manager.h
 	$(CXX) $(CXXFLAGS) $(SOURCE)/groebner_basis.cpp -o $(BINARY)/groebner_basis.o
 
 tset.o: $(SOURCE)/tset.h $(SOURCE)/janettree.h
@@ -69,6 +71,9 @@ triple.o: $(SOURCE)/triple.h $(SOURCE)/polynom.h $(SOURCE)/fast_allocator.h
 
 settings_manager.o: $(SOURCE)/settings_manager.h
 	$(CXX) $(CXXFLAGS) $(SOURCE)/settings_manager.cpp  -o $(BINARY)/settings_manager.o
+
+resource_counter.o: $(SOURCE)/timer.h $(SOURCE)/fast_allocator.h $(SOURCE)/resource_counter.h
+	$(CXX) $(CXXFLAGS) $(SOURCE)/resource_counter.cpp  -o $(BINARY)/resource_counter.o
 
 polynom.o: $(SOURCE)/polynom.h $(SOURCE)/monom.h $(SOURCE)/monomDRL.h $(SOURCE)/monomDL.h $(SOURCE)/monomLex.h $(SOURCE)/monomOld.h $(SOURCE)/fast_allocator.h
 	$(CXX) $(CXXFLAGS) $(SOURCE)/polynom.cpp -o $(BINARY)/polynom.o

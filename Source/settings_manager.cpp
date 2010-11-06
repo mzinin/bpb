@@ -4,6 +4,11 @@ SettingsManager::SettingsManager()
     : CollectStatistics(false)
     , UseNovaInvolution(false)
     , ConstructBasis(true)
+    , PrintAnswer(false)
+{
+}
+
+SettingsManager::~SettingsManager()
 {
 }
 
