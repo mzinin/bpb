@@ -170,7 +170,7 @@ void GroebnerBasis::ConstructInvolutiveBasis()
 
         if (!newNormalForm->IsZero())
         {
-            if (GetSettingsManager().CollectStatistics)
+            if (GetSettingsManager().GetCollectStatistics())
             {
                 ++GetResourceCounter().NonZeroReductions;
             }
@@ -182,7 +182,7 @@ void GroebnerBasis::ConstructInvolutiveBasis()
             {
                 if ((**tit).GetPolyLm().IsTrueDivisibleBy(newNormalForm->Lm()))
                 {
-                    if (GetSettingsManager().UseNovaInvolution)
+                    if (GetSettingsManager().GetUseNovaInvolution())
                     {
                         (**tit).SetNmp(std::set<Monom::Integer>());
                     }
@@ -202,7 +202,7 @@ void GroebnerBasis::ConstructInvolutiveBasis()
                 return;
             }
 
-            if (GetSettingsManager().UseNovaInvolution)
+            if (GetSettingsManager().GetUseNovaInvolution())
             {
                 tit = IntermediateBasis.Begin();
                 for (; tit != IntermediateBasis.End(); ++tit)
@@ -215,7 +215,7 @@ void GroebnerBasis::ConstructInvolutiveBasis()
                 IntermediateBasis.CollectNonMultiProlongations(--IntermediateBasis.End(), newProlongations);
             }
 
-            if (GetSettingsManager().CollectStatistics)
+            if (GetSettingsManager().GetCollectStatistics())
             {
                 GetResourceCounter().NonMultiProlongations += newProlongations.size();
             }
@@ -255,7 +255,7 @@ void GroebnerBasis::Construct(const std::list<Polynom*>& set)
     Reset();
     GBasis = set;
 
-    if (GetSettingsManager().UseNovaInvolution)
+    if (GetSettingsManager().GetUseNovaInvolution())
     {
         std::list<Polynom*>::const_iterator i1 = set.begin();
         for (; i1 != set.end(); ++i1)

@@ -17,7 +17,7 @@ void TSet::Clear()
 {
     JTree.Clear();
 
-    if (GetSettingsManager().UseNovaInvolution)
+    if (GetSettingsManager().GetUseNovaInvolution())
     {
         DegreeInfos.clear();
     }
@@ -33,7 +33,7 @@ void TSet::Clear()
 
 TSet::Iterator TSet::Erase(TSet::Iterator it)
 {
-    if (GetSettingsManager().UseNovaInvolution)
+    if (GetSettingsManager().GetUseNovaInvolution())
     {
         Monom::Integer degree = (**it).GetPolyLm().Degree();
         DegreeInfos[degree].JTree.Delete(*it);
@@ -54,7 +54,7 @@ void TSet::PushBack(Triple* newTriple)
     TripleList.push_back(newTriple);
     JTree.Insert(newTriple);
 
-    if (GetSettingsManager().UseNovaInvolution)
+    if (GetSettingsManager().GetUseNovaInvolution())
     {
         Monom::Integer degree = newTriple->GetPolyLm().Degree();
         DegreeInfos[degree].JTree.Insert(newTriple);
@@ -74,7 +74,7 @@ void TSet::CollectNonMultiProlongations(TSet::Iterator& iterator, std::list<Trip
         return;
     }
 
-    if (GetSettingsManager().UseNovaInvolution)
+    if (GetSettingsManager().GetUseNovaInvolution())
     {
         std::set<Monom::Integer> nonMultiVars = NonMultiNova(*iterator);
         std::set<Monom::Integer>::const_iterator nmvIterator = nonMultiVars.begin();

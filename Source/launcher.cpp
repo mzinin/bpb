@@ -1,5 +1,6 @@
 #include <fstream>
 #include <iomanip>
+#include <iostream>
 #include <sstream>
 
 #ifdef __linux__
@@ -9,95 +10,148 @@
 #include "fast_allocator.h"
 #include "launcher.h"
 #include "resource_counter.h"
-#include "settings_manager.h"
 #include "version.h"
 
 namespace
 {
-    const char VERSION_SHORT_KEY[] = "-v";
-    const char VERSION_LONG_KEY[]  = "--version";
-    const char HELP_SHORT_KEY[]    = "-h";
-    const char HELP_LONG_KEY[]     = "--help";
-    const char STATISTICS_SHORT_KEY[] = "-s";
-    const char STATISTICS_LONG_KEY[]  = "--collect-statistics";
-    const char NOVA_INVOLUTION_SHORT_KEY[] = "-n";
-    const char NOVA_INVOLUTION_LONG_KEY[]  = "--nova-involution";
-    const char PRINT_ANSWER_SHORT_KEY[] = "-a";
-    const char PRINT_ANSWER_LONG_KEY[]  = "--print-answer";
+    const char OPTION_SHORT_PREFIX[] = "-";
+    const char OPTION_LONG_PREFIX[] = "--";
+    const char OPTION_VALUE_DELIMITER = '=';
+
+    const char VERSION_SHORT_KEY   = 'v';
+    const char VERSION_LONG_KEY[]  = "version";
+    const char VERSION_USAGE_COMMENT[] = "print version";
+
+    const char HELP_SHORT_KEY  = 'h';
+    const char HELP_LONG_KEY[] = "help";
+    const char HELP_USAGE_COMMENT[] = "print this message";
+
+    const char STATISTICS_SHORT_KEY  = 's';
+    const char STATISTICS_LONG_KEY[] = "collect-statistics";
+    const char STATISTICS_USAGE_COMMENT[] = "collect and print out statistics";
+
+    const char NOVA_INVOLUTION_SHORT_KEY  = 'n';
+    const char NOVA_INVOLUTION_LONG_KEY[] = "nova-involution";
+    const char NOVA_INVOLUTION_USAGE_COMMENT[] = "use Nova involutive division instead of Pommaret one";
+
+    const char PRINT_ANSWER_SHORT_KEY  = 'a';
+    const char PRINT_ANSWER_LONG_KEY[] = "print-answer";
+    const char PRINT_ANSWER_USAGE_COMMENT[] = "print out constructed Groebner Basis";
 }
 
-void Launcher::PrintUsage() const
+Launcher::CommandLineOption::OptionValue::OptionValue(const std::string& value,
+                                                      const std::string& usageComment,
+                                                      void (SettingsManager::* const action)())
+    : Value(value)
+    , UsageComment(usageComment)
+    , Action(action)
 {
-    std::cout << "Usage:" << std::endl;
-    std::cout << "     " << ApplicationName << " [options] <file_name.gnv> - execute given task;" << std::endl;
-    std::cout << " Or: " << ApplicationName << " [key];" << std::endl << std::endl;
-
-    std::cout << "Options:" << std::endl;
-    std::cout << "    " << STATISTICS_SHORT_KEY << ", " << std::setw(25) << std::left << STATISTICS_LONG_KEY << " - collect and print out statistics;" << std::endl;
-    std::cout << "    " << NOVA_INVOLUTION_SHORT_KEY << ", " << std::setw(25) << std::left << NOVA_INVOLUTION_LONG_KEY << " - use Nova involutive division instead of Pommaret one;" << std::endl;
-    std::cout << "    " << PRINT_ANSWER_SHORT_KEY << ", " << std::setw(25) << std::left << PRINT_ANSWER_LONG_KEY << " - print out constructed Groebner Basis;" << std::endl << std::endl;
-
-    std::cout << "Keys:" << std::endl;
-    std::cout << "    " << VERSION_SHORT_KEY << ", " << std::setw(12) << std::left << VERSION_LONG_KEY << " - print version;" << std::endl;
-    std::cout << "    " << HELP_SHORT_KEY << ", " << std::setw(12) << std::left << HELP_LONG_KEY << " - print this message." << std::endl;
 }
 
-void Launcher::PrintVersion() const
+Launcher::CommandLineOption::OptionValue::~OptionValue()
 {
-    std::cout << "version " << GetVersion().GetMajor() << "." << GetVersion().GetMinor() << "." << GetVersion().GetRevision() << std::endl;
 }
 
-bool Launcher::AnalizeArguments(int argc, char *argv[])
+Launcher::CommandLineOption::CommandLineOption(const char shortKey,
+                                               const std::string& longKey,
+                                               const std::string& usageComment,
+                                               void (SettingsManager::* const action)())
+    : ShortKey(shortKey)
+    , LongKey(longKey)
+    , UsageComment(usageComment)
+    , Action(action)
+    , Values()
+    , ChosenValue(Values.end())
 {
-    if (argc == 1)
+}
+
+Launcher::CommandLineOption::CommandLineOption(const char shortKey,
+                                               const std::string& longKey,
+                                               const std::string& usageComment,
+                                               const std::list<OptionValue>& values)
+    : ShortKey(shortKey)
+    , LongKey(longKey)
+    , UsageComment(usageComment)
+    , Action(0)
+    , Values(values)
+    , ChosenValue(Values.end())
+{
+}
+
+Launcher::CommandLineOption::~CommandLineOption()
+{
+}
+
+bool Launcher::CommandLineOption::DetectKey(const std::string& option) const
+{
+    if (Values.empty())
     {
-        std::cerr << "Arguments are missing." << std::endl << std::endl;
-        PrintUsage();
+        return LongKey == option || option.size() == 1 && option[0] == ShortKey;
+    }
+
+    std::size_t position = option.find(OPTION_VALUE_DELIMITER);
+    std::string givenOption = option.substr(0, position);
+    if (LongKey != givenOption)
+    {
         return false;
     }
 
-    for (register int i = 1; i < argc; ++i)
+    if (option.size() < position + 2)
     {
-        if (!strcmp(argv[i], VERSION_SHORT_KEY) || !strcmp(argv[i], VERSION_LONG_KEY))
+        std::cerr << "Option '" << OPTION_LONG_PREFIX << LongKey << "' requires value, but didn't get one" << std::endl;
+        return false;
+    }
+
+    std::string givenValue = option.substr(position + 1);
+    ChosenValue = Values.begin();
+    for (; ChosenValue != Values.end(); ++ChosenValue)
+    {
+        if (ChosenValue->Value == givenValue)
         {
-            PrintVersion();
-            GetSettingsManager().ConstructBasis = false;
-            return true;
-        }
-        else if (!strcmp(argv[i], HELP_SHORT_KEY) || !strcmp(argv[i], HELP_LONG_KEY))
-        {
-            PrintUsage();
-            GetSettingsManager().ConstructBasis = false;
-            return true;
-        }
-        else if (!strcmp(argv[i], STATISTICS_SHORT_KEY) || !strcmp(argv[i], STATISTICS_LONG_KEY))
-        {
-            GetSettingsManager().CollectStatistics = true;
-            continue;
-        }
-        else if (!strcmp(argv[i], NOVA_INVOLUTION_SHORT_KEY) || !strcmp(argv[i], NOVA_INVOLUTION_LONG_KEY))
-        {
-            GetSettingsManager().UseNovaInvolution = true;
-            continue;
-        }
-        else if (!strcmp(argv[i], PRINT_ANSWER_SHORT_KEY) || !strcmp(argv[i], PRINT_ANSWER_LONG_KEY))
-        {
-            GetSettingsManager().PrintAnswer = true;
-            continue;
-        }
-        else if (i == argc - 1)
-        {
-            InputFileName = argv[i];
-        }
-        else
-        {
-            std::cerr << "Unknown option or key: '" << argv[i] << "'." << std::endl << std::endl;
-            PrintUsage();
-            return false;
+            break;
         }
     }
 
+    if (ChosenValue == Values.end())
+    {
+        std::cerr << "Option '" << OPTION_SHORT_PREFIX << ShortKey << "' got an unknown value '" << givenValue << "'." << std::endl;
+        return false;
+    }
+
     return true;
+}
+
+void Launcher::CommandLineOption::Activate() const
+{
+    if (Action && Values.empty())
+    {
+        (GetSettingsManager().*Action)();
+    }
+    if (!Values.empty() && ChosenValue != Values.end())
+    {
+        (GetSettingsManager().*(ChosenValue->Action))();
+    }
+}
+
+void Launcher::CommandLineOption::PrintHelp() const
+{
+    if (Values.empty())
+    {
+        std::cout << OPTION_SHORT_PREFIX << ShortKey << ", " << OPTION_LONG_PREFIX << LongKey << std::endl;
+        std::cout << "\t" << UsageComment << ";" << std::endl;
+    }
+    else
+    {
+        std::cout << OPTION_LONG_PREFIX << LongKey << OPTION_VALUE_DELIMITER << "<value>";
+        std::cout << "\t" << UsageComment << "," << std::endl;
+        std::cout << "\tAdmissible values are:" << std::endl;
+
+        for (std::list<OptionValue>::const_iterator i = Values.begin(); i != Values.end(); ++i)
+        {
+            std::cout << "\t\t" << i->Value << " - " << i->UsageComment;
+            std::cout << (i == Values.end()-- ? "," : ";") << std::endl;
+        }
+    }
 }
 
 Launcher::Launcher()
@@ -107,6 +161,7 @@ Launcher::Launcher()
     , InitialAnswer()
     , GBasis()
 {
+    FillOptions();
 }
 
 Launcher::~Launcher()
@@ -118,7 +173,190 @@ Launcher::~Launcher()
 bool Launcher::Init(int argc, char *argv[])
 {
     ApplicationName = argv[0];
-    return AnalizeArguments(argc, argv) && !InputFileName.empty();
+    return AnalizeArguments(argc, argv);
+}
+
+bool Launcher::Run()
+{
+    if (GetSettingsManager().GetPrintHelp())
+    {
+        PrintUsage();
+        return true;
+    }
+    if (GetSettingsManager().GetPrintVersion())
+    {
+        PrintVersion();
+        return true;
+    }
+
+    if (InputFileName.empty())
+    {
+        std::cerr << "Task file name is not defined." << std::endl << std::endl;
+        PrintUsage();
+        return false;
+    }
+    if (!GetTaskFromFile())
+    {
+        return false;
+    }
+
+    GetResourceCounter().GroebnerBasisTimer.Start();
+    GBasis.Construct(InitialSet);
+    GetResourceCounter().GroebnerBasisTimer.Stop();
+
+    return true;
+}
+
+void Launcher::PrintResult() const
+{
+    if (!GBasis.Length())
+    {
+        return;
+    }
+
+    if (GetSettingsManager().GetPrintAnswer())
+    {
+        std::cout << GBasis << std::endl;
+    }
+
+    if (GetSettingsManager().GetCollectStatistics())
+    {
+        GetResourceCounter().PrintFullStatistics(std::cout);
+    }
+    else
+    {
+        GetResourceCounter().PrintBriefStatistics(std::cout);
+    }
+
+    if (CheckAnswer())
+    {
+        std::cout << "The answer is CORRECT" << std::endl << std::endl;
+    }
+    else
+    {
+        std::cout << "The answer is WRONG" << std::endl << std::endl;
+    }
+}
+
+void Launcher::FillOptions()
+{
+    if (!CommandLineOptions.empty())
+    {
+        return;
+    }
+
+    // add help option
+    CommandLineOptions.push_back(CommandLineOption(HELP_SHORT_KEY,
+                                                   HELP_LONG_KEY,
+                                                   HELP_USAGE_COMMENT,
+                                                   &SettingsManager::SetPrintHelpEnabled));
+
+    // add version option
+    CommandLineOptions.push_back(CommandLineOption(VERSION_SHORT_KEY,
+                                                   VERSION_LONG_KEY,
+                                                   VERSION_USAGE_COMMENT,
+                                                   &SettingsManager::SetPrintVersionEnabled));
+
+    // add statistics option
+    CommandLineOptions.push_back(CommandLineOption(STATISTICS_SHORT_KEY,
+                                                   STATISTICS_LONG_KEY,
+                                                   STATISTICS_USAGE_COMMENT,
+                                                   &SettingsManager::SetCollectStatisticsEnabled));
+
+    // add nova involution option
+    CommandLineOptions.push_back(CommandLineOption(NOVA_INVOLUTION_SHORT_KEY,
+                                                   NOVA_INVOLUTION_LONG_KEY,
+                                                   NOVA_INVOLUTION_USAGE_COMMENT,
+                                                   &SettingsManager::SetUseNovaInvolutionEnabled));
+
+    // add print answer option
+    CommandLineOptions.push_back(CommandLineOption(PRINT_ANSWER_SHORT_KEY,
+                                                   PRINT_ANSWER_LONG_KEY,
+                                                   PRINT_ANSWER_USAGE_COMMENT,
+                                                   &SettingsManager::SetPrintAnswerEnabled));
+}
+
+void Launcher::PrintUsage() const
+{
+    std::cout << "Usage:" << std::endl;
+    std::cout << "\t" << ApplicationName << " [options] <file_name.gnv> - execute given task;" << std::endl << std::endl;
+
+    std::cout << "Options:" << std::endl;
+    for (std::list<CommandLineOption>::const_iterator i = CommandLineOptions.begin(); i != CommandLineOptions.end(); ++i)
+    {
+        i->PrintHelp();
+        std::cout << std::endl;
+    }
+}
+
+void Launcher::PrintVersion() const
+{
+    std::cout << "\t" << ApplicationName << std::endl;
+    std::cout << "\tVersion " << GetVersion().GetMajor() << "." << GetVersion().GetMinor() << "." << GetVersion().GetRevision() << std::endl;
+}
+
+bool Launcher::AnalizeArguments(int argc, char *argv[])
+{
+    if (argc == 1)
+    {
+        std::cerr << "Arguments are missing." << std::endl << std::endl;
+        PrintUsage();
+        return false;
+    }
+
+    std::list<std::string> arguments;
+    for (register int i = 1; i < argc; ++i)
+    {
+        std::string currentArgument = std::string(argv[i]);
+
+        if (currentArgument.size() > 2 && currentArgument.find(OPTION_LONG_PREFIX) == 0)
+        {
+            arguments.push_back(currentArgument.substr(strlen(OPTION_LONG_PREFIX)));
+        }
+        else if (currentArgument.size() > 1 && currentArgument.find(OPTION_SHORT_PREFIX) == 0)
+        {
+            for (register int p = strlen(OPTION_SHORT_PREFIX); p < currentArgument.size(); ++p)
+            {
+                arguments.push_back(std::string(1, currentArgument[p]));
+            }
+        }
+        else if (i == argc - 1)
+        {
+            InputFileName = argv[i];
+        }
+        else
+        {
+            std::cerr << "'" << argv[i] << "' - task file name should be the last argument." << std::endl << std::endl;
+            PrintUsage();
+            return false;
+        }
+    }
+
+    std::list<std::string>::const_iterator argumentsIterator = arguments.begin();
+    for (; argumentsIterator != arguments.end(); ++argumentsIterator)
+    {
+        std::list<CommandLineOption>::const_iterator optionsIterator = CommandLineOptions.begin();
+        for (; optionsIterator != CommandLineOptions.end(); ++optionsIterator)
+        {
+            if (optionsIterator->DetectKey(*argumentsIterator))
+            {
+                break;
+            }
+        }
+
+        if (optionsIterator != CommandLineOptions.end())
+        {
+            optionsIterator->Activate();
+        }
+        else
+        {
+            std::cerr << "Unknown option: '" << *argumentsIterator << "'." << std::endl << std::endl;
+            PrintUsage();
+            return false;
+        }
+    }
+
+    return true;
 }
 
 void Launcher::ReadVariables(std::ifstream& inputFileStream)
@@ -186,46 +424,6 @@ bool Launcher::GetTaskFromFile()
     return true;
 }
 
-bool Launcher::Run()
-{
-    if (!GetTaskFromFile())
-    {
-        return false;
-    }
-
-    GetResourceCounter().GroebnerBasisTimer.Start();
-    GBasis.Construct(InitialSet);
-    GetResourceCounter().GroebnerBasisTimer.Stop();
-
-    return true;
-}
-
-void Launcher::PrintResult() const
-{
-    if (GetSettingsManager().PrintAnswer)
-    {
-        std::cout << GBasis << std::endl;
-    }
-
-    if (GetSettingsManager().CollectStatistics)
-    {
-        GetResourceCounter().PrintFullStatistics(std::cout);
-    }
-    else
-    {
-        GetResourceCounter().PrintBriefStatistics(std::cout);
-    }
-
-    if (CheckAnswer())
-    {
-        std::cout << "The answer is CORRECT" << std::endl;
-    }
-    else
-    {
-        std::cout << "The answer is WRONG" << std::endl;
-    }
-}
-
 bool Launcher::CheckAnswer() const
 {
     if (GBasis.Length() != InitialAnswer.size())
@@ -265,3 +463,5 @@ void Launcher::ClearPolynomList(std::list<Polynom*>& list)
     }
     list.clear();
 }
+
+std::list<Launcher::CommandLineOption> Launcher::CommandLineOptions = std::list<Launcher::CommandLineOption>();

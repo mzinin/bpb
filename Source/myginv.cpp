@@ -12,14 +12,11 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    if (GetSettingsManager().ConstructBasis)
+    if (!launcher.Run())
     {
-        if (!launcher.Run())
-        {
-            return EXIT_FAILURE;
-        }
-        launcher.PrintResult();
+        return EXIT_FAILURE;
     }
 
+    launcher.PrintResult();
     return EXIT_SUCCESS;
 }

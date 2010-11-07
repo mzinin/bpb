@@ -3,8 +3,9 @@
 SettingsManager::SettingsManager()
     : CollectStatistics(false)
     , UseNovaInvolution(false)
-    , ConstructBasis(true)
     , PrintAnswer(false)
+    , PrintVersion(false)
+    , PrintHelp(false)
 {
 }
 
