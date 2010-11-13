@@ -1,123 +1,106 @@
 #include "monomDL.h"
 
-void MonomDL::AddVariable(const char *var)
+int MonomDL::Compare(const Monom& anotherMonom)
 {
-    if (mIndepend->Add(var))
-    {
-        ++mDimIndepend;
-    }
-}
+    const MonomDL* castedAnotherMonom = CastToMe(anotherMonom);
 
-const char* MonomDL::GetVariable(MonomDL::Integer var)
-{
-    return mIndepend->Variable(var);
-}
-
-std::istream& operator>>(std::istream& in, MonomDL& a)
-{
-    std::streampos posbeg = in.tellg();
-    int var = a.mIndepend->Read(in);
-    if (var < 0)
-    {
-        in.clear();
-        in.setstate(std::ios::failbit);
-    }
-    else
-    {
-        a.SetOne();
-        int deg;
-        do
-        {
-            deg = 1;
-            std::streampos posbeg = in.tellg();
-            if ((in >> std::ws).peek() == '^')
-            {
-                in.get();
-                in >> std::ws >> deg;
-                if (in.fail() || deg < 0)
-                {
-                    in.setstate(std::ios::failbit);
-                }
-            }
-            a *= var;
-            posbeg = in.tellg();
-            if (in.peek() != '*')
-            {
-                var = -1;
-            }
-            else
-            {
-                in.get();
-                var = a.mIndepend->Read(in);
-                if (var < 0)
-                {
-                    in.clear();
-                    in.seekg(posbeg);
-                }
-            }
-        } while(var >= 0);
-
-        if (in.eof() && deg >= 0)
-        {
-            in.clear();
-        }
-    }
-    return in;
-}
-
-std::ostream& operator<<(std::ostream& out, const MonomDL& a)
-{
-    if (!a.mListHead)
-    {
-        out << "1";
-    }
-    else
-    {
-        MonomDL::VarsListNode* iteratorA(a.mListHead);
-        out << a.mIndepend->Variable(iteratorA->value);
-        iteratorA = iteratorA->next;
-        while (iteratorA)
-        {
-            out << "*" << a.mIndepend->Variable(iteratorA->value);
-            iteratorA = iteratorA->next;
-        }
-    }
-
-    return out;
-}
-
-int MonomDL::Compare(const MonomDL& monomA, const MonomDL& monomB)
-{
-    if (monomA.mDegree < monomB.mDegree)
+    if (TotalDegree < castedAnotherMonom->TotalDegree)
     {
         return -1;
     }
-    else if (monomA.mDegree > monomB.mDegree)
+    else if (TotalDegree > castedAnotherMonom->TotalDegree)
     {
         return 1;
     }
     else
     {
-        VarsListNode *iteratorA(monomA.mListHead),
-                     *iteratorB(monomB.mListHead);
-        while (iteratorA)
+        VarsListNode *iterator(ListHead),
+                     *iteratorAnother(castedAnotherMonom->ListHead);
+        while (iterator)
         {
-            if (iteratorA->value < iteratorB->value)
+            if (iterator->Value < iteratorAnother->Value)
             {
                 return 1;
             }
-            if (iteratorA->value > iteratorB->value)
+            if (iterator->Value > iteratorAnother->Value)
             {
                 return -1;
             }
-            iteratorA = iteratorA->next;
-            iteratorB = iteratorB->next;
+            iterator = iterator->Next;
+            iteratorAnother = iteratorAnother->Next;
         }
         return 0;
     }
 }
 
-Variables* MonomDL::mIndepend = new Variables();
+MonomDL::Integer MonomDL::GcdDegree(const Monom& anotherMonom)
+{
+    const MonomDL* castedAnotherMonom = CastToMe(anotherMonom);
+
+    Integer gcd = 0;
+    VarsListNode *iterator(ListHead),
+                 *iteratorAnother(castedAnotherMonom->ListHead);
+
+    while (iterator && iteratorAnother)
+    {
+        if (iterator->Value == iteratorAnother->Value)
+        {
+            ++gcd;
+            iterator = iterator->Next;
+            iteratorAnother = iteratorAnother->Next;
+        }
+        else if (iterator->Value < iteratorAnother->Value)
+        {
+            iterator = iterator->Next;
+        }
+        else
+        {
+            iteratorAnother = iteratorAnother->Next;
+        }
+    }
+    return gcd;
+}
+
+MonomDL::Integer MonomDL::LcmDegree(const Monom& anotherMonom)
+{
+    const MonomDL* castedAnotherMonom = CastToMe(anotherMonom);
+
+    Integer lcm = 0;
+    VarsListNode *iterator(ListHead),
+                 *iteratorAnother(castedAnotherMonom->ListHead);
+
+    while (iterator && iteratorAnother)
+    {
+        ++lcm;
+        if (iterator->Value == iteratorAnother->Value)
+        {
+            iterator = iterator->Next;
+            iteratorAnother = iteratorAnother->Next;
+        }
+        else if (iterator->Value < iteratorAnother->Value)
+        {
+            iterator = iterator->Next;
+        }
+        else
+        {
+            iteratorAnother = iteratorAnother->Next;
+        }
+    }
+
+    while (iterator)
+    {
+        ++lcm;
+        iterator = iterator->Next;
+    }
+
+    while (iteratorAnother)
+    {
+        ++lcm;
+        iteratorAnother = iteratorAnother->Next;
+    }
+
+    return lcm;
+}
+
 FastAllocator MonomDL::Allocator(sizeof(MonomDL));
 FastAllocator MonomDL::VarsListNode::Allocator(sizeof(MonomDL::VarsListNode));
-MonomDL::Integer MonomDL::mDimIndepend = 0;

@@ -132,7 +132,7 @@ std::set<Monom::Integer> TSet::NonMultiNova(const Triple* triple)
     Monom::Integer degree = triple->GetPolyLm().Degree();
     std::set<Monom::Integer> nmulti = DegreeInfos[degree].JTree.NonMulti(triple);
 
-    for (Monom::Integer var = 0; var < Monom::DimIndepend(); ++var)
+    for (Monom::Integer var = 0; var < Monom::GetDimIndepend(); ++var)
     {
         if (nmulti.find(var) != nmulti.end())
         {

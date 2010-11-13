@@ -1,121 +1,94 @@
 #include "monomOld.h"
 
-void MonomOld::AddVariable(const char *var)
+int MonomOld::Compare(const Monom& anotherMonom)
 {
-    if (mIndepend->Add(var))
-    {
-        ++mDimIndepend;
-    }
-    if (One[0] == 0)
-    {
-        for (int i=0; i<64; ++i)
-        {
-            One[i] = 1;
-            One[i] = One[i] << i;
-            Zero[i] = ~One[i];
-        }
-    }
-}
+    const MonomOld* castedAnotherMonom = CastToMe(anotherMonom);
 
-const char* MonomOld::GetVariable(MonomOld::Integer var)
-{
-    return mIndepend->Variable(var);
-}
-
-std::istream& operator>>(std::istream& in, MonomOld& a)
-{
-    std::streampos posbeg = in.tellg();
-    int var = a.mIndepend->Read(in);
-    if (var < 0)
+    if (TotalDegree < castedAnotherMonom->TotalDegree)
     {
-        in.clear();
-        in.setstate(std::ios::failbit);
+        return -1;
+    }
+    else if (TotalDegree > castedAnotherMonom->TotalDegree)
+    {
+        return 1;
     }
     else
     {
-        a.SetOne();
-        int deg;
-        do
-        {
-            deg = 1;
-            std::streampos posbeg = in.tellg();
-            if ((in >> std::ws).peek() == '^')
-            {
-                in.get();
-                in >> std::ws >> deg;
-                if (in.fail() || deg < 0)
-                {
-                    in.setstate(std::ios::failbit);
-                }
-            }
-            a *= var;
-            posbeg = in.tellg();
-            if (in.peek() != '*')
-            {
-                var = -1;
-            }
-            else
-            {
-                in.get();
-                var = a.mIndepend->Read(in);
-                if (var < 0)
-                {
-                    in.clear();
-                    in.seekg(posbeg);
-                }
-            }
-        } while(var >= 0);
-        if (in.eof() && deg >= 0)
-        {
-            in.clear();
-        }
+        if (Exponent < castedAnotherMonom->Exponent)
+            return 1;
+        else if (Exponent > castedAnotherMonom->Exponent)
+            return -1;
+        else
+            return 0;
     }
-    return in;
 }
 
-std::ostream& operator<<(std::ostream& out, const MonomOld& a)
+MonomOld::Integer MonomOld::GcdDegree(const Monom& anotherMonom)
 {
-    if (a.Degree() == 0)
+    const MonomOld* castedAnotherMonom = CastToMe(anotherMonom);
+
+    unsigned long d(Exponent & castedAnotherMonom->Exponent);
+    unsigned short *s = (unsigned short*)&d;
+    short r = Data[*s][DEGREE];
+    for (register int i = 1; i < 4; ++i)
     {
-        out << '1';
+        ++s;
+        r += Data[*s][DEGREE];
     }
-    else
-    {
-        int i = 0;
-        Variables::ConstIterator j(a.mIndepend->Begin());
-        while(a[i] == 0)
-        {
-            ++i;
-            ++j;
-        }
-        out << *j;
-        if (a[i] > 1)
-        {
-            out << '^' << a[i];
-        }
-        ++i;
-        ++j;
-        while(j != a.mIndepend->End())
-        {
-            if (a[i])
-            {
-                out << '*' << *j;
-                if (a[i] > 1)
-                {
-                    out << '^' << a[i];
-                }
-            }
-            ++i;
-            ++j;
-        }
-    }
-    return out;
+    return r;
 }
 
-Variables* MonomOld::mIndepend = new Variables();
+MonomOld::Integer MonomOld::LcmDegree(const Monom& anotherMonom)
+{
+    const MonomOld* castedAnotherMonom = CastToMe(anotherMonom);
+
+    unsigned long d(Exponent | castedAnotherMonom->Exponent);
+    unsigned short *s = (unsigned short*)&d;
+    short r = Data[*s][DEGREE];
+    for (register int i = 1; i < 4; ++i)
+    {
+        ++s;
+        r += Data[*s][DEGREE];
+    }
+    return r;
+}
+
 FastAllocator MonomOld::Allocator(sizeof(MonomOld));
-unsigned long MonomOld::Zero[64], MonomOld::One[64];
-short MonomOld::mDimIndepend;
+
+
+unsigned long MonomOld::One[64] =  {0x0000000000000001, 0x0000000000000002, 0x0000000000000004, 0x0000000000000008,
+                                    0x0000000000000010, 0x0000000000000020, 0x0000000000000040, 0x0000000000000080,
+                                    0x0000000000000100, 0x0000000000000200, 0x0000000000000400, 0x0000000000000800,
+                                    0x0000000000001000, 0x0000000000002000, 0x0000000000004000, 0x0000000000008000,
+                                    0x0000000000010000, 0x0000000000020000, 0x0000000000040000, 0x0000000000080000,
+                                    0x0000000000100000, 0x0000000000200000, 0x0000000000400000, 0x0000000000800000,
+                                    0x0000000001000000, 0x0000000002000000, 0x0000000004000000, 0x0000000008000000,
+                                    0x0000000010000000, 0x0000000020000000, 0x0000000040000000, 0x0000000080000000,
+                                    0x0000000100000000, 0x0000000200000000, 0x0000000400000000, 0x0000000800000000,
+                                    0x0000001000000000, 0x0000002000000000, 0x0000004000000000, 0x0000008000000000,
+                                    0x0000010000000000, 0x0000020000000000, 0x0000040000000000, 0x0000080000000000,
+                                    0x0000100000000000, 0x0000200000000000, 0x0000400000000000, 0x0000800000000000,
+                                    0x0001000000000000, 0x0002000000000000, 0x0004000000000000, 0x0008000000000000,
+                                    0x0010000000000000, 0x0020000000000000, 0x0040000000000000, 0x0080000000000000,
+                                    0x0100000000000000, 0x0200000000000000, 0x0400000000000000, 0x0800000000000000,
+                                    0x1000000000000000, 0x2000000000000000, 0x4000000000000000, 0x8000000000000000};
+
+unsigned long MonomOld::Zero[64] = {0xFFFFFFFFFFFFFFFE, 0xFFFFFFFFFFFFFFFD, 0xFFFFFFFFFFFFFFFB, 0xFFFFFFFFFFFFFFF7,
+                                    0xFFFFFFFFFFFFFFEF, 0xFFFFFFFFFFFFFFDF, 0xFFFFFFFFFFFFFFBF, 0xFFFFFFFFFFFFFF7F,
+                                    0xFFFFFFFFFFFFFEFF, 0xFFFFFFFFFFFFFDFF, 0xFFFFFFFFFFFFFBFF, 0xFFFFFFFFFFFFF7FF,
+                                    0xFFFFFFFFFFFFEFFF, 0xFFFFFFFFFFFFDFFF, 0xFFFFFFFFFFFFBFFF, 0xFFFFFFFFFFFF7FFF,
+                                    0xFFFFFFFFFFFEFFFF, 0xFFFFFFFFFFFDFFFF, 0xFFFFFFFFFFFBFFFF, 0xFFFFFFFFFFF7FFFF,
+                                    0xFFFFFFFFFFEFFFFF, 0xFFFFFFFFFFDFFFFF, 0xFFFFFFFFFFBFFFFF, 0xFFFFFFFFFF7FFFFF,
+                                    0xFFFFFFFFFEFFFFFF, 0xFFFFFFFFFDFFFFFF, 0xFFFFFFFFFBFFFFFF, 0xFFFFFFFFF7FFFFFF,
+                                    0xFFFFFFFFEFFFFFFF, 0xFFFFFFFFDFFFFFFF, 0xFFFFFFFFBFFFFFFF, 0xFFFFFFFF7FFFFFFF,
+                                    0xFFFFFFFEFFFFFFFF, 0xFFFFFFFDFFFFFFFF, 0xFFFFFFFBFFFFFFFF, 0xFFFFFFF7FFFFFFFF,
+                                    0xFFFFFFEFFFFFFFFF, 0xFFFFFFDFFFFFFFFF, 0xFFFFFFBFFFFFFFFF, 0xFFFFFF7FFFFFFFFF,
+                                    0xFFFFFEFFFFFFFFFF, 0xFFFFFDFFFFFFFFFF, 0xFFFFFBFFFFFFFFFF, 0xFFFFF7FFFFFFFFFF,
+                                    0xFFFFEFFFFFFFFFFF, 0xFFFFDFFFFFFFFFFF, 0xFFFFBFFFFFFFFFFF, 0xFFFF7FFFFFFFFFFF,
+                                    0xFFFEFFFFFFFFFFFF, 0xFFFDFFFFFFFFFFFF, 0xFFFBFFFFFFFFFFFF, 0xFFF7FFFFFFFFFFFF,
+                                    0xFFEFFFFFFFFFFFFF, 0xFFDFFFFFFFFFFFFF, 0xFFBFFFFFFFFFFFFF, 0xFF7FFFFFFFFFFFFF,
+                                    0xFEFFFFFFFFFFFFFF, 0xFDFFFFFFFFFFFFFF, 0xFBFFFFFFFFFFFFFF, 0xF7FFFFFFFFFFFFFF,
+                                    0xEFFFFFFFFFFFFFFF, 0xDFFFFFFFFFFFFFFF, 0xBFFFFFFFFFFFFFFF, 0x7FFFFFFFFFFFFFFF};
 
 unsigned short MonomOld::Data[][4] =
 {

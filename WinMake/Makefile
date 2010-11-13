@@ -13,6 +13,11 @@ BINARY = .\
 
 all: myginv.exe
 
+clear:
+    @del $(BINARY)\*.exe 2> NUL
+    @del $(BINARY)\*.obj 2> NUL
+    @del $(BINARY)\*.res 2> NUL
+
 myginv.exe: myginv.res \
             myginv.obj \
             launcher.obj \
@@ -25,6 +30,7 @@ myginv.exe: myginv.res \
             settings_manager.obj \
             resource_counter.obj \
             polynom.obj \
+            monom.obj \
             monomOld.obj \
             monomLex.obj \
             monomDL.obj \
@@ -46,6 +52,7 @@ myginv.exe: myginv.res \
             $(BINARY)\settings_manager.obj \
             $(BINARY)\resource_counter.obj \
             $(BINARY)\polynom.obj \
+            $(BINARY)\monom.obj \
             $(BINARY)\monomOld.obj \
             $(BINARY)\monomLex.obj \
             $(BINARY)\monomDL.obj \
@@ -90,19 +97,22 @@ settings_manager.obj: $(SOURCE)\settings_manager.h
 resource_counter.obj: $(SOURCE)\timer.h $(SOURCE)\fast_allocator.h $(SOURCE)\resource_counter.h
     $(CXX) $(CXXFLAGS) $(SOURCE)\resource_counter.cpp /Fo $(BINARY)\resource_counter.obj 2> NUL
 
-polynom.obj: $(SOURCE)\polynom.h $(SOURCE)\monom.h $(SOURCE)\monomDRL.h $(SOURCE)\monomDL.h $(SOURCE)\monomLex.h $(SOURCE)\monomOld.h $(SOURCE)\fast_allocator.h
+polynom.obj: $(SOURCE)\polynom.h $(SOURCE)\monom.h $(SOURCE)\fast_allocator.h
     $(CXX) $(CXXFLAGS) $(SOURCE)\polynom.cpp /Fo $(BINARY)\polynom.obj 2> NUL
 
-monomDRL.obj: $(SOURCE)\monomDRL.h $(SOURCE)\variables.h $(SOURCE)\fast_allocator.h
+monom.obj: $(SOURCE)\monomLex.h $(SOURCE)\monomDL.h $(SOURCE)\monomDRL.h $(SOURCE)\monomOld.h $(SOURCE)\variables.h
+    $(CXX) $(CXXFLAGS) $(SOURCE)\monom.cpp /Fo $(BINARY)\monom.obj 2> NUL
+
+monomDRL.obj: $(SOURCE)\monom.h $(SOURCE)\monomDRL.h $(SOURCE)\fast_allocator.h
     $(CXX) $(CXXFLAGS) $(SOURCE)\monomDRL.cpp /Fo $(BINARY)\monomDRL.obj 2> NUL
 
-monomDL.obj: $(SOURCE)\monomDL.h $(SOURCE)\variables.h $(SOURCE)\fast_allocator.h
+monomDL.obj: $(SOURCE)\monom.h $(SOURCE)\monomDL.h $(SOURCE)\fast_allocator.h
     $(CXX) $(CXXFLAGS) $(SOURCE)\monomDL.cpp /Fo $(BINARY)\monomDL.obj 2> NUL
 
-monomLex.obj: $(SOURCE)\monomLex.h $(SOURCE)\variables.h $(SOURCE)\fast_allocator.h
+monomLex.obj: $(SOURCE)\monom.h $(SOURCE)\monomLex.h $(SOURCE)\fast_allocator.h
     $(CXX) $(CXXFLAGS) $(SOURCE)\monomLex.cpp /Fo $(BINARY)\monomLex.obj 2> NUL
 
-monomOld.obj: $(SOURCE)\monomOld.h $(SOURCE)\variables.h $(SOURCE)\fast_allocator.h
+monomOld.obj: $(SOURCE)\monom.h $(SOURCE)\monomOld.h $(SOURCE)\fast_allocator.h
     $(CXX) $(CXXFLAGS) $(SOURCE)\monomOld.cpp /Fo $(BINARY)\monomOld.obj 2> NUL
 
 fast_allocator.obj: $(SOURCE)\fast_allocator.h

@@ -260,7 +260,7 @@ void GroebnerBasis::Construct(const std::list<Polynom*>& set)
         std::list<Polynom*>::const_iterator i1 = set.begin();
         for (; i1 != set.end(); ++i1)
         {
-            for (register Monom::Integer var = 0; var < Monom::DimIndepend(); ++var)
+            for (register Monom::Integer var = 0; var < Monom::GetDimIndepend(); ++var)
             {
                 GBasis.push_back(new Polynom(**i1));
                 (*GBasis.back()) *= var;

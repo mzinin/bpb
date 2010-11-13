@@ -1,6 +1,10 @@
 #ifndef SETTINGS_MANAGER_H
 #define SETTINGS_MANAGER_H
 
+#include "monom.h"
+
+class Launcher;
+
 class SettingsManager
 {
 private:
@@ -9,62 +13,51 @@ private:
     bool PrintAnswer;
     bool PrintVersion;
     bool PrintHelp;
+    Monom::Order MonomialOrder;
 
 public:
     ~SettingsManager();
 
-    void SetCollectStatisticsEnabled();
-    void SetCollectStatisticsDisabled();
     bool GetCollectStatistics() const;
-
-    void SetUseNovaInvolutionEnabled();
-    void SetUseNovaInvolutionDisabled();
     bool GetUseNovaInvolution() const;
-
-    void SetPrintAnswerEnabled();
-    void SetPrintAnswerDisabled();
     bool GetPrintAnswer() const;
-
-    void SetPrintVersionEnabled();
-    void SetPrintVersionDisabled();
     bool GetPrintVersion() const;
-
-    void SetPrintHelpEnabled();
-    void SetPrintHelpDisabled();
     bool GetPrintHelp() const;
+    Monom::Order GetMonomialOrder() const;
 
 private:
     SettingsManager();
 
-friend SettingsManager& GetSettingsManager();
+    void SetCollectStatisticsEnabled();
+    void SetCollectStatisticsDisabled();
+
+    void SetUseNovaInvolutionEnabled();
+    void SetUseNovaInvolutionDisabled();
+
+    void SetPrintAnswerEnabled();
+    void SetPrintAnswerDisabled();
+
+    void SetPrintVersionEnabled();
+    void SetPrintVersionDisabled();
+
+    void SetPrintHelpEnabled();
+    void SetPrintHelpDisabled();
+
+    void SetMonomialOrderLex();
+    void SetMonomialOrderDegLex();
+    void SetMonomialOrderDegRevLex();
+    void SetMonomialOrderOldDRL();
+
+    friend SettingsManager& GetSettingsManager();
+    friend class Launcher;
 };
 
 SettingsManager& GetSettingsManager();
 
 
-inline void SettingsManager::SetCollectStatisticsEnabled()
-{
-    CollectStatistics = true;
-}
-
-inline void SettingsManager::SetCollectStatisticsDisabled()
-{
-    CollectStatistics = false;
-}
-
 inline bool SettingsManager::GetCollectStatistics() const
 {
     return CollectStatistics;
-}
-
-inline void SettingsManager::SetUseNovaInvolutionEnabled()
-{
-    UseNovaInvolution = true;
-}
-
-inline void SettingsManager::SetUseNovaInvolutionDisabled()
-{
-    UseNovaInvolution = false;
 }
 
 inline bool SettingsManager::GetUseNovaInvolution() const
@@ -72,29 +65,9 @@ inline bool SettingsManager::GetUseNovaInvolution() const
     return UseNovaInvolution;
 }
 
-inline void SettingsManager::SetPrintAnswerEnabled()
-{
-    PrintAnswer = true;
-}
-
-inline void SettingsManager::SetPrintAnswerDisabled()
-{
-    PrintAnswer = false;
-}
-
 inline bool SettingsManager::GetPrintAnswer() const
 {
     return PrintAnswer;
-}
-
-inline void SettingsManager::SetPrintVersionEnabled()
-{
-    PrintVersion = true;
-}
-
-inline void SettingsManager::SetPrintVersionDisabled()
-{
-    PrintVersion = false;
 }
 
 inline bool SettingsManager::GetPrintVersion() const
@@ -102,19 +75,14 @@ inline bool SettingsManager::GetPrintVersion() const
     return PrintVersion;
 }
 
-inline void SettingsManager::SetPrintHelpEnabled()
-{
-    PrintHelp = true;
-}
-
-inline void SettingsManager::SetPrintHelpDisabled()
-{
-    PrintHelp = false;
-}
-
 inline bool SettingsManager::GetPrintHelp() const
 {
     return PrintHelp;
+}
+
+inline Monom::Order SettingsManager::GetMonomialOrder() const
+{
+    return MonomialOrder;
 }
 
 #endif // SETTINGS_MANAGER_H

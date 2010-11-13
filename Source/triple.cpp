@@ -41,8 +41,7 @@ Triple::Triple(Polynom *initialPolynom
     else
     {
         Poly = new Polynom();
-        Monom tmpMonom(initialPolynom->Lm());
-        (*Poly) += tmpMonom;
+        (*Poly) += initialPolynom->Lm();
 
         Anc = initialAncestor;
         Wanc = weakAncestor;

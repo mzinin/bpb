@@ -20,23 +20,34 @@ namespace
 
     const char VERSION_SHORT_KEY   = 'v';
     const char VERSION_LONG_KEY[]  = "version";
-    const char VERSION_USAGE_COMMENT[] = "print version";
+    const char VERSION_USAGE_COMMENT[] = "Print version";
 
     const char HELP_SHORT_KEY  = 'h';
     const char HELP_LONG_KEY[] = "help";
-    const char HELP_USAGE_COMMENT[] = "print this message";
+    const char HELP_USAGE_COMMENT[] = "Print this message";
 
     const char STATISTICS_SHORT_KEY  = 's';
     const char STATISTICS_LONG_KEY[] = "collect-statistics";
-    const char STATISTICS_USAGE_COMMENT[] = "collect and print out statistics";
+    const char STATISTICS_USAGE_COMMENT[] = "Collect and print out statistics";
 
     const char NOVA_INVOLUTION_SHORT_KEY  = 'n';
     const char NOVA_INVOLUTION_LONG_KEY[] = "nova-involution";
-    const char NOVA_INVOLUTION_USAGE_COMMENT[] = "use Nova involutive division instead of Pommaret one";
+    const char NOVA_INVOLUTION_USAGE_COMMENT[] = "Use Nova involutive division instead of Pommaret one";
 
     const char PRINT_ANSWER_SHORT_KEY  = 'a';
     const char PRINT_ANSWER_LONG_KEY[] = "print-answer";
-    const char PRINT_ANSWER_USAGE_COMMENT[] = "print out constructed Groebner Basis";
+    const char PRINT_ANSWER_USAGE_COMMENT[] = "Print out constructed Groebner Basis";
+
+    const char MONOMIAL_ORDER_LONG_KEY[] = "monomial-order";
+    const char MONOMIAL_ORDER_USAGE_COMMENT[] = "Define monomial order to construct Groebner Basis with respect to";
+    const char MONOMIAL_ORDER_LEX_VALUE[]   = "lex";
+    const char MONOMIAL_ORDER_LEX_COMMENT[] = "pure lexicographic order";
+    const char MONOMIAL_ORDER_DEGLEX_VALUE[]   = "deglex";
+    const char MONOMIAL_ORDER_DEGLEX_COMMENT[] = "degree lexicographic order";
+    const char MONOMIAL_ORDER_DEGREVLEX_VALUE[]   = "degrevlex";
+    const char MONOMIAL_ORDER_DEGREVLEX_COMMENT[] = "degree reverse lexicographic order";
+    const char MONOMIAL_ORDER_OLDDRL_VALUE[]   = "old";
+    const char MONOMIAL_ORDER_OLDDRL_COMMENT[] = "";
 }
 
 Launcher::CommandLineOption::OptionValue::OptionValue(const std::string& value,
@@ -65,11 +76,10 @@ Launcher::CommandLineOption::CommandLineOption(const char shortKey,
 {
 }
 
-Launcher::CommandLineOption::CommandLineOption(const char shortKey,
-                                               const std::string& longKey,
+Launcher::CommandLineOption::CommandLineOption(const std::string& longKey,
                                                const std::string& usageComment,
                                                const std::list<OptionValue>& values)
-    : ShortKey(shortKey)
+    : ShortKey(0)
     , LongKey(longKey)
     , UsageComment(usageComment)
     , Action(0)
@@ -114,7 +124,7 @@ bool Launcher::CommandLineOption::DetectKey(const std::string& option) const
 
     if (ChosenValue == Values.end())
     {
-        std::cerr << "Option '" << OPTION_SHORT_PREFIX << ShortKey << "' got an unknown value '" << givenValue << "'." << std::endl;
+        std::cerr << "Option '" << OPTION_LONG_PREFIX << LongKey << "' got an unknown value '" << givenValue << "'." << std::endl;
         return false;
     }
 
@@ -142,14 +152,30 @@ void Launcher::CommandLineOption::PrintHelp() const
     }
     else
     {
-        std::cout << OPTION_LONG_PREFIX << LongKey << OPTION_VALUE_DELIMITER << "<value>";
+        std::cout << OPTION_LONG_PREFIX << LongKey << OPTION_VALUE_DELIMITER << "<value>" << std::endl;
         std::cout << "\t" << UsageComment << "," << std::endl;
         std::cout << "\tAdmissible values are:" << std::endl;
 
+        unsigned valueFieldWidth = 0;
         for (std::list<OptionValue>::const_iterator i = Values.begin(); i != Values.end(); ++i)
         {
-            std::cout << "\t\t" << i->Value << " - " << i->UsageComment;
-            std::cout << (i == Values.end()-- ? "," : ";") << std::endl;
+            if (i->UsageComment.empty())
+            {
+                continue;
+            }
+            if (i->Value.size() > valueFieldWidth)
+            {
+                valueFieldWidth = i->Value.size();
+            }
+        }
+        for (std::list<OptionValue>::const_iterator i = Values.begin(); i != Values.end(); ++i)
+        {
+            if (i->UsageComment.empty())
+            {
+                continue;
+            }
+            std::cout << "\t\t" << std::setw(valueFieldWidth) << std::left << i->Value << " - ";
+            std::cout  << i->UsageComment << (i == Values.end()-- ? "," : ";") << std::endl;
         }
     }
 }
@@ -274,6 +300,25 @@ void Launcher::FillOptions()
                                                    PRINT_ANSWER_LONG_KEY,
                                                    PRINT_ANSWER_USAGE_COMMENT,
                                                    &SettingsManager::SetPrintAnswerEnabled));
+
+    // add monomial order option with values
+    std::list<CommandLineOption::OptionValue> monomialOrderValues;
+    monomialOrderValues.push_back(CommandLineOption::OptionValue(MONOMIAL_ORDER_LEX_VALUE,
+                                                                 MONOMIAL_ORDER_LEX_COMMENT,
+                                                                 &SettingsManager::SetMonomialOrderLex));
+    monomialOrderValues.push_back(CommandLineOption::OptionValue(MONOMIAL_ORDER_DEGLEX_VALUE,
+                                                                 MONOMIAL_ORDER_DEGLEX_COMMENT,
+                                                                 &SettingsManager::SetMonomialOrderDegLex));
+    monomialOrderValues.push_back(CommandLineOption::OptionValue(MONOMIAL_ORDER_DEGREVLEX_VALUE,
+                                                                 MONOMIAL_ORDER_DEGREVLEX_COMMENT,
+                                                                 &SettingsManager::SetMonomialOrderDegRevLex));
+    // undocumented value
+    monomialOrderValues.push_back(CommandLineOption::OptionValue(MONOMIAL_ORDER_OLDDRL_VALUE,
+                                                                 MONOMIAL_ORDER_OLDDRL_COMMENT,
+                                                                 &SettingsManager::SetMonomialOrderOldDRL));
+    CommandLineOptions.push_back(CommandLineOption(MONOMIAL_ORDER_LONG_KEY,
+                                                   MONOMIAL_ORDER_USAGE_COMMENT,
+                                                   monomialOrderValues));
 }
 
 void Launcher::PrintUsage() const

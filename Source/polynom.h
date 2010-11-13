@@ -6,6 +6,10 @@
 #include "monom.h"
 #include "fast_allocator.h"
 
+#ifdef __linux__
+#include <memory>
+#endif // __linux__
+
 
 class Polynom
 {
@@ -79,10 +83,10 @@ inline Polynom::Polynom(const Polynom& anotherPolynom)
               *iteratorAnother = anotherPolynom.MonomListHead;
         while (iteratorAnother)
         {
-            *iterator = new Monom(*iteratorAnother);
+            *iterator = Monom::GetNewMonom(*iteratorAnother);
 
-            iterator = &((*iterator)->mNext);
-            iteratorAnother = iteratorAnother->mNext;
+            iterator = &((*iterator)->Next);
+            iteratorAnother = iteratorAnother->Next;
         }
     }
 }
@@ -108,10 +112,10 @@ inline const Monom * const * Polynom::Find(const Monom& monom) const
         currentPointer = previousPointer;
         for (register unsigned long i = 0; i < middle; ++i)
         {
-            currentPointer = &((*currentPointer)->mNext);
+            currentPointer = &((*currentPointer)->Next);
         }
 
-        switch (Monom::Compare(**currentPointer, monom))
+        switch ((**currentPointer).Compare(monom))
         {
         case 1:
             previousPointer = currentPointer;
@@ -124,14 +128,14 @@ inline const Monom * const * Polynom::Find(const Monom& monom) const
             return currentPointer;
         }
     }
-    //return &((*previousPointer)->mNext);
+
     return previousPointer;
 }
 
 inline void Polynom::SetOne()
 {
     SetZero();
-    MonomListHead = new Monom();
+    MonomListHead = Monom::GetNewMonom();
 }
 
 inline void Polynom::SetZero()
@@ -142,7 +146,7 @@ inline void Polynom::SetZero()
         while (MonomListHead)
         {
             tmpMonom = MonomListHead;
-            MonomListHead = MonomListHead->mNext;
+            MonomListHead = MonomListHead->Next;
             delete tmpMonom;
         }
     }
@@ -159,7 +163,7 @@ inline unsigned long Polynom::Length() const
     Monom* iterator(MonomListHead);
     while (iterator)
     {
-        iterator = iterator->mNext;
+        iterator = iterator->Next;
         ++length;
     }
     return length;
@@ -185,8 +189,8 @@ inline const Monom& Polynom::Lm() const
     }
     else
     {
-        static Monom nullMonom = Monom();
-        return nullMonom;
+        static const std::auto_ptr<Monom> nullMonom(Monom::GetNewMonom());
+        return *nullMonom;
     }
 }
 
@@ -195,7 +199,7 @@ inline void Polynom::RidOfLm()
     if (MonomListHead)
     {
         Monom* tmpMonom(MonomListHead);
-        MonomListHead = MonomListHead->mNext;
+        MonomListHead = MonomListHead->Next;
         delete tmpMonom;
     }
 }
@@ -223,27 +227,27 @@ inline const Polynom& Polynom::operator=(const Polynom& anotherPolynom)
         while (*iterator && iteratorAnother)
         {
             **iterator = *iteratorAnother;
-            iterator = &((*iterator)->mNext);
-            iteratorAnother = iteratorAnother->mNext;
+            iterator = &((*iterator)->Next);
+            iteratorAnother = iteratorAnother->Next;
         }
 
         if (*iterator)
         {
-            Monom* monomToDelete = (*iterator)->mNext;
+            Monom* monomToDelete = (*iterator)->Next;
             *iterator = 0;
             while (monomToDelete)
             {
                 iteratorAnother = monomToDelete;
-                monomToDelete = monomToDelete->mNext;
+                monomToDelete = monomToDelete->Next;
                 delete iteratorAnother;
             }
         }
 
         while (iteratorAnother)
         {
-            *iterator = new Monom(*iteratorAnother);
-            iterator = &((*iterator)->mNext);
-            iteratorAnother = iteratorAnother->mNext;
+            *iterator = Monom::GetNewMonom(*iteratorAnother);
+            iterator = &((*iterator)->Next);
+            iteratorAnother = iteratorAnother->Next;
         }
     }
     return *this;
@@ -259,8 +263,8 @@ inline bool Polynom::operator==(const Polynom &anotherPolynom) const
         {
             break;
         }
-        iterator = iterator->mNext;
-        anotherIterator = anotherIterator->mNext;
+        iterator = iterator->Next;
+        anotherIterator = anotherIterator->Next;
     }
     return !iterator && !anotherIterator;
 }
@@ -275,8 +279,8 @@ inline bool Polynom::operator!=(const Polynom &anotherPolynom) const
         {
             break;
         }
-        iterator = iterator->mNext;
-        anotherIterator = anotherIterator->mNext;
+        iterator = iterator->Next;
+        anotherIterator = anotherIterator->Next;
     }
     return iterator || anotherIterator;
 }
@@ -287,7 +291,7 @@ inline bool Polynom::operator<(const Polynom& anotherPolynom) const
           *anotherIterator(anotherPolynom.MonomListHead);
     while (iterator && anotherIterator)
     {
-        switch (Monom::Compare(*iterator, *anotherIterator))
+        switch ((*iterator).Compare(*anotherIterator))
         {
             case -1:
                 return true;
@@ -296,8 +300,8 @@ inline bool Polynom::operator<(const Polynom& anotherPolynom) const
                 return false;
                 break;
             case 0:
-                iterator = iterator->mNext;
-                anotherIterator = anotherIterator->mNext;
+                iterator = iterator->Next;
+                anotherIterator = anotherIterator->Next;
                 break;
         }
     }
@@ -310,7 +314,7 @@ inline bool Polynom::operator>(const Polynom& anotherPolynom) const
           *anotherIterator(anotherPolynom.MonomListHead);
     while (iterator && anotherIterator)
     {
-        switch (Monom::Compare(*iterator, *anotherIterator))
+        switch ((*iterator).Compare(*anotherIterator))
         {
             case -1:
                 return false;
@@ -319,8 +323,8 @@ inline bool Polynom::operator>(const Polynom& anotherPolynom) const
                 return true;
                 break;
             case 0:
-                iterator = iterator->mNext;
-                anotherIterator = anotherIterator->mNext;
+                iterator = iterator->Next;
+                anotherIterator = anotherIterator->Next;
                 break;
         }
     }
@@ -333,7 +337,7 @@ inline int Polynom::Compare(const Polynom& polynomA, const Polynom& polynomB)
           *iteratorB(polynomB.MonomListHead);
     while (iteratorA && iteratorB)
     {
-        switch (Monom::Compare(*iteratorA, *iteratorB))
+        switch ((*iteratorA).Compare(*iteratorB))
         {
             case -1:
                 return -1;
@@ -342,8 +346,8 @@ inline int Polynom::Compare(const Polynom& polynomA, const Polynom& polynomB)
                 return 1;
                 break;
             case 0:
-                iteratorA = iteratorA->mNext;
-                iteratorB = iteratorB->mNext;
+                iteratorA = iteratorA->Next;
+                iteratorB = iteratorB->Next;
                 break;
         }
     }

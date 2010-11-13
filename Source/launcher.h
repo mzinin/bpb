@@ -33,7 +33,7 @@ private:
 
     public:
         CommandLineOption(const char shortKey, const std::string& longKey, const std::string& usageComment, void (SettingsManager::* const action)());
-        CommandLineOption(const char shortKey, const std::string& longKey, const std::string& usageComment, const std::list<OptionValue>& values);
+        CommandLineOption(const std::string& longKey, const std::string& usageComment, const std::list<OptionValue>& values);
         ~CommandLineOption();
 
         bool DetectKey(const std::string& option) const;

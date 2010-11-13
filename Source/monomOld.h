@@ -1,24 +1,18 @@
 #ifndef MONOMOLD_H
 #define MONOMOLD_H
 
-#include <iostream>
 #include <cstring>
 #include <bitset>
 #include <set>
 
-#include "variables.h"
 #include "fast_allocator.h"
+#include "monom.h"
 
-class MonomOld
+class MonomOld : public Monom
 {
-public:
-    typedef short int Integer;
+private:
+    unsigned long Exponent;
 
-protected:
-    Integer mTotalDegree;
-    unsigned long exp;
-
-    static Integer mDimIndepend;
     static FastAllocator Allocator;
     static unsigned long Zero[64], One[64];
     static unsigned short Data[][4];
@@ -31,178 +25,291 @@ protected:
         POMMARETNM = 3
     };
 
-public:
-    MonomOld* mNext;
-    static Variables* mIndepend;
+    friend class Monom;
+
+private:
+    MonomOld();
+    MonomOld(const Monom& anotherMonom);
+    const MonomOld* CastToMe(const Monom& monom) const;
 
 public:
-    static void AddVariable(const char *var);
-    static const char* GetVariable(Integer var);
-    static Integer DimIndepend();
+    ~MonomOld();
 
-    MonomOld() { memset(this, 0, sizeof(MonomOld)); }
-    MonomOld(const MonomOld& a) { memcpy(this, &a, sizeof(MonomOld)); }
-    ~MonomOld() { mNext = 0; };
+    Monom::Order GetOrder() const;
 
-    void* operator new(size_t) { return Allocator.Allocate(); }
-    void operator delete(void *ptr) { Allocator.Free(ptr); }
-
-    Integer Degree() const;
+    void* operator new(std::size_t);
+    void operator delete(void* ptr);
 
     Integer operator[](short var) const;
-    const MonomOld& operator=(const MonomOld& anotherMonom);
-    const MonomOld& operator*=(short var);
-    const MonomOld& operator*=(const MonomOld& anotherMonom);
-    void SetProductOf(const MonomOld& monomA, short var);
-    void SetProductOf(const MonomOld& monomA, const MonomOld& monomB);
-    const MonomOld& operator/=(const MonomOld& anotherMonom);
-    void SetQuotientOf(const MonomOld& monomA, const MonomOld& monomB);
 
-    bool operator==(const MonomOld& anotherMonom) const;
-    bool operator!=(const MonomOld& anotherMonom) const;
-    bool operator<(const MonomOld& anotherMonom) const;
-    bool operator>(const MonomOld& anotherMonom) const;
-    static int Compare(const MonomOld& monomA, const MonomOld& monomB);
+    const Monom& operator=(const Monom& anotherMonom);
+
+    const Monom& operator*=(short var);
+    const Monom& operator*=(const Monom& anotherMonom);
+    void SetProductOf(const Monom& anotherMonom, short var);
+    void SetProductOf(const Monom& monomA, const Monom& monomB);
+
+    const Monom& operator/=(const Monom& anotherMonom);
+    void SetQuotientOf(const Monom& monomA, const Monom& monomB);
 
     void SetOne();
 
-    bool IsDivisibleBy(const MonomOld& anotherMonom) const;
-    bool IsTrueDivisibleBy(const MonomOld& anotherMonom) const;
-    bool IsPommaretDivisibleBy(const MonomOld& anotherMonom) const;
+    bool operator==(const Monom& anotherMonom) const;
+    bool operator!=(const Monom& anotherMonom) const;
+    bool operator<(const Monom& anotherMonom) const;
+    bool operator>(const Monom& anotherMonom) const;
 
-    static short GcdDegree(const MonomOld& monomA, const MonomOld& monomB);
-    static short LcmDegree(const MonomOld& monomA, const MonomOld& monomB);
-    void SetGcdOf(const MonomOld& monomA, const MonomOld& monomB);
-    void SetLcmOf(const MonomOld& monomA, const MonomOld& monomB);
+    bool IsDivisibleBy(const Monom& anotherMonom) const;
+    bool IsTrueDivisibleBy(const Monom& anotherMonom) const;
+    bool IsPommaretDivisibleBy(const Monom& anotherMonom) const;
 
-    friend std::istream& operator>>(std::istream& in, MonomOld& a);
-    friend std::ostream& operator<<(std::ostream& out, const MonomOld& a);
+    void SetGcdOf(const Monom& monomA, const Monom& monomB);
+    void SetLcmOf(const Monom& monomA, const Monom& monomB);
 
     Integer FirstMultiVar() const;
     std::set<Integer> GetVariablesSet() const;
+
+    int Compare(const Monom& anotherMonom);
+    Integer GcdDegree(const Monom& anotherMonom);
+    Integer LcmDegree(const Monom& anotherMonom);
 };
 
-inline const MonomOld& MonomOld::operator=(const MonomOld& anotherMonom)
+inline MonomOld::MonomOld()
+    : Monom()
+    , Exponent(0)
 {
-    memcpy(this, &anotherMonom, sizeof(MonomOld));
-    return *this;
+}
+
+inline MonomOld::MonomOld(const Monom& anotherMonom)
+    : Monom()
+    , Exponent(0)
+{
+    const MonomOld* castedAnotherMonom = CastToMe(anotherMonom);
+
+    TotalDegree = castedAnotherMonom->TotalDegree;
+    Exponent = castedAnotherMonom->Exponent;
+}
+
+inline const MonomOld* MonomOld::CastToMe(const Monom& monom) const
+{
+    if (monom.GetOrder() != GetOrder())
+    {
+        throw 1;
+    }
+    return static_cast<const MonomOld*>(&monom);
+}
+
+inline MonomOld::~MonomOld()
+{
+    SetOne();
+}
+
+inline Monom::Order MonomOld::GetOrder() const
+{
+    return Monom::OldDRL;
+}
+
+inline void* MonomOld::operator new(std::size_t)
+{
+    return Allocator.Allocate();
+}
+
+inline void MonomOld::operator delete(void* ptr)
+{
+    Allocator.Free(ptr);
 }
 
 inline MonomOld::Integer MonomOld::operator[](short var) const
 {
-    return (exp & One[var]) != 0;
+    return (Exponent & One[var]) != 0;
 }
 
-inline MonomOld::Integer MonomOld::DimIndepend()
+inline const Monom& MonomOld::operator=(const Monom& anotherMonom)
 {
-    return mDimIndepend;
+    const MonomOld* castedAnotherMonom = CastToMe(anotherMonom);
+
+    TotalDegree = castedAnotherMonom->TotalDegree;
+    Exponent = castedAnotherMonom->Exponent;
+    return *this;
 }
 
-inline MonomOld::Integer MonomOld::Degree() const
+inline const Monom& MonomOld::operator*=(short var)
 {
-    return mTotalDegree;
+    if (!(Exponent & One[var]))
+    {
+        Exponent |= One[var];
+        ++TotalDegree;
+    }
+    return *this;
+}
+
+inline const Monom& MonomOld::operator*=(const Monom& anotherMonom)
+{
+    const MonomOld* castedAnotherMonom = CastToMe(anotherMonom);
+
+    Exponent |= castedAnotherMonom->Exponent;
+    unsigned short *s = (unsigned short*)&Exponent;
+    TotalDegree = Data[*s][DEGREE];
+    for (register int i = 1; i < 4; ++i)
+    {
+        ++s;
+        TotalDegree += Data[*s][DEGREE];
+    }
+    return *this;
+}
+
+inline void MonomOld::SetProductOf(const Monom& anotherMonom, short var)
+{
+    const MonomOld* castedAnotherMonom = CastToMe(anotherMonom);
+
+    Exponent = castedAnotherMonom->Exponent;
+    Exponent |= One[var];
+    unsigned short *s = (unsigned short*)&Exponent;
+    TotalDegree = Data[*s][DEGREE];
+    for (register int i = 1; i < 4; ++i)
+    {
+        ++s;
+        TotalDegree += Data[*s][DEGREE];
+    }
+}
+
+inline void MonomOld::SetProductOf(const Monom& monomA, const Monom& monomB)
+{
+    const MonomOld* castedMonomA = CastToMe(monomA);
+    const MonomOld* castedMonomB = CastToMe(monomB);
+
+    Exponent = castedMonomA->Exponent | castedMonomB->Exponent;
+    unsigned short *s = (unsigned short*)&Exponent;
+    TotalDegree = Data[*s][DEGREE];
+    for (register int i = 1; i < 4; ++i)
+    {
+        ++s;
+        TotalDegree += Data[*s][DEGREE];
+    }
+}
+
+inline const Monom& MonomOld::operator/=(const Monom& anotherMonom)
+{
+    const MonomOld* castedAnotherMonom = CastToMe(anotherMonom);
+
+    Exponent ^= castedAnotherMonom->Exponent;
+    unsigned short *s = (unsigned short*)&Exponent;
+    TotalDegree = Data[*s][DEGREE];
+    for (register int i = 1; i < 4; ++i)
+    {
+        ++s;
+        TotalDegree += Data[*s][DEGREE];
+    }
+    return *this;
+}
+
+inline void MonomOld::SetQuotientOf(const Monom& monomA, const Monom& monomB)
+{
+    const MonomOld* castedMonomA = CastToMe(monomA);
+    const MonomOld* castedMonomB = CastToMe(monomB);
+
+    TotalDegree = castedMonomA->TotalDegree - castedMonomB->TotalDegree;
+    Exponent = castedMonomA->Exponent ^ castedMonomB->Exponent;
 }
 
 inline void MonomOld::SetOne()
 {
-    mTotalDegree = 0;
-    exp = 0;
+    TotalDegree = 0;
+    Exponent = 0;
 }
 
-inline const MonomOld& MonomOld::operator*=(short var)
+inline bool MonomOld::operator==(const Monom& anotherMonom) const
 {
-    if (!(exp & One[var]))
+    const MonomOld* castedAnotherMonom = CastToMe(anotherMonom);
+
+    return Exponent == castedAnotherMonom->Exponent;
+}
+
+inline bool MonomOld::operator!=(const Monom& anotherMonom) const
+{
+    const MonomOld* castedAnotherMonom = CastToMe(anotherMonom);
+
+    return Exponent != castedAnotherMonom->Exponent;
+}
+
+inline bool MonomOld::operator<(const Monom& anotherMonom) const
+{
+    const MonomOld* castedAnotherMonom = CastToMe(anotherMonom);
+
+    if (TotalDegree < castedAnotherMonom->TotalDegree)
     {
-        exp |= One[var];
-        ++mTotalDegree;
+        return true;
     }
-    return *this;
-}
-
-inline const MonomOld& MonomOld::operator/=(const MonomOld& anotherMonom)
-{
-    exp ^= anotherMonom.exp;
-    unsigned short *s = (unsigned short*)&exp;
-    mTotalDegree = Data[*s][DEGREE];
-    for (register int i=1; i<4; ++i)
-    {
-        ++s;
-        mTotalDegree += Data[*s][DEGREE];
-    }
-    return *this;
-}
-
-inline const MonomOld& MonomOld::operator*=(const MonomOld& anotherMonom)
-{
-    exp |= anotherMonom.exp;
-    unsigned short *s = (unsigned short*)&exp;
-    mTotalDegree = Data[*s][DEGREE];
-    for (int i=1; i<4; ++i)
-    {
-        ++s;
-        mTotalDegree += Data[*s][DEGREE];
-    }
-    return *this;
-}
-
-inline void MonomOld::SetProductOf(const MonomOld& monomA, short var)
-{
-    exp = monomA.exp;
-    exp |= One[var];
-    unsigned short *s = (unsigned short*)&exp;
-    mTotalDegree = Data[*s][DEGREE];
-    for (int i=1; i<4; ++i)
-    {
-        ++s;
-        mTotalDegree += Data[*s][DEGREE];
-    }
-}
-
-inline void MonomOld::SetProductOf(const MonomOld& monomA, const MonomOld& monomB)
-{
-    exp = monomA.exp | monomB.exp;
-    unsigned short *s = (unsigned short*)&exp;
-    mTotalDegree = Data[*s][DEGREE];
-    for (int i=1; i<4; ++i)
-    {
-        ++s;
-        mTotalDegree += Data[*s][DEGREE];
-    }
-}
-
-inline bool MonomOld::IsDivisibleBy(const MonomOld& anotherMonom) const
-{
-    unsigned long d(exp ^ anotherMonom.exp);
-    d &= anotherMonom.exp;
-    return d == 0;
-}
-
-inline bool MonomOld::IsTrueDivisibleBy(const MonomOld& anotherMonom) const
-{
-    unsigned long d(exp ^ anotherMonom.exp);
-    if (d==0)
+    else if (TotalDegree > castedAnotherMonom->TotalDegree)
     {
         return false;
     }
     else
     {
-        d &= anotherMonom.exp;
-        return d == 0;
+        if (Exponent > castedAnotherMonom->Exponent)
+            return true;
+        else
+            return false;
     }
 }
 
-inline bool MonomOld::IsPommaretDivisibleBy(const MonomOld& anotherMonom) const
+inline bool MonomOld::operator>(const Monom& anotherMonom) const
 {
-    if (!exp && anotherMonom.exp)
+    const MonomOld* castedAnotherMonom = CastToMe(anotherMonom);
+
+    if (TotalDegree < castedAnotherMonom->TotalDegree)
     {
         return false;
     }
-    //эта проверка идентична if(!d)
-    //if (exp == a.exp)
-    //	return true;
+    else if (TotalDegree > castedAnotherMonom->TotalDegree)
+    {
+        return true;
+    }
+    else
+    {
+        if (Exponent < castedAnotherMonom->Exponent)
+            return true;
+        else
+            return false;
+    }
+}
 
-    unsigned long d(exp ^ anotherMonom.exp);
-    unsigned short *iterD = (unsigned short*)&d, *iterA = (unsigned short*)&anotherMonom.exp + 3;
+inline bool MonomOld::IsDivisibleBy(const Monom& anotherMonom) const
+{
+    const MonomOld* castedAnotherMonom = CastToMe(anotherMonom);
+
+    unsigned long d(Exponent ^ castedAnotherMonom->Exponent);
+    d &= castedAnotherMonom->Exponent;
+    return !d;
+}
+
+inline bool MonomOld::IsTrueDivisibleBy(const Monom& anotherMonom) const
+{
+    const MonomOld* castedAnotherMonom = CastToMe(anotherMonom);
+
+    unsigned long d(Exponent ^ castedAnotherMonom->Exponent);
+    if (!d)
+    {
+        return false;
+    }
+    else
+    {
+        d &= castedAnotherMonom->Exponent;
+        return !d;
+    }
+}
+
+inline bool MonomOld::IsPommaretDivisibleBy(const Monom& anotherMonom) const
+{
+    const MonomOld* castedAnotherMonom = CastToMe(anotherMonom);
+
+    if (!Exponent && castedAnotherMonom->Exponent)
+    {
+        return false;
+    }
+
+    unsigned long d(Exponent ^ castedAnotherMonom->Exponent);
+    unsigned short *iterD = (unsigned short*)&d, *iterA = (unsigned short*)&castedAnotherMonom->Exponent + 3;
     //эта глупая проверка нужна лишь для того, чтобы вычислилось наконец d.
     //при уровне оптимизации O2 и выше значение переменной d не вычисляется
     //до первого непосредственного обращения.
@@ -224,179 +331,84 @@ inline bool MonomOld::IsPommaretDivisibleBy(const MonomOld& anotherMonom) const
     while (j >= 0)
     {
         if (*iterA) break;
-        iterA--;
-        j--;
+        --iterA;
+        --j;
     }
 
-    if (i < j) return false;
-    if (i > j) return true;
-    if (i == j)
-    {
-        if (Data[*iterD][FIRSTONE]>Data[*iterA][LASTONE])
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-}
-
-inline void MonomOld::SetQuotientOf(const MonomOld& monomA, const MonomOld& monomB)
-{
-    mTotalDegree = monomA.mTotalDegree - monomB.mTotalDegree;
-    exp = monomA.exp ^ monomB.exp;
-}
-
-inline short MonomOld::GcdDegree(const MonomOld& monomA, const MonomOld& monomB)
-{
-    unsigned long d(monomA.exp & monomB.exp);
-    unsigned short *s = (unsigned short*)&d;
-    short r = Data[*s][DEGREE];
-    for (register int i=1; i<4; ++i)
-    {
-        ++s;
-        r += Data[*s][DEGREE];
-    }
-    return r;
-}
-
-inline short MonomOld::LcmDegree(const MonomOld& monomA, const MonomOld& monomB)
-{
-    unsigned long d(monomA.exp | monomB.exp);
-    unsigned short *s = (unsigned short*)&d;
-    short r = Data[*s][DEGREE];
-    for (register int i=1; i<4; ++i)
-    {
-        ++s;
-        r += Data[*s][DEGREE];
-    }
-    return r;
-}
-
-inline void MonomOld::SetGcdOf(const MonomOld& monomA, const MonomOld& monomB)
-{
-    exp = monomA.exp & monomB.exp;
-    unsigned short *s = (unsigned short*)&exp;
-    mTotalDegree = Data[*s][DEGREE];
-    for (register int i=1; i<4; ++i)
-    {
-        ++s;
-        mTotalDegree += Data[*s][DEGREE];
-    }
-}
-
-inline void MonomOld::SetLcmOf(const MonomOld& monomA, const MonomOld& monomB)
-{
-    exp = monomA.exp | monomB.exp;
-    unsigned short *s = (unsigned short*)&exp;
-    mTotalDegree = Data[*s][DEGREE];
-    for (register int i=1; i<4; ++i)
-    {
-        ++s;
-        mTotalDegree += Data[*s][DEGREE];
-    }
-}
-
-inline int MonomOld::Compare(const MonomOld& monomA, const MonomOld& monomB)
-{
-    if (monomA.mTotalDegree < monomB.mTotalDegree)
-    {
-        return -1;
-    }
-    else if (monomA.mTotalDegree > monomB.mTotalDegree)
-    {
-        return 1;
-    }
-    else
-    {
-        if (monomA.exp < monomB.exp)
-            return 1;
-        else if (monomA.exp > monomB.exp)
-            return -1;
-        else
-            return 0;
-    }
-}
-
-inline bool MonomOld::operator<(const MonomOld& anotherMonom) const
-{
-    if (mTotalDegree < anotherMonom.mTotalDegree)
-    {
-        return true;
-    }
-    else if (mTotalDegree > anotherMonom.mTotalDegree)
+    if (i < j)
     {
         return false;
     }
-    else
-    {
-        if (exp > anotherMonom.exp)
-            return true;
-        else
-            return false;
-    }
-}
-
-inline bool MonomOld::operator>(const MonomOld& anotherMonom) const
-{
-    if (mTotalDegree < anotherMonom.mTotalDegree)
-    {
-        return false;
-    }
-    else if (mTotalDegree > anotherMonom.mTotalDegree)
+    if (i > j)
     {
         return true;
     }
-    else
+    if (i == j && Data[*iterD][FIRSTONE]>Data[*iterA][LASTONE])
     {
-        if (exp < anotherMonom.exp)
-            return true;
-        else
-            return false;
+        return true;
+    }
+
+    return false;
+}
+
+inline void MonomOld::SetGcdOf(const Monom& monomA, const Monom& monomB)
+{
+    const MonomOld* castedMonomA = CastToMe(monomA);
+    const MonomOld* castedMonomB = CastToMe(monomB);
+
+    Exponent = castedMonomA->Exponent & castedMonomB->Exponent;
+    unsigned short *s = (unsigned short*)&Exponent;
+    TotalDegree = Data[*s][DEGREE];
+    for (register int i = 1; i < 4; ++i)
+    {
+        ++s;
+        TotalDegree += Data[*s][DEGREE];
     }
 }
 
-inline bool MonomOld::operator==(const MonomOld& anotherMonom) const
+inline void MonomOld::SetLcmOf(const Monom& monomA, const Monom& monomB)
 {
-    return exp == anotherMonom.exp;
-}
+    const MonomOld* castedMonomA = CastToMe(monomA);
+    const MonomOld* castedMonomB = CastToMe(monomB);
 
-inline bool MonomOld::operator!=(const MonomOld& anotherMonom) const
-{
-    return exp != anotherMonom.exp;
+    Exponent = castedMonomA->Exponent | castedMonomB->Exponent;
+    unsigned short *s = (unsigned short*)&Exponent;
+    TotalDegree = Data[*s][DEGREE];
+    for (register int i = 1; i < 4; ++i)
+    {
+        ++s;
+        TotalDegree += Data[*s][DEGREE];
+    }
 }
 
 inline short MonomOld::FirstMultiVar() const
 {
-    if (exp == 0)
+    if (!Exponent)
     {
         return 0;
     }
-    else
+
+    unsigned long tmp = Exponent;
+    short result = -1;
+    while (tmp > 0)
     {
-        unsigned long tmp = exp;
-        short result = -1;
-        while (tmp > 0)
-        {
-            tmp = tmp >> 1;
-            ++result;
-        }
-        return result;
+        tmp = tmp >> 1;
+        ++result;
     }
+    return result;
 }
 
 inline std::set<MonomOld::Integer> MonomOld::GetVariablesSet() const
 {
     std::set<Integer> result;
-    for (register Integer i = 0; i < DimIndepend(); ++i)
+    for (register Integer i = 0; i < DimIndepend; ++i)
     {
-        if((exp & One[i]))
+        if((Exponent & One[i]))
         {
             result.insert(i);
         }
     }
+    return result;
 }
 
 #endif // MONOMOLD_H
