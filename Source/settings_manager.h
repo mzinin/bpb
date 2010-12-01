@@ -27,6 +27,8 @@ public:
 
 private:
     SettingsManager();
+    SettingsManager(const SettingsManager&);
+    SettingsManager& operator=(const SettingsManager&);
 
     void SetCollectStatisticsEnabled();
     void SetCollectStatisticsDisabled();

@@ -16,7 +16,9 @@ public:
     void PrintBriefStatistics(std::ostream& out) const;
 
 private:
-   ResourceCounter();
+    ResourceCounter();
+    ResourceCounter(const ResourceCounter&);
+    ResourceCounter& operator=(const ResourceCounter&);
 
 friend ResourceCounter& GetResourceCounter();
 };

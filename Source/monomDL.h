@@ -239,6 +239,10 @@ inline MonomDL::Integer MonomDL::operator[](MonomDL::Integer var) const
 inline const Monom& MonomDL::operator=(const Monom& anotherMonom)
 {
     const MonomDL* castedAnotherMonom = CastToMe(anotherMonom);
+    if (this == castedAnotherMonom)
+    {
+        return *this;
+    }
 
     if (!castedAnotherMonom->ListHead)
     {

@@ -238,6 +238,10 @@ inline MonomLex::Integer MonomLex::operator[](MonomLex::Integer var) const
 inline const Monom& MonomLex::operator=(const Monom& anotherMonom)
 {
     const MonomLex* castedAnotherMonom = CastToMe(anotherMonom);
+    if (this == castedAnotherMonom)
+    {
+        return *this;
+    }
 
     if (!castedAnotherMonom->ListHead)
     {

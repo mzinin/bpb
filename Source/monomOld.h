@@ -127,6 +127,10 @@ inline MonomOld::Integer MonomOld::operator[](short var) const
 inline const Monom& MonomOld::operator=(const Monom& anotherMonom)
 {
     const MonomOld* castedAnotherMonom = CastToMe(anotherMonom);
+    if (this == castedAnotherMonom)
+    {
+        return *this;
+    }
 
     TotalDegree = castedAnotherMonom->TotalDegree;
     Exponent = castedAnotherMonom->Exponent;

@@ -273,6 +273,11 @@ void GroebnerBasis::Construct(const std::list<Polynom*>& set)
     ProlongationsSet.Insert(GBasis);
     GBasis.clear();
 
+    if (GetSettingsManager().GetCollectStatistics())
+    {
+        GetResourceCounter().NonMultiProlongations += ProlongationsSet.Size();
+    }
+
     ConstructInvolutiveBasis();
     ProlongationsSet.Clear();
 
