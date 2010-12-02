@@ -8,7 +8,9 @@ class ResourceCounter
 public:
     Timer GroebnerBasisTimer;
     unsigned long NonMultiProlongations;
+    unsigned long NonMultiProlongationsLength;
     unsigned long NonZeroReductions;
+    unsigned long NonZeroReductionsLength;
 
 public:
    ~ResourceCounter();

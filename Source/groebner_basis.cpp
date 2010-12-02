@@ -21,6 +21,12 @@ Polynom* GroebnerBasis::NormalForm(const Triple* triple)
         (*h) *= triple->GetVar();
     }
 
+    if (GetSettingsManager().GetCollectStatistics())
+    {
+        ++GetResourceCounter().NonMultiProlongations;
+        GetResourceCounter().NonMultiProlongationsLength += h->Length();
+    }
+
     while (!h->IsZero())
     {
         involutiveDivisor = IntermediateBasis.Find(h->Lm());
@@ -173,6 +179,7 @@ void GroebnerBasis::ConstructInvolutiveBasis()
             if (GetSettingsManager().GetCollectStatistics())
             {
                 ++GetResourceCounter().NonZeroReductions;
+                GetResourceCounter().NonZeroReductionsLength += newNormalForm->Length();
             }
 
             std::list<Triple*> newProlongations;
@@ -213,11 +220,6 @@ void GroebnerBasis::ConstructInvolutiveBasis()
             else
             {
                 IntermediateBasis.CollectNonMultiProlongations(--IntermediateBasis.End(), newProlongations);
-            }
-
-            if (GetSettingsManager().GetCollectStatistics())
-            {
-                GetResourceCounter().NonMultiProlongations += newProlongations.size();
             }
 
             ProlongationsSet.Insert(newProlongations);
@@ -272,11 +274,6 @@ void GroebnerBasis::Construct(const std::list<Polynom*>& set)
 
     ProlongationsSet.Insert(GBasis);
     GBasis.clear();
-
-    if (GetSettingsManager().GetCollectStatistics())
-    {
-        GetResourceCounter().NonMultiProlongations += ProlongationsSet.Size();
-    }
 
     ConstructInvolutiveBasis();
     ProlongationsSet.Clear();

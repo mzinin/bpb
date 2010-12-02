@@ -7,7 +7,9 @@
 ResourceCounter::ResourceCounter()
     : GroebnerBasisTimer()
     , NonMultiProlongations(0)
+    , NonMultiProlongationsLength(0)
     , NonZeroReductions(0)
+    , NonZeroReductionsLength(0)
 {
 }
 
@@ -24,6 +26,12 @@ void ResourceCounter::PrintFullStatistics(std::ostream& out) const
 
     out << std::setw(38) << std::left << "Zero Reductions made" << ": " << NonMultiProlongations - NonZeroReductions
         << " (" << std::fixed << std::setprecision(2) << double(NonMultiProlongations - NonZeroReductions) / NonMultiProlongations * 100 << "%)" << std::endl << std::endl;
+
+    out << std::setw(41) << std::left << "Average Non-Multiple Prolongation length" << ": "
+        << std::setprecision(2) << double(NonMultiProlongationsLength) / NonMultiProlongations << std::endl;
+
+    out << std::setw(41) << std::left << "Average Non-Zero Reduction length" << ": "
+        << std::setprecision(2) << double(NonZeroReductionsLength) / NonZeroReductions << std::endl << std::endl;
 
     PrintBriefStatistics(out);
 }
