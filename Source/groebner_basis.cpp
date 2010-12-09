@@ -270,7 +270,9 @@ void GroebnerBasis::Construct(const std::list<Polynom*>& set)
         }
     }
 
+    GetResourceCounter().AutoReductionTimer.Start();
     ReduceSet();
+    GetResourceCounter().AutoReductionTimer.Stop();
 
     ProlongationsSet.Insert(GBasis);
     GBasis.clear();

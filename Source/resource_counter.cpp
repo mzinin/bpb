@@ -6,6 +6,7 @@
 
 ResourceCounter::ResourceCounter()
     : GroebnerBasisTimer()
+    , AutoReductionTimer()
     , NonMultiProlongations(0)
     , NonMultiProlongationsLength(0)
     , NonZeroReductions(0)
@@ -38,7 +39,7 @@ void ResourceCounter::PrintFullStatistics(std::ostream& out) const
 
 void ResourceCounter::PrintBriefStatistics(std::ostream& out) const
 {
-    out << "memory used: ";
+    out << std::setw(19) << "Memory used" << ": ";
     unsigned long usedMemory = FastAllocator::GetUsedMemory();
     if (usedMemory < 1024*1024)
     {
@@ -53,7 +54,9 @@ void ResourceCounter::PrintBriefStatistics(std::ostream& out) const
         out << std::fixed << std::setprecision(3) << double(usedMemory) / 1024 / 1024 / 1024 << " Gb" << std::endl;
     }
 
-    out << GroebnerBasisTimer << std::endl;
+    out << std::setw(19) << "AutoReduction time" << ": " << std::setprecision(2) << AutoReductionTimer.GetRealTime() << " sec" << std::endl;
+
+    out << std::setw(19) << "Running time" << ": " << std::setprecision(2) << GroebnerBasisTimer.GetRealTime() << " sec" << std::endl << std::endl;
 }
 
 ResourceCounter& GetResourceCounter()

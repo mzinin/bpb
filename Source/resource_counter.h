@@ -7,6 +7,7 @@ class ResourceCounter
 {
 public:
     Timer GroebnerBasisTimer;
+    Timer AutoReductionTimer;
     unsigned long NonMultiProlongations;
     unsigned long NonMultiProlongationsLength;
     unsigned long NonZeroReductions;
