@@ -13,11 +13,11 @@ JanetTree::~JanetTree()
 
 const Triple* JanetTree::Find(const Monom& monom) const
 {
-    const Triple* triple(0);
+    const Triple* triple = 0;
 
     if (Root)
     {
-        ConstIterator nodeIterator(Root);
+        ConstIterator nodeIterator = Root;
         Monom::Integer degree = monom.Degree();
         Monom::Integer var = 0;
         do
@@ -53,7 +53,12 @@ const Triple* JanetTree::Find(const Monom& monom) const
 
 void JanetTree::Delete(const Triple *triple)
 {
-    Iterator nodeIterator(Root);
+    if (!triple)
+    {
+        return;
+    }
+
+    Iterator nodeIterator = Root;
     //count bifurcations
     Monom::Integer var = 0;
     unsigned bifurcations = 0;
@@ -96,7 +101,7 @@ void JanetTree::Delete(const Triple *triple)
 
     if (nodeIterator.HasNextDegree() && nodeIterator.HasNextVariable())
     {
-        bifurcations--;
+        --bifurcations;
     }
     if (!bifurcations)
     {
@@ -117,7 +122,7 @@ void JanetTree::Delete(const Triple *triple)
             nodeIterator.StepNextDegree();
             if (nodeIterator.HasNextDegree() && nodeIterator.HasNextVariable())
             {
-                bifurcations--;
+                --bifurcations;
             }
         }
 
@@ -139,7 +144,7 @@ void JanetTree::Delete(const Triple *triple)
         nodeIterator.StepNextVariable();
         if (nodeIterator.HasNextDegree() && nodeIterator.HasNextVariable())
         {
-            bifurcations--;
+            --bifurcations;
         }
         if (!bifurcations)
         {
@@ -171,6 +176,11 @@ void JanetTree::Delete(const Triple *triple)
 
 void JanetTree::Insert(Triple* triple)
 {
+    if (!triple)
+    {
+        return;
+    }
+
     Monom::Integer degree = triple->GetPolyLm().Degree();
     JanetTree::Iterator nodeIterator(Root);
 
@@ -222,7 +232,7 @@ std::set<Monom::Integer> JanetTree::NonMulti(const Triple* triple) const
 {
     std::set<Monom::Integer> result;
 
-    if (Root)
+    if (triple && Root)
     {
         ConstIterator nodeIterator(Root);
         Monom::Integer var = 0;

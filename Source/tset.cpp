@@ -22,7 +22,7 @@ void TSet::Clear()
         DegreeInfos.clear();
     }
 
-    Iterator it(TripleList.begin());
+    Iterator it = TripleList.begin();
     while (it != TripleList.end())
     {
         delete *it;

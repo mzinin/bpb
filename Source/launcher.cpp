@@ -209,6 +209,7 @@ bool Launcher::Run()
         PrintUsage();
         return true;
     }
+
     if (GetSettingsManager().GetPrintVersion())
     {
         PrintVersion();
@@ -221,6 +222,7 @@ bool Launcher::Run()
         PrintUsage();
         return false;
     }
+
     if (!GetTaskFromFile())
     {
         return false;

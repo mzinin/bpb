@@ -4,7 +4,7 @@ int MonomOld::Compare(const Monom& anotherMonom)
 {
     const MonomOld* castedAnotherMonom = CastToMe(anotherMonom);
 
-    if (TotalDegree < castedAnotherMonom->TotalDegree)
+    if (!castedAnotherMonom || TotalDegree < castedAnotherMonom->TotalDegree)
     {
         return -1;
     }
@@ -26,6 +26,10 @@ int MonomOld::Compare(const Monom& anotherMonom)
 MonomOld::Integer MonomOld::GcdDegree(const Monom& anotherMonom)
 {
     const MonomOld* castedAnotherMonom = CastToMe(anotherMonom);
+    if (!castedAnotherMonom)
+    {
+        return 0;
+    }
 
     unsigned long d(Exponent & castedAnotherMonom->Exponent);
     unsigned short *s = (unsigned short*)&d;
@@ -41,6 +45,10 @@ MonomOld::Integer MonomOld::GcdDegree(const Monom& anotherMonom)
 MonomOld::Integer MonomOld::LcmDegree(const Monom& anotherMonom)
 {
     const MonomOld* castedAnotherMonom = CastToMe(anotherMonom);
+    if (!castedAnotherMonom)
+    {
+        return 0;
+    }
 
     unsigned long d(Exponent | castedAnotherMonom->Exponent);
     unsigned short *s = (unsigned short*)&d;

@@ -116,7 +116,7 @@ inline MonomDL::MonomDL(const Monom& anotherMonom)
 {
     const MonomDL* castedAnotherMonom = CastToMe(anotherMonom);
 
-    if (!castedAnotherMonom->ListHead)
+    if (!castedAnotherMonom || !castedAnotherMonom->ListHead)
     {
         return;
     }
@@ -239,7 +239,7 @@ inline MonomDL::Integer MonomDL::operator[](MonomDL::Integer var) const
 inline const Monom& MonomDL::operator=(const Monom& anotherMonom)
 {
     const MonomDL* castedAnotherMonom = CastToMe(anotherMonom);
-    if (this == castedAnotherMonom)
+    if (this == castedAnotherMonom || !castedAnotherMonom)
     {
         return *this;
     }
@@ -325,49 +325,51 @@ inline const Monom& MonomDL::operator*=(MonomDL::Integer var)
 
 inline const Monom& MonomDL::operator*=(const Monom& anotherMonom)
 {
-    const MonomDL* castedAnotherMonom = CastToMe(anotherMonom);
-
     if (!ListHead)
     {
-        *this = *castedAnotherMonom;
+        *this = anotherMonom;
     }
-    else if (castedAnotherMonom->ListHead)
+    else
     {
-        VarsListNode **iterator = &ListHead,
-                     *anotherIterator = castedAnotherMonom->ListHead;
-
-        while (*iterator && anotherIterator)
+        const MonomDL* castedAnotherMonom = CastToMe(anotherMonom);
+        if (castedAnotherMonom && castedAnotherMonom->ListHead)
         {
-            if ((*iterator)->Value == anotherIterator->Value)
+            VarsListNode **iterator = &ListHead,
+                         *anotherIterator = castedAnotherMonom->ListHead;
+
+            while (*iterator && anotherIterator)
             {
-                iterator = &((*iterator)->Next);
-                anotherIterator = anotherIterator->Next;
+                if ((*iterator)->Value == anotherIterator->Value)
+                {
+                    iterator = &((*iterator)->Next);
+                    anotherIterator = anotherIterator->Next;
+                }
+                else if ((*iterator)->Value < anotherIterator->Value)
+                {
+                    iterator = &((*iterator)->Next);
+                }
+                else
+                {
+                    VarsListNode* newNode = new VarsListNode();
+                    newNode->Value = anotherIterator->Value;
+                    newNode->Next = *iterator;
+                    *iterator = newNode;
+                    ++TotalDegree;
+
+                    iterator = &(newNode->Next);
+                    anotherIterator = anotherIterator->Next;
+                }
             }
-            else if ((*iterator)->Value < anotherIterator->Value)
+
+            while (anotherIterator)
             {
-                iterator = &((*iterator)->Next);
-            }
-            else
-            {
-                VarsListNode* newNode = new VarsListNode();
-                newNode->Value = anotherIterator->Value;
-                newNode->Next = *iterator;
-                *iterator = newNode;
+                *iterator = new VarsListNode();
+                (*iterator)->Value = anotherIterator->Value;
                 ++TotalDegree;
 
-                iterator = &(newNode->Next);
+                iterator = &((*iterator)->Next);
                 anotherIterator = anotherIterator->Next;
             }
-        }
-
-        while (anotherIterator)
-        {
-            *iterator = new VarsListNode();
-            (*iterator)->Value = anotherIterator->Value;
-            ++TotalDegree;
-
-            iterator = &((*iterator)->Next);
-            anotherIterator = anotherIterator->Next;
         }
     }
 
@@ -387,8 +389,8 @@ inline void MonomDL::SetProductOf(const Monom& monomA, const Monom& monomB)
 
     SetOne();
     VarsListNode **iterator = &ListHead,
-                 *iteratorA = castedMonomA->ListHead,
-                 *iteratorB = castedMonomB->ListHead;
+                 *iteratorA = castedMonomA ? castedMonomA->ListHead : 0,
+                 *iteratorB = castedMonomB ? castedMonomB->ListHead : 0;
 
     while (iteratorA && iteratorB)
     {
@@ -437,7 +439,7 @@ inline const Monom& MonomDL::operator/=(const Monom& anotherMonom)
     const MonomDL* castedAnotherMonom = CastToMe(anotherMonom);
 
     VarsListNode **iterator = &ListHead,
-                 *anotherIterator = castedAnotherMonom->ListHead;
+                 *anotherIterator = castedAnotherMonom ? castedAnotherMonom->ListHead : 0;
 
     while (*iterator && anotherIterator)
     {
@@ -465,8 +467,8 @@ inline void MonomDL::SetQuotientOf(const Monom& monomA, const Monom& monomB)
 
     SetOne();
     VarsListNode **iterator = &ListHead,
-                 *iteratorA = castedMonomA->ListHead,
-                 *iteratorB = castedMonomB->ListHead;
+                 *iteratorA = castedMonomA ? castedMonomA->ListHead : 0,
+                 *iteratorB = castedMonomB ? castedMonomB->ListHead : 0;
 
     while (iteratorA && iteratorB)
     {
@@ -517,7 +519,7 @@ inline bool MonomDL::operator==(const Monom& anotherMonom) const
 {
     const MonomDL* castedAnotherMonom = CastToMe(anotherMonom);
 
-    if (TotalDegree != castedAnotherMonom->TotalDegree)
+    if (!castedAnotherMonom || TotalDegree != castedAnotherMonom->TotalDegree)
     {
         return false;
     }
@@ -542,7 +544,7 @@ inline bool MonomDL::operator!=(const Monom& anotherMonom) const
 {
     const MonomDL* castedAnotherMonom = CastToMe(anotherMonom);
 
-    if (TotalDegree != castedAnotherMonom->TotalDegree)
+    if (!castedAnotherMonom || TotalDegree != castedAnotherMonom->TotalDegree)
     {
         return true;
     }
@@ -567,7 +569,7 @@ inline bool MonomDL::operator<(const Monom& anotherMonom) const
 {
     const MonomDL* castedAnotherMonom = CastToMe(anotherMonom);
 
-    if (TotalDegree < castedAnotherMonom->TotalDegree)
+    if (!castedAnotherMonom || TotalDegree < castedAnotherMonom->TotalDegree)
     {
         return true;
     }
@@ -600,7 +602,7 @@ inline bool MonomDL::operator>(const Monom& anotherMonom) const
 {
     const MonomDL* castedAnotherMonom = CastToMe(anotherMonom);
 
-    if (TotalDegree < castedAnotherMonom->TotalDegree)
+    if (!castedAnotherMonom || TotalDegree < castedAnotherMonom->TotalDegree)
     {
         return false;
     }
@@ -633,8 +635,8 @@ inline bool MonomDL::IsDivisibleBy(const Monom& anotherMonom) const
 {
     const MonomDL* castedAnotherMonom = CastToMe(anotherMonom);
 
-    VarsListNode *iterator(ListHead),
-                 *anotherIterator(castedAnotherMonom->ListHead);
+    VarsListNode *iterator = ListHead,
+                 *anotherIterator = castedAnotherMonom ? castedAnotherMonom->ListHead : 0;
     while (iterator && anotherIterator)
     {
         if (iterator->Value == anotherIterator->Value)
@@ -659,7 +661,7 @@ inline bool MonomDL::IsTrueDivisibleBy(const Monom& anotherMonom) const
 {
     const MonomDL* castedAnotherMonom = CastToMe(anotherMonom);
 
-    if (TotalDegree <= castedAnotherMonom->TotalDegree)
+    if (!castedAnotherMonom || TotalDegree <= castedAnotherMonom->TotalDegree)
     {
         return false;
     }
@@ -690,7 +692,7 @@ inline bool MonomDL::IsPommaretDivisibleBy(const Monom& anotherMonom) const
 {
     const MonomDL* castedAnotherMonom = CastToMe(anotherMonom);
 
-    if (TotalDegree < castedAnotherMonom->TotalDegree)
+    if (!castedAnotherMonom || TotalDegree < castedAnotherMonom->TotalDegree)
     {
         return false;
     }
@@ -721,8 +723,8 @@ inline void MonomDL::SetGcdOf(const Monom& monomA, const Monom& monomB)
 
     SetOne();
     VarsListNode **iterator = &ListHead,
-                 *iteratorA = castedMonomA->ListHead,
-                 *iteratorB = castedMonomB->ListHead;
+                 *iteratorA = castedMonomA ? castedMonomA->ListHead : 0,
+                 *iteratorB = castedMonomB ? castedMonomB->ListHead : 0;
 
     while (iteratorA && iteratorB)
     {

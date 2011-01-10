@@ -27,6 +27,11 @@ void FastAllocator::ExpandMemory()
          **end = begin + TSize * (PageSize - 1),
          **tmp;
 
+    if (!begin)
+    {
+        exit(EXIT_FAILURE);
+    }
+
     *(reinterpret_cast<void***>(end)) = FreeBlock;
     FreeBlock = static_cast<void**>(begin);
     do

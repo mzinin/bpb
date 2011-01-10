@@ -204,6 +204,11 @@ inline Monom::Integer JanetTree::Iterator::GetDegree() const
 
 inline void JanetTree::Iterator::Build(Monom::Integer degree, Monom::Integer var, Triple *triple)
 {
+    if (!triple)
+    {
+        return;
+    }
+
     Node* r =  new JanetTree::Node(triple->GetPolyLm()[var]);
     Node* j = r;
     while(degree > triple->GetPolyLm()[var])
@@ -221,9 +226,12 @@ inline void JanetTree::Iterator::Build(Monom::Integer degree, Monom::Integer var
 
 inline void JanetTree::Iterator::Delete()
 {
-    Node* tmp = *CurrentNode;
-    *CurrentNode = tmp->NextDegree;
-    delete tmp;
+    if (*CurrentNode)
+    {
+        Node* tmp = *CurrentNode;
+        *CurrentNode = tmp->NextDegree;
+        delete tmp;
+    }
 }
 
 inline void JanetTree::Iterator::Clear()

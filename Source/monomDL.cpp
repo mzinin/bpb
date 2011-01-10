@@ -4,7 +4,7 @@ int MonomDL::Compare(const Monom& anotherMonom)
 {
     const MonomDL* castedAnotherMonom = CastToMe(anotherMonom);
 
-    if (TotalDegree < castedAnotherMonom->TotalDegree)
+    if (!castedAnotherMonom || TotalDegree < castedAnotherMonom->TotalDegree)
     {
         return -1;
     }
@@ -38,8 +38,8 @@ MonomDL::Integer MonomDL::GcdDegree(const Monom& anotherMonom)
     const MonomDL* castedAnotherMonom = CastToMe(anotherMonom);
 
     Integer gcd = 0;
-    VarsListNode *iterator(ListHead),
-                 *iteratorAnother(castedAnotherMonom->ListHead);
+    VarsListNode *iterator = ListHead,
+                 *iteratorAnother = castedAnotherMonom ? castedAnotherMonom->ListHead : 0;
 
     while (iterator && iteratorAnother)
     {
@@ -66,8 +66,8 @@ MonomDL::Integer MonomDL::LcmDegree(const Monom& anotherMonom)
     const MonomDL* castedAnotherMonom = CastToMe(anotherMonom);
 
     Integer lcm = 0;
-    VarsListNode *iterator(ListHead),
-                 *iteratorAnother(castedAnotherMonom->ListHead);
+    VarsListNode *iterator = ListHead,
+                 *iteratorAnother = castedAnotherMonom ? castedAnotherMonom->ListHead : 0;
 
     while (iterator && iteratorAnother)
     {

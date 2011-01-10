@@ -11,7 +11,10 @@ QSet::QSet(const std::list<Polynom*>& basis)
     std::list<Polynom*>::const_iterator itBasis(basis.begin());
     while (itBasis != basis.end())
     {
-        TripleList.push_back(new Triple(*itBasis));
+        if (*itBasis)
+        {
+            TripleList.push_back(new Triple(*itBasis));
+        }
         ++itBasis;
     }
     TripleList.sort(Triple::Compare);
@@ -27,7 +30,10 @@ void QSet::Insert(std::list<Polynom*>& addList)
     std::list<Polynom*>::const_iterator itBasis(addList.begin());
     while ( itBasis != addList.end() )
     {
-        TripleList.push_back(new Triple(*itBasis));
+        if (*itBasis)
+        {
+            TripleList.push_back(new Triple(*itBasis));
+        }
         ++itBasis;
     }
     TripleList.sort(Triple::Compare);
@@ -59,6 +65,11 @@ void QSet::Clear()
 
 void QSet::DeleteDescendants(const Triple* ancestor)
 {
+    if (!ancestor)
+    {
+        return;
+    }
+
     std::list<Triple*>::iterator it(TripleList.begin());
     while ( it != TripleList.end() )
     {

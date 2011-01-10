@@ -8,6 +8,11 @@ Triple::Triple(Polynom *initialPolynom)
     , Nmp()
     , Var(-1)
 {
+    if (!initialPolynom)
+    {
+        throw 1;
+    }
+
     Poly = initialPolynom;
     Lm = &Poly->Lm();
     Anc = this;
@@ -26,6 +31,11 @@ Triple::Triple(Polynom *initialPolynom
     , Nmp()
     , Var(nmVar)
 {
+    if (!initialPolynom)
+    {
+        throw 1;
+    }
+
     if (Var == -1)
     {
         Poly = initialPolynom;

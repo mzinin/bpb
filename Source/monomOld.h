@@ -85,6 +85,10 @@ inline MonomOld::MonomOld(const Monom& anotherMonom)
     , Exponent(0)
 {
     const MonomOld* castedAnotherMonom = CastToMe(anotherMonom);
+    if (!castedAnotherMonom)
+    {
+        return;
+    }
 
     TotalDegree = castedAnotherMonom->TotalDegree;
     Exponent = castedAnotherMonom->Exponent;
@@ -127,7 +131,7 @@ inline MonomOld::Integer MonomOld::operator[](short var) const
 inline const Monom& MonomOld::operator=(const Monom& anotherMonom)
 {
     const MonomOld* castedAnotherMonom = CastToMe(anotherMonom);
-    if (this == castedAnotherMonom)
+    if (this == castedAnotherMonom || !castedAnotherMonom)
     {
         return *this;
     }
@@ -151,13 +155,16 @@ inline const Monom& MonomOld::operator*=(const Monom& anotherMonom)
 {
     const MonomOld* castedAnotherMonom = CastToMe(anotherMonom);
 
-    Exponent |= castedAnotherMonom->Exponent;
-    unsigned short *s = (unsigned short*)&Exponent;
-    TotalDegree = Data[*s][DEGREE];
-    for (register int i = 1; i < 4; ++i)
+    if (castedAnotherMonom)
     {
-        ++s;
-        TotalDegree += Data[*s][DEGREE];
+        Exponent |= castedAnotherMonom->Exponent;
+        unsigned short *s = (unsigned short*)&Exponent;
+        TotalDegree = Data[*s][DEGREE];
+        for (register int i = 1; i < 4; ++i)
+        {
+            ++s;
+            TotalDegree += Data[*s][DEGREE];
+        }
     }
     return *this;
 }
@@ -182,6 +189,11 @@ inline void MonomOld::SetProductOf(const Monom& monomA, const Monom& monomB)
     const MonomOld* castedMonomA = CastToMe(monomA);
     const MonomOld* castedMonomB = CastToMe(monomB);
 
+    if (!castedMonomA || !castedMonomB)
+    {
+        return;
+    }
+
     Exponent = castedMonomA->Exponent | castedMonomB->Exponent;
     unsigned short *s = (unsigned short*)&Exponent;
     TotalDegree = Data[*s][DEGREE];
@@ -196,13 +208,16 @@ inline const Monom& MonomOld::operator/=(const Monom& anotherMonom)
 {
     const MonomOld* castedAnotherMonom = CastToMe(anotherMonom);
 
-    Exponent ^= castedAnotherMonom->Exponent;
-    unsigned short *s = (unsigned short*)&Exponent;
-    TotalDegree = Data[*s][DEGREE];
-    for (register int i = 1; i < 4; ++i)
+    if (castedAnotherMonom)
     {
-        ++s;
-        TotalDegree += Data[*s][DEGREE];
+        Exponent ^= castedAnotherMonom->Exponent;
+        unsigned short *s = (unsigned short*)&Exponent;
+        TotalDegree = Data[*s][DEGREE];
+        for (register int i = 1; i < 4; ++i)
+        {
+            ++s;
+            TotalDegree += Data[*s][DEGREE];
+        }
     }
     return *this;
 }
@@ -211,6 +226,11 @@ inline void MonomOld::SetQuotientOf(const Monom& monomA, const Monom& monomB)
 {
     const MonomOld* castedMonomA = CastToMe(monomA);
     const MonomOld* castedMonomB = CastToMe(monomB);
+
+    if (!castedMonomA || !castedMonomB)
+    {
+        return;
+    }
 
     TotalDegree = castedMonomA->TotalDegree - castedMonomB->TotalDegree;
     Exponent = castedMonomA->Exponent ^ castedMonomB->Exponent;
@@ -226,21 +246,21 @@ inline bool MonomOld::operator==(const Monom& anotherMonom) const
 {
     const MonomOld* castedAnotherMonom = CastToMe(anotherMonom);
 
-    return Exponent == castedAnotherMonom->Exponent;
+    return castedAnotherMonom && Exponent == castedAnotherMonom->Exponent;
 }
 
 inline bool MonomOld::operator!=(const Monom& anotherMonom) const
 {
     const MonomOld* castedAnotherMonom = CastToMe(anotherMonom);
 
-    return Exponent != castedAnotherMonom->Exponent;
+    return !castedAnotherMonom || Exponent != castedAnotherMonom->Exponent;
 }
 
 inline bool MonomOld::operator<(const Monom& anotherMonom) const
 {
     const MonomOld* castedAnotherMonom = CastToMe(anotherMonom);
 
-    if (TotalDegree < castedAnotherMonom->TotalDegree)
+    if (!castedAnotherMonom || TotalDegree < castedAnotherMonom->TotalDegree)
     {
         return true;
     }
@@ -261,7 +281,7 @@ inline bool MonomOld::operator>(const Monom& anotherMonom) const
 {
     const MonomOld* castedAnotherMonom = CastToMe(anotherMonom);
 
-    if (TotalDegree < castedAnotherMonom->TotalDegree)
+    if (!castedAnotherMonom || TotalDegree < castedAnotherMonom->TotalDegree)
     {
         return false;
     }
@@ -281,6 +301,10 @@ inline bool MonomOld::operator>(const Monom& anotherMonom) const
 inline bool MonomOld::IsDivisibleBy(const Monom& anotherMonom) const
 {
     const MonomOld* castedAnotherMonom = CastToMe(anotherMonom);
+    if (!castedAnotherMonom)
+    {
+        return false;
+    }
 
     unsigned long d(Exponent ^ castedAnotherMonom->Exponent);
     d &= castedAnotherMonom->Exponent;
@@ -290,6 +314,10 @@ inline bool MonomOld::IsDivisibleBy(const Monom& anotherMonom) const
 inline bool MonomOld::IsTrueDivisibleBy(const Monom& anotherMonom) const
 {
     const MonomOld* castedAnotherMonom = CastToMe(anotherMonom);
+    if (!castedAnotherMonom)
+    {
+        return false;
+    }
 
     unsigned long d(Exponent ^ castedAnotherMonom->Exponent);
     if (!d)
@@ -307,7 +335,7 @@ inline bool MonomOld::IsPommaretDivisibleBy(const Monom& anotherMonom) const
 {
     const MonomOld* castedAnotherMonom = CastToMe(anotherMonom);
 
-    if (!Exponent && castedAnotherMonom->Exponent)
+    if (!castedAnotherMonom || !Exponent && castedAnotherMonom->Exponent)
     {
         return false;
     }
@@ -360,6 +388,11 @@ inline void MonomOld::SetGcdOf(const Monom& monomA, const Monom& monomB)
     const MonomOld* castedMonomA = CastToMe(monomA);
     const MonomOld* castedMonomB = CastToMe(monomB);
 
+    if (!castedMonomA || !castedMonomB)
+    {
+        return;
+    }
+
     Exponent = castedMonomA->Exponent & castedMonomB->Exponent;
     unsigned short *s = (unsigned short*)&Exponent;
     TotalDegree = Data[*s][DEGREE];
@@ -374,6 +407,11 @@ inline void MonomOld::SetLcmOf(const Monom& monomA, const Monom& monomB)
 {
     const MonomOld* castedMonomA = CastToMe(monomA);
     const MonomOld* castedMonomB = CastToMe(monomB);
+
+    if (!castedMonomA || !castedMonomB)
+    {
+        return;
+    }
 
     Exponent = castedMonomA->Exponent | castedMonomB->Exponent;
     unsigned short *s = (unsigned short*)&Exponent;
