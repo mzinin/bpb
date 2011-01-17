@@ -85,11 +85,6 @@ inline MonomOld::MonomOld(const Monom& anotherMonom)
     , Exponent(0)
 {
     const MonomOld* castedAnotherMonom = CastToMe(anotherMonom);
-    if (!castedAnotherMonom)
-    {
-        return;
-    }
-
     TotalDegree = castedAnotherMonom->TotalDegree;
     Exponent = castedAnotherMonom->Exponent;
 }
@@ -155,17 +150,15 @@ inline const Monom& MonomOld::operator*=(const Monom& anotherMonom)
 {
     const MonomOld* castedAnotherMonom = CastToMe(anotherMonom);
 
-    if (castedAnotherMonom)
+    Exponent |= castedAnotherMonom->Exponent;
+    unsigned short *s = (unsigned short*)&Exponent;
+    TotalDegree = Data[*s][DEGREE];
+    for (register int i = 1; i < 4; ++i)
     {
-        Exponent |= castedAnotherMonom->Exponent;
-        unsigned short *s = (unsigned short*)&Exponent;
-        TotalDegree = Data[*s][DEGREE];
-        for (register int i = 1; i < 4; ++i)
-        {
-            ++s;
-            TotalDegree += Data[*s][DEGREE];
-        }
+        ++s;
+        TotalDegree += Data[*s][DEGREE];
     }
+
     return *this;
 }
 
@@ -189,11 +182,6 @@ inline void MonomOld::SetProductOf(const Monom& monomA, const Monom& monomB)
     const MonomOld* castedMonomA = CastToMe(monomA);
     const MonomOld* castedMonomB = CastToMe(monomB);
 
-    if (!castedMonomA || !castedMonomB)
-    {
-        return;
-    }
-
     Exponent = castedMonomA->Exponent | castedMonomB->Exponent;
     unsigned short *s = (unsigned short*)&Exponent;
     TotalDegree = Data[*s][DEGREE];
@@ -208,17 +196,15 @@ inline const Monom& MonomOld::operator/=(const Monom& anotherMonom)
 {
     const MonomOld* castedAnotherMonom = CastToMe(anotherMonom);
 
-    if (castedAnotherMonom)
+    Exponent ^= castedAnotherMonom->Exponent;
+    unsigned short *s = (unsigned short*)&Exponent;
+    TotalDegree = Data[*s][DEGREE];
+    for (register int i = 1; i < 4; ++i)
     {
-        Exponent ^= castedAnotherMonom->Exponent;
-        unsigned short *s = (unsigned short*)&Exponent;
-        TotalDegree = Data[*s][DEGREE];
-        for (register int i = 1; i < 4; ++i)
-        {
-            ++s;
-            TotalDegree += Data[*s][DEGREE];
-        }
+        ++s;
+        TotalDegree += Data[*s][DEGREE];
     }
+
     return *this;
 }
 
@@ -226,11 +212,6 @@ inline void MonomOld::SetQuotientOf(const Monom& monomA, const Monom& monomB)
 {
     const MonomOld* castedMonomA = CastToMe(monomA);
     const MonomOld* castedMonomB = CastToMe(monomB);
-
-    if (!castedMonomA || !castedMonomB)
-    {
-        return;
-    }
 
     TotalDegree = castedMonomA->TotalDegree - castedMonomB->TotalDegree;
     Exponent = castedMonomA->Exponent ^ castedMonomB->Exponent;
@@ -245,22 +226,20 @@ inline void MonomOld::SetOne()
 inline bool MonomOld::operator==(const Monom& anotherMonom) const
 {
     const MonomOld* castedAnotherMonom = CastToMe(anotherMonom);
-
-    return castedAnotherMonom && Exponent == castedAnotherMonom->Exponent;
+    return Exponent == castedAnotherMonom->Exponent;
 }
 
 inline bool MonomOld::operator!=(const Monom& anotherMonom) const
 {
     const MonomOld* castedAnotherMonom = CastToMe(anotherMonom);
-
-    return !castedAnotherMonom || Exponent != castedAnotherMonom->Exponent;
+    return Exponent != castedAnotherMonom->Exponent;
 }
 
 inline bool MonomOld::operator<(const Monom& anotherMonom) const
 {
     const MonomOld* castedAnotherMonom = CastToMe(anotherMonom);
 
-    if (!castedAnotherMonom || TotalDegree < castedAnotherMonom->TotalDegree)
+    if (TotalDegree < castedAnotherMonom->TotalDegree)
     {
         return true;
     }
@@ -281,7 +260,7 @@ inline bool MonomOld::operator>(const Monom& anotherMonom) const
 {
     const MonomOld* castedAnotherMonom = CastToMe(anotherMonom);
 
-    if (!castedAnotherMonom || TotalDegree < castedAnotherMonom->TotalDegree)
+    if (TotalDegree < castedAnotherMonom->TotalDegree)
     {
         return false;
     }
@@ -301,11 +280,6 @@ inline bool MonomOld::operator>(const Monom& anotherMonom) const
 inline bool MonomOld::IsDivisibleBy(const Monom& anotherMonom) const
 {
     const MonomOld* castedAnotherMonom = CastToMe(anotherMonom);
-    if (!castedAnotherMonom)
-    {
-        return false;
-    }
-
     unsigned long d(Exponent ^ castedAnotherMonom->Exponent);
     d &= castedAnotherMonom->Exponent;
     return !d;
@@ -314,11 +288,6 @@ inline bool MonomOld::IsDivisibleBy(const Monom& anotherMonom) const
 inline bool MonomOld::IsTrueDivisibleBy(const Monom& anotherMonom) const
 {
     const MonomOld* castedAnotherMonom = CastToMe(anotherMonom);
-    if (!castedAnotherMonom)
-    {
-        return false;
-    }
-
     unsigned long d(Exponent ^ castedAnotherMonom->Exponent);
     if (!d)
     {
@@ -335,7 +304,7 @@ inline bool MonomOld::IsPommaretDivisibleBy(const Monom& anotherMonom) const
 {
     const MonomOld* castedAnotherMonom = CastToMe(anotherMonom);
 
-    if (!castedAnotherMonom || !Exponent && castedAnotherMonom->Exponent)
+    if (!Exponent && castedAnotherMonom->Exponent)
     {
         return false;
     }
@@ -388,11 +357,6 @@ inline void MonomOld::SetGcdOf(const Monom& monomA, const Monom& monomB)
     const MonomOld* castedMonomA = CastToMe(monomA);
     const MonomOld* castedMonomB = CastToMe(monomB);
 
-    if (!castedMonomA || !castedMonomB)
-    {
-        return;
-    }
-
     Exponent = castedMonomA->Exponent & castedMonomB->Exponent;
     unsigned short *s = (unsigned short*)&Exponent;
     TotalDegree = Data[*s][DEGREE];
@@ -407,11 +371,6 @@ inline void MonomOld::SetLcmOf(const Monom& monomA, const Monom& monomB)
 {
     const MonomOld* castedMonomA = CastToMe(monomA);
     const MonomOld* castedMonomB = CastToMe(monomB);
-
-    if (!castedMonomA || !castedMonomB)
-    {
-        return;
-    }
 
     Exponent = castedMonomA->Exponent | castedMonomB->Exponent;
     unsigned short *s = (unsigned short*)&Exponent;

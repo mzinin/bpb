@@ -5,7 +5,7 @@
 #include "resource_counter.h"
 #include "settings_manager.h"
 
-Polynom* GroebnerBasis::NormalForm(const Triple* triple)
+Polynom* GroebnerBasis::NormalForm(const Triple* triple) const
 {
     if (!triple)
     {
@@ -59,7 +59,7 @@ Polynom* GroebnerBasis::NormalForm(const Triple* triple)
     return normalForm;
 }
 
-const Polynom* GroebnerBasis::FindR(const Polynom* polynom, const std::list<Polynom*>& set)
+const Polynom* GroebnerBasis::FindDivisor(const Polynom* polynom, const std::list<Polynom*>& set, bool toGroebner) const
 {
     if (!polynom || polynom->IsZero())
     {
@@ -71,7 +71,11 @@ const Polynom* GroebnerBasis::FindR(const Polynom* polynom, const std::list<Poly
 
     while (it != setEnd)
     {
-        if (plm.IsDivisibleBy((**it).Lm()))
+        if (toGroebner && plm.IsDivisibleBy((**it).Lm()))
+        {
+            return *it;
+        }
+        else if (!toGroebner && plm.IsPommaretDivisibleBy((**it).Lm()))
         {
             return *it;
         }
@@ -81,7 +85,7 @@ const Polynom* GroebnerBasis::FindR(const Polynom* polynom, const std::list<Poly
     return 0;
 }
 
-Polynom* GroebnerBasis::Reduce(Polynom* polynom, const std::list<Polynom*>& set)
+Polynom* GroebnerBasis::Reduce(Polynom* polynom, const std::list<Polynom*>& set, bool toGroebner) const
 {
     if (!polynom)
     {
@@ -93,11 +97,11 @@ Polynom* GroebnerBasis::Reduce(Polynom* polynom, const std::list<Polynom*>& set)
 
     while (!polynom->IsZero())
     {
-        currentReducer = FindR(polynom, set);
+        currentReducer = FindDivisor(polynom, set, toGroebner);
         while (currentReducer)
         {
             polynom->Reduction(*currentReducer);
-            currentReducer = FindR(polynom, set);
+            currentReducer = FindDivisor(polynom, set, toGroebner);
         }
         if (!polynom->IsZero())
         {
@@ -110,7 +114,7 @@ Polynom* GroebnerBasis::Reduce(Polynom* polynom, const std::list<Polynom*>& set)
     return result;
 }
 
-void GroebnerBasis::ReduceSet()
+void GroebnerBasis::ReduceSet(bool toGroebner)
 {
     std::list<Polynom*> tmpPolySet;
     GBasis.sort(PointerMoreComparator<Polynom>());
@@ -119,7 +123,7 @@ void GroebnerBasis::ReduceSet()
     {
         Polynom* currentPolynom = GBasis.front();
         GBasis.pop_front();
-        currentPolynom = Reduce(currentPolynom, tmpPolySet);
+        currentPolynom = Reduce(currentPolynom, tmpPolySet, toGroebner);
 
         if (currentPolynom && !currentPolynom->IsZero())
         {
@@ -146,7 +150,7 @@ void GroebnerBasis::ReduceSet()
     {
         Polynom* currentPolynom = tmpPolySet.front();
         tmpPolySet.pop_front();
-        currentPolynom = Reduce(currentPolynom, tmpPolySet);
+        currentPolynom = Reduce(currentPolynom, tmpPolySet, toGroebner);
         if (!currentPolynom || currentPolynom->IsZero())
         {
             tmpPolySetSize--;
@@ -301,7 +305,7 @@ void GroebnerBasis::Construct(const std::list<Polynom*>& set)
         GBasis.push_back(const_cast<Polynom*>((**i2).GetPoly()));
         ++i2;
     }
-    ReduceSet();
+    ReduceSet(true);
 }
 
 const Polynom& GroebnerBasis::operator[](int num) const
