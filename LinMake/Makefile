@@ -21,10 +21,6 @@ myginv: myginv.o \
         resource_counter.o \
         polynom.o \
         monom.o \
-        monomOld.o \
-        monomLex.o \
-        monomDL.o \
-        monomDRL.o \
         fast_allocator.o \
         variables.o \
         timer.o
@@ -41,10 +37,6 @@ myginv: myginv.o \
             $(BINARY)/resource_counter.o \
             $(BINARY)/polynom.o \
             $(BINARY)/monom.o \
-            $(BINARY)/monomOld.o \
-            $(BINARY)/monomLex.o \
-            $(BINARY)/monomDL.o \
-            $(BINARY)/monomDRL.o \
             $(BINARY)/fast_allocator.o \
             $(BINARY)/variables.o \
             $(BINARY)/timer.o \
@@ -84,20 +76,8 @@ resource_counter.o: $(SOURCE)/timer.h $(SOURCE)/fast_allocator.h $(SOURCE)/resou
 polynom.o: $(SOURCE)/polynom.h $(SOURCE)/monom.h $(SOURCE)/fast_allocator.h
 	$(CXX) $(CXXFLAGS) $(SOURCE)/polynom.cpp -o $(BINARY)/polynom.o
 
-monom.o: $(SOURCE)/monomLex.h $(SOURCE)/monomDL.h $(SOURCE)/monomDRL.h $(SOURCE)/monomOld.h $(SOURCE)/variables.h
+monom.o: $(SOURCE)/monom.h $(SOURCE)/variables.h
 	$(CXX) $(CXXFLAGS) $(SOURCE)/monom.cpp -o $(BINARY)/monom.o
-
-monomDRL.o: $(SOURCE)/monom.h $(SOURCE)/monomDRL.h $(SOURCE)/fast_allocator.h
-	$(CXX) $(CXXFLAGS) $(SOURCE)/monomDRL.cpp -o $(BINARY)/monomDRL.o
-
-monomDL.o: $(SOURCE)/monom.h $(SOURCE)/monomDL.h $(SOURCE)/fast_allocator.h
-	$(CXX) $(CXXFLAGS) $(SOURCE)/monomDL.cpp  -o $(BINARY)/monomDL.o
-
-monomLex.o: $(SOURCE)/monom.h $(SOURCE)/monomLex.h $(SOURCE)/fast_allocator.h
-	$(CXX) $(CXXFLAGS) $(SOURCE)/monomLex.cpp -o $(BINARY)/monomLex.o
-
-monomOld.o: $(SOURCE)/monom.h $(SOURCE)/monomOld.h $(SOURCE)/fast_allocator.h
-	$(CXX) $(CXXFLAGS) $(SOURCE)/monomOld.cpp -o $(BINARY)/monomOld.o
 
 fast_allocator.o: $(SOURCE)/fast_allocator.h
 	$(CXX) $(CXXFLAGS) $(SOURCE)/fast_allocator.cpp -o $(BINARY)/fast_allocator.o

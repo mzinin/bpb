@@ -83,7 +83,7 @@ inline Polynom::Polynom(const Polynom& anotherPolynom)
               *iteratorAnother = anotherPolynom.MonomListHead;
         while (iteratorAnother)
         {
-            *iterator = Monom::GetNewMonom(*iteratorAnother);
+            *iterator = new Monom(*iteratorAnother);
 
             iterator = &((*iterator)->Next);
             iteratorAnother = iteratorAnother->Next;
@@ -135,7 +135,7 @@ inline const Monom * const * Polynom::Find(const Monom& monom) const
 inline void Polynom::SetOne()
 {
     SetZero();
-    MonomListHead = Monom::GetNewMonom();
+    MonomListHead = new Monom();
 }
 
 inline void Polynom::SetZero()
@@ -189,7 +189,7 @@ inline const Monom& Polynom::Lm() const
     }
     else
     {
-        static const std::auto_ptr<Monom> nullMonom(Monom::GetNewMonom());
+        static const std::auto_ptr<Monom> nullMonom(new Monom());
         return *nullMonom;
     }
 }
@@ -245,7 +245,7 @@ inline const Polynom& Polynom::operator=(const Polynom& anotherPolynom)
 
         while (iteratorAnother)
         {
-            *iterator = Monom::GetNewMonom(*iteratorAnother);
+            *iterator = new Monom(*iteratorAnother);
             iterator = &((*iterator)->Next);
             iteratorAnother = iteratorAnother->Next;
         }

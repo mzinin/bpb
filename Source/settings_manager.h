@@ -48,7 +48,6 @@ private:
     void SetMonomialOrderLex();
     void SetMonomialOrderDegLex();
     void SetMonomialOrderDegRevLex();
-    void SetMonomialOrderOldDRL();
 
     friend SettingsManager& GetSettingsManager();
     friend class Launcher;

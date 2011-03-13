@@ -31,10 +31,6 @@ myginv.exe: myginv.res \
             resource_counter.obj \
             polynom.obj \
             monom.obj \
-            monomOld.obj \
-            monomLex.obj \
-            monomDL.obj \
-            monomDRL.obj \
             fast_allocator.obj \
             variables.obj \
             timer.obj
@@ -53,10 +49,6 @@ myginv.exe: myginv.res \
             $(BINARY)\resource_counter.obj \
             $(BINARY)\polynom.obj \
             $(BINARY)\monom.obj \
-            $(BINARY)\monomOld.obj \
-            $(BINARY)\monomLex.obj \
-            $(BINARY)\monomDL.obj \
-            $(BINARY)\monomDRL.obj \
             $(BINARY)\fast_allocator.obj \
             $(BINARY)\variables.obj \
             $(BINARY)\timer.obj 2> NUL
@@ -100,20 +92,8 @@ resource_counter.obj: $(SOURCE)\timer.h $(SOURCE)\fast_allocator.h $(SOURCE)\res
 polynom.obj: $(SOURCE)\polynom.h $(SOURCE)\monom.h $(SOURCE)\fast_allocator.h
     $(CXX) $(CXXFLAGS) $(SOURCE)\polynom.cpp /Fo $(BINARY)\polynom.obj 2> NUL
 
-monom.obj: $(SOURCE)\monomLex.h $(SOURCE)\monomDL.h $(SOURCE)\monomDRL.h $(SOURCE)\monomOld.h $(SOURCE)\variables.h
+monom.obj: $(SOURCE)\monom.h $(SOURCE)\variables.h
     $(CXX) $(CXXFLAGS) $(SOURCE)\monom.cpp /Fo $(BINARY)\monom.obj 2> NUL
-
-monomDRL.obj: $(SOURCE)\monom.h $(SOURCE)\monomDRL.h $(SOURCE)\fast_allocator.h
-    $(CXX) $(CXXFLAGS) $(SOURCE)\monomDRL.cpp /Fo $(BINARY)\monomDRL.obj 2> NUL
-
-monomDL.obj: $(SOURCE)\monom.h $(SOURCE)\monomDL.h $(SOURCE)\fast_allocator.h
-    $(CXX) $(CXXFLAGS) $(SOURCE)\monomDL.cpp /Fo $(BINARY)\monomDL.obj 2> NUL
-
-monomLex.obj: $(SOURCE)\monom.h $(SOURCE)\monomLex.h $(SOURCE)\fast_allocator.h
-    $(CXX) $(CXXFLAGS) $(SOURCE)\monomLex.cpp /Fo $(BINARY)\monomLex.obj 2> NUL
-
-monomOld.obj: $(SOURCE)\monom.h $(SOURCE)\monomOld.h $(SOURCE)\fast_allocator.h
-    $(CXX) $(CXXFLAGS) $(SOURCE)\monomOld.cpp /Fo $(BINARY)\monomOld.obj 2> NUL
 
 fast_allocator.obj: $(SOURCE)\fast_allocator.h
     $(CXX) $(CXXFLAGS) $(SOURCE)\fast_allocator.cpp /Fo $(BINARY)\fast_allocator.obj 2> NUL

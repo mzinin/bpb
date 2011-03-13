@@ -9,7 +9,7 @@ const Polynom& Polynom::operator+=(const Monom& newMonom)
 
     if (!position)
     {
-        tmpMonom = Monom::GetNewMonom(newMonom);
+        tmpMonom = new Monom(newMonom);
         tmpMonom->Next = MonomListHead;
         MonomListHead = tmpMonom;
     }
@@ -23,7 +23,7 @@ const Polynom& Polynom::operator+=(const Monom& newMonom)
         }
         else
         {
-            tmpMonom = Monom::GetNewMonom(newMonom);
+            tmpMonom = new Monom(newMonom);
             tmpMonom->Next = (*position)->Next;
             (*position)->Next = tmpMonom;
         }
@@ -45,7 +45,7 @@ const Polynom& Polynom::operator+=(const Polynom& anotherPolynom)
             switch ((**iterator).Compare(*iteratorAnother))
             {
                 case -1:
-                    tmpMonom = Monom::GetNewMonom(*iteratorAnother);
+                    tmpMonom = new Monom(*iteratorAnother);
                     tmpMonom->Next = *iterator;
                     *iterator = tmpMonom;
                     iterator = &(tmpMonom->Next);
@@ -65,7 +65,7 @@ const Polynom& Polynom::operator+=(const Polynom& anotherPolynom)
 
         while (iteratorAnother)
         {
-            *iterator = Monom::GetNewMonom(*iteratorAnother);
+            *iterator = new Monom(*iteratorAnother);
             iterator = &((*iterator)->Next);
             iteratorAnother = iteratorAnother->Next;
         }
@@ -153,7 +153,7 @@ void Polynom::Reduction(const Polynom &anotherPolynom)
 {
     if (MonomListHead && anotherPolynom.MonomListHead)
     {
-        std::auto_ptr<Monom> tmpMonom(Monom::GetNewMonom());
+        std::auto_ptr<Monom> tmpMonom(new Monom());
         Polynom* tmpPolynom = 0;
         Monom* iterator = MonomListHead;
         const Monom& anotherLm = anotherPolynom.Lm();
@@ -204,7 +204,7 @@ void Polynom::HeadReduction(const Polynom &anotherPolynom)
 {
     if (MonomListHead && anotherPolynom.MonomListHead)
     {
-        std::auto_ptr<Monom> tmpMonom(Monom::GetNewMonom());
+        std::auto_ptr<Monom> tmpMonom(new Monom());
         Polynom* tmpPolynom = 0;
         Monom* iterator = MonomListHead;
         const Monom& anotherLm = anotherPolynom.Lm();
@@ -349,7 +349,7 @@ void Polynom::Bracket(std::istream& in)
     else
     {
         SetOne();
-        std::auto_ptr<Monom> tmpMonom(Monom::GetNewMonom());
+        std::auto_ptr<Monom> tmpMonom(new Monom());
         in >> *tmpMonom;
         if (!in.fail())
         {

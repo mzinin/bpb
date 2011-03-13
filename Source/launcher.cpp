@@ -46,8 +46,6 @@ namespace
     const char MONOMIAL_ORDER_DEGLEX_COMMENT[] = "degree lexicographic order";
     const char MONOMIAL_ORDER_DEGREVLEX_VALUE[]   = "degrevlex";
     const char MONOMIAL_ORDER_DEGREVLEX_COMMENT[] = "degree reverse lexicographic order";
-    const char MONOMIAL_ORDER_OLDDRL_VALUE[]   = "old";
-    const char MONOMIAL_ORDER_OLDDRL_COMMENT[] = "";
 }
 
 Launcher::CommandLineOption::OptionValue::OptionValue(const std::string& value,
@@ -314,10 +312,6 @@ void Launcher::FillOptions()
     monomialOrderValues.push_back(CommandLineOption::OptionValue(MONOMIAL_ORDER_DEGREVLEX_VALUE,
                                                                  MONOMIAL_ORDER_DEGREVLEX_COMMENT,
                                                                  &SettingsManager::SetMonomialOrderDegRevLex));
-    // undocumented value
-    monomialOrderValues.push_back(CommandLineOption::OptionValue(MONOMIAL_ORDER_OLDDRL_VALUE,
-                                                                 MONOMIAL_ORDER_OLDDRL_COMMENT,
-                                                                 &SettingsManager::SetMonomialOrderOldDRL));
     CommandLineOptions.push_back(CommandLineOption(MONOMIAL_ORDER_LONG_KEY,
                                                    MONOMIAL_ORDER_USAGE_COMMENT,
                                                    monomialOrderValues));

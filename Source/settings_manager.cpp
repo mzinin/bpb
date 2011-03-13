@@ -79,11 +79,6 @@ void SettingsManager::SetMonomialOrderDegRevLex()
     MonomialOrder = Monom::DegRevLex;
 }
 
-void SettingsManager::SetMonomialOrderOldDRL()
-{
-    MonomialOrder = Monom::OldDRL;
-}
-
 
 SettingsManager& GetSettingsManager()
 {
