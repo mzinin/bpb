@@ -210,7 +210,7 @@ bool JanetTree<MonomType>::Iterator::HasNextVariable() const
 }
 
 template <typename MonomType>
-typename JanetTree<MonomType>::Iterator::operator typename JanetTree<MonomType>::ConstIterator() const
+JanetTree<MonomType>::Iterator::operator typename JanetTree<MonomType>::ConstIterator() const
 {
     return *CurrentNode;
 }
@@ -296,8 +296,8 @@ const Triple<MonomType>* JanetTree<MonomType>::Find(const MonomType& monom) cons
     if (Root)
     {
         ConstIterator nodeIterator = Root;
-        MonomType::Integer degree = monom.Degree();
-        MonomType::Integer var = 0;
+        typename MonomType::Integer degree = monom.Degree();
+        typename MonomType::Integer var = 0;
         do
         {
             if (nodeIterator.GetDegree() != monom[var] && nodeIterator.HasNextDegree())
@@ -337,7 +337,7 @@ void JanetTree<MonomType>::Insert(Triple<MonomType>* triple)
         return;
     }
 
-    MonomType::Integer degree = triple->GetPolynomLm().Degree();
+    typename MonomType::Integer degree = triple->GetPolynomLm().Degree();
     JanetTree<MonomType>::Iterator nodeIterator(Root);
 
     if (!Root)
@@ -346,7 +346,7 @@ void JanetTree<MonomType>::Insert(Triple<MonomType>* triple)
     }
     else
     {
-        MonomType::Integer var = 0;
+        typename MonomType::Integer var = 0;
         do
         {
             while(nodeIterator.GetDegree() < triple->GetPolynomLm()[var] && nodeIterator.HasNextDegree())
@@ -385,7 +385,7 @@ void JanetTree<MonomType>::Delete(const Triple<MonomType>* triple)
 
     Iterator nodeIterator = Root;
     //count bifurcations
-    MonomType::Integer var = 0;
+    typename MonomType::Integer var = 0;
     unsigned bifurcations = 0;
 
     if (nodeIterator.HasNextDegree() && nodeIterator.HasNextVariable())
@@ -512,12 +512,12 @@ void JanetTree<MonomType>::Clear()
 template <typename MonomType>
 std::set<typename MonomType::Integer> JanetTree<MonomType>::NonMulti(const Triple<MonomType>* triple) const
 {
-    std::set<MonomType::Integer> result;
+    std::set<typename MonomType::Integer> result;
 
     if (triple && Root)
     {
         ConstIterator nodeIterator(Root);
-        MonomType::Integer var = 0;
+        typename MonomType::Integer var = 0;
         do
         {
             while (nodeIterator.GetDegree() < triple->GetPolynomLm()[var])

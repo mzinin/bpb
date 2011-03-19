@@ -464,7 +464,7 @@ void Launcher::ReadPolynomList(std::ifstream& inputFileStream, std::list<Polynom
 template<typename MonomType>
 void Launcher::ClearPolynomList(std::list<Polynom<MonomType>*>& list) const
 {
-    std::list<Polynom<MonomType>*>::iterator i(list.begin());
+    typename std::list<Polynom<MonomType>*>::iterator i(list.begin());
     for (; i != list.end(); ++i)
     {
         delete *i;
@@ -513,7 +513,7 @@ bool Launcher::CheckAnswer(GroebnerBasis<MonomType>& gBasis, std::list<Polynom<M
     }
     else
     {
-        std::list<Polynom<MonomType>*>::const_iterator iterAnswerList = initialAnswer.begin();
+        typename std::list<Polynom<MonomType>*>::const_iterator iterAnswerList = initialAnswer.begin();
         for (; iterAnswerList != initialAnswer.end(); ++iterAnswerList)
         {
             bool foundMatch = false;

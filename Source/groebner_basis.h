@@ -4,6 +4,7 @@
 #include <list>
 #include <algorithm>
 #include "pcomparator.h"
+#include "resource_counter.h"
 #include "qset.h"
 #include "tset.h"
 
@@ -24,7 +25,7 @@ public:
     const Polynom<MonomType>& operator[](int number) const;
     unsigned Length() const;
 
-    template <typename MonomType>
+    template <typename SomeMonomType>
     friend std::ostream& operator<<(std::ostream& out, const GroebnerBasis& groebnerBasis);
 
 private:
@@ -62,7 +63,7 @@ void GroebnerBasis<MonomType>::Construct(const std::list<Polynom<MonomType>*>& s
 
     if (GetSettingsManager().GetUseNovaInvolution())
     {
-        std::list<Polynom<MonomType>*>::const_iterator i1 = set.begin();
+        typename std::list<Polynom<MonomType>*>::const_iterator i1 = set.begin();
         for (; i1 != set.end(); ++i1)
         {
             if (!*i1)
@@ -70,7 +71,7 @@ void GroebnerBasis<MonomType>::Construct(const std::list<Polynom<MonomType>*>& s
                 continue;
             }
 
-            for (register MonomType::Integer var = 0; var < MonomType::GetDimIndepend(); ++var)
+            for (register typename MonomType::Integer var = 0; var < MonomType::GetDimIndepend(); ++var)
             {
                 GBasis.push_back(new Polynom<MonomType>(**i1));
                 (*GBasis.back()) *= var;
@@ -88,7 +89,7 @@ void GroebnerBasis<MonomType>::Construct(const std::list<Polynom<MonomType>*>& s
     ConstructInvolutiveBasis();
     ProlongationsSet.Clear();
 
-    TSet<MonomType>::ConstIterator i2(IntermediateBasis.Begin());
+    typename TSet<MonomType>::ConstIterator i2(IntermediateBasis.Begin());
     while (i2 != IntermediateBasis.End())
     {
         GBasis.push_back(const_cast<Polynom<MonomType>*>((**i2).GetPolynom()));
@@ -100,7 +101,7 @@ void GroebnerBasis<MonomType>::Construct(const std::list<Polynom<MonomType>*>& s
 template <typename MonomType>
 const Polynom<MonomType>& GroebnerBasis<MonomType>::operator[](int num) const
 {
-    std::list<Polynom<MonomType>*>::const_iterator it(GBasis.begin());
+    typename std::list<Polynom<MonomType>*>::const_iterator it(GBasis.begin());
     for (register unsigned i = Length()-1-num; i > 0; i--)
     {
         ++it;
@@ -179,7 +180,7 @@ const Polynom<MonomType>* GroebnerBasis<MonomType>::FindDivisor(const Polynom<Mo
         return 0;
     }
 
-    std::list<Polynom<MonomType>*>::const_iterator it(set.begin()), setEnd(set.end());
+    typename std::list<Polynom<MonomType>*>::const_iterator it(set.begin()), setEnd(set.end());
     const MonomType& plm = polynom->Lm();
 
     while (it != setEnd)
@@ -245,7 +246,7 @@ void GroebnerBasis<MonomType>::ReduceSet(bool toGroebner)
         if (currentPolynom && !currentPolynom->IsZero())
         {
             const MonomType& hLm = currentPolynom->Lm();
-            std::list<Polynom<MonomType>*>::iterator iteratorTmpPolySet = tmpPolySet.begin();
+            typename std::list<Polynom<MonomType>*>::iterator iteratorTmpPolySet = tmpPolySet.begin();
             while (iteratorTmpPolySet != tmpPolySet.end())
             {
                 if ((**iteratorTmpPolySet).Lm().IsDivisibleBy(hLm))
@@ -284,7 +285,7 @@ void GroebnerBasis<MonomType>::ReduceSet(bool toGroebner)
 template <typename MonomType>
 void GroebnerBasis<MonomType>::ConstructInvolutiveBasis()
 {
-    TSet<MonomType>::Iterator tit(IntermediateBasis.Begin());
+    typename TSet<MonomType>::Iterator tit(IntermediateBasis.Begin());
     Polynom<MonomType>* newNormalForm = 0;
     Triple<MonomType>* currentTriple = 0;
 
@@ -293,7 +294,7 @@ void GroebnerBasis<MonomType>::ConstructInvolutiveBasis()
         currentTriple = ProlongationsSet.Get();
         newNormalForm = NormalForm(currentTriple);
 
-        std::set<MonomType::Integer> currentNmpSet;
+        std::set<typename MonomType::Integer> currentNmpSet;
         const Triple<MonomType>* currentAncestor = 0;
         if (newNormalForm && !newNormalForm->IsZero() && newNormalForm->Lm() == currentTriple->GetPolynomLm())
         {

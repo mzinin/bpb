@@ -37,7 +37,7 @@ template <typename MonomType>
 QSet<MonomType>::QSet(const std::list<Polynom<MonomType>*>& basis)
     : TripleList()
 {
-    std::list<Polynom<MonomType>*>::const_iterator itBasis(basis.begin());
+    typename std::list<Polynom<MonomType>*>::const_iterator itBasis(basis.begin());
     while (itBasis != basis.end())
     {
         if (*itBasis)
@@ -58,7 +58,7 @@ QSet<MonomType>::~QSet()
 template <typename MonomType>
 void QSet<MonomType>::Insert(std::list<Polynom<MonomType>*>& addList)
 {
-    std::list<Polynom<MonomType>*>::const_iterator itBasis(addList.begin());
+    typename std::list<Polynom<MonomType>*>::const_iterator itBasis(addList.begin());
     while ( itBasis != addList.end() )
     {
         if (*itBasis)
@@ -88,7 +88,7 @@ Triple<MonomType>* QSet<MonomType>::Get()
 template <typename MonomType>
 void QSet<MonomType>::Clear()
 {
-    std::list<Triple<MonomType>*>::iterator it(TripleList.begin());
+    typename std::list<Triple<MonomType>*>::iterator it(TripleList.begin());
     while (it != TripleList.end())
     {
         delete *it;
@@ -117,7 +117,7 @@ void QSet<MonomType>::DeleteDescendants(const Triple<MonomType>* ancestor)
         return;
     }
 
-    std::list<Triple<MonomType>*>::iterator it(TripleList.begin());
+    typename std::list<Triple<MonomType>*>::iterator it(TripleList.begin());
     while ( it != TripleList.end() )
     {
         if ((**it).GetAncestor() == ancestor || (**it).GetWeakAncestor() == ancestor)

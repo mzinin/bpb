@@ -5,6 +5,7 @@
 #include <map>
 #include <algorithm>
 #include "janettree.h"
+#include "settings_manager.h"
 
 template <typename MonomType>
 class TSet
@@ -130,11 +131,11 @@ void TSet<MonomType>::PushBack(Triple<MonomType>* newTriple)
 
     if (GetSettingsManager().GetUseNovaInvolution())
     {
-        MonomType::Integer degree = newTriple->GetPolynomLm().Degree();
+        typename MonomType::Integer degree = newTriple->GetPolynomLm().Degree();
         DegreeInfos[degree].JTree.Insert(newTriple);
         VarCountMap& addedVarCountMap = DegreeInfos[degree].VCMap;
-        std::set<MonomType::Integer> addedVarSet = newTriple->GetPolynomLm().GetVariablesSet();
-        for (std::set<MonomType::Integer>::const_iterator i = addedVarSet.begin(); i != addedVarSet.end(); ++i)
+        std::set<typename MonomType::Integer> addedVarSet = newTriple->GetPolynomLm().GetVariablesSet();
+        for (typename std::set<typename MonomType::Integer>::const_iterator i = addedVarSet.begin(); i != addedVarSet.end(); ++i)
         {
             ++addedVarCountMap[*i];
         }
@@ -169,8 +170,8 @@ void TSet<MonomType>::CollectNonMultiProlongations(typename TSet<MonomType>::Ite
 
     if (GetSettingsManager().GetUseNovaInvolution())
     {
-        std::set<MonomType::Integer> nonMultiVars = NonMultiNova(*iterator);
-        std::set<MonomType::Integer>::const_iterator nmvIterator = nonMultiVars.begin();
+        std::set<typename MonomType::Integer> nonMultiVars = NonMultiNova(*iterator);
+        typename std::set<typename MonomType::Integer>::const_iterator nmvIterator = nonMultiVars.begin();
         for (; nmvIterator != nonMultiVars.end(); ++nmvIterator)
         {
             if (!(**iterator).TestNmp(*nmvIterator))
@@ -195,8 +196,8 @@ void TSet<MonomType>::CollectNonMultiProlongations(typename TSet<MonomType>::Ite
     }
     else
     {
-        MonomType::Integer firstMultiVar = (**iterator).GetPolynomLm().FirstMultiVar();
-        for (register MonomType::Integer var = 0; var < firstMultiVar; ++var)
+        typename MonomType::Integer firstMultiVar = (**iterator).GetPolynomLm().FirstMultiVar();
+        for (register typename MonomType::Integer var = 0; var < firstMultiVar; ++var)
         {
             if (!(**iterator).TestNmp(var))
         {
@@ -223,18 +224,18 @@ void TSet<MonomType>::CollectNonMultiProlongations(typename TSet<MonomType>::Ite
 template <typename MonomType>
 std::set<typename MonomType::Integer> TSet<MonomType>::NonMultiNova(const Triple<MonomType>* triple)
 {
-    MonomType::Integer degree = triple->GetPolynomLm().Degree();
-    std::set<MonomType::Integer> nmulti = DegreeInfos[degree].JTree.NonMulti(triple);
+    typename MonomType::Integer degree = triple->GetPolynomLm().Degree();
+    std::set<typename MonomType::Integer> nmulti = DegreeInfos[degree].JTree.NonMulti(triple);
 
-    for (MonomType::Integer var = 0; var < MonomType::GetDimIndepend(); ++var)
+    for (typename MonomType::Integer var = 0; var < MonomType::GetDimIndepend(); ++var)
     {
         if (nmulti.find(var) != nmulti.end())
         {
             continue;
         }
 
-        MonomType::Integer i = degree;
-        for (MonomType::Integer i = degree; i > 0; --i)
+        typename MonomType::Integer i = degree;
+        for (typename MonomType::Integer i = degree; i > 0; --i)
         {
             if (DegreeInfos[i-1].VCMap[var])
                 break;

@@ -62,7 +62,7 @@ Triple<MonomType>::Triple(Polynom<MonomType>* initialPolynom)
     {
         Lm = &Polynomial->Lm();
         Ancestor = this;
-        Nmp = std::set<MonomType::Integer>();
+        Nmp = std::set<typename MonomType::Integer>();
     }
 }
 

@@ -2,6 +2,7 @@
 #define POLYNOM_H
 
 #include <iostream>
+#include <sstream>
 #include "fast_allocator.h"
 
 template <typename MonomType>
@@ -22,17 +23,17 @@ public:
     bool IsZero() const;
     unsigned long Length() const;
     typename MonomType::Integer Degree() const;
-    const typename MonomType& Lm() const;
+    const MonomType& Lm() const;
     void RidOfLm();
 
     void* operator new(std::size_t);
     void operator delete(void *ptr);
 
     const Polynom& operator=(const Polynom& anotherPolynom);
-    const Polynom& operator+=(const typename MonomType& newMonom);
+    const Polynom& operator+=(const MonomType& newMonom);
     const Polynom& operator+=(const Polynom& anotherPolynom);
     const Polynom& operator*=(typename MonomType::Integer var);
-    const Polynom& operator*=(const typename MonomType& anotherMonom);
+    const Polynom& operator*=(const MonomType& anotherMonom);
     const Polynom& operator*=(const Polynom& anotherPolynom);
 
     bool operator==(const Polynom &anotherPolynom) const;
@@ -46,17 +47,17 @@ public:
     void MergeWith(Polynom& anotherPolynom);
     std::string ToString() const;
 
-    template <typename MonomType>
-    friend std::ostream& operator<<(std::ostream& out, const Polynom<MonomType>& polynom);
-    template <typename MonomType>
-    friend std::istream& operator>>(std::istream& in, Polynom<MonomType>& polynom);
+    template <typename SomeMonomType>
+    friend std::ostream& operator<<(std::ostream& out, const Polynom<SomeMonomType>& polynom);
+    template <typename SomeMonomType>
+    friend std::istream& operator>>(std::istream& in, Polynom<SomeMonomType>& polynom);
 
 private:
     void Additive(std::istream& in);
     void Multiplicative(std::istream& in);
     void Unary(std::istream& in);
     void Bracket(std::istream& in);
-    const typename MonomType * const * Find(const typename MonomType& monom) const;
+    const MonomType * const * Find(const MonomType& monom) const;
 };
 
 template <typename MonomType>
@@ -154,7 +155,7 @@ typename MonomType::Integer Polynom<MonomType>::Degree() const
 }
 
 template <typename MonomType>
-const typename MonomType& Polynom<MonomType>::Lm() const
+const MonomType& Polynom<MonomType>::Lm() const
 {
     if (MonomListHead)
     {
@@ -171,7 +172,7 @@ void Polynom<MonomType>::RidOfLm()
 {
     if (MonomListHead)
     {
-        Monom* tmpMonom(MonomListHead);
+        MonomType* tmpMonom(MonomListHead);
         MonomListHead = MonomListHead->Next;
         delete tmpMonom;
     }
@@ -209,7 +210,7 @@ const Polynom<MonomType>& Polynom<MonomType>::operator=(const Polynom<MonomType>
 
         if (*iterator)
         {
-            Monom* monomToDelete = (*iterator)->Next;
+            MonomType* monomToDelete = (*iterator)->Next;
             *iterator = 0;
             while (monomToDelete)
             {
@@ -230,7 +231,7 @@ const Polynom<MonomType>& Polynom<MonomType>::operator=(const Polynom<MonomType>
 }
 
 template <typename MonomType>
-const Polynom<MonomType>& Polynom<MonomType>::operator+=(const typename MonomType& newMonom)
+const Polynom<MonomType>& Polynom<MonomType>::operator+=(const MonomType& newMonom)
 {
     MonomType** position = const_cast<MonomType**>(Find(newMonom));
     MonomType* tmpMonom = 0;
@@ -341,11 +342,11 @@ const Polynom<MonomType>& Polynom<MonomType>::operator*=(typename MonomType::Int
 }
 
 template <typename MonomType>
-const Polynom<MonomType>& Polynom<MonomType>::operator*=(const typename MonomType& anotherMonom)
+const Polynom<MonomType>& Polynom<MonomType>::operator*=(const MonomType& anotherMonom)
 {
     if (MonomListHead)
     {
-        for (register MonomType::Integer i = 0; i < anotherMonom.GetDimIndepend(); ++i)
+        for (register typename MonomType::Integer i = 0; i < anotherMonom.GetDimIndepend(); ++i)
         {
             if (anotherMonom[i])
             {
@@ -750,7 +751,7 @@ void Polynom<MonomType>::Bracket(std::istream& in)
 }
 
 template <typename MonomType>
-const typename MonomType * const * Polynom<MonomType>::Find(const typename MonomType& monom) const
+const MonomType * const * Polynom<MonomType>::Find(const MonomType& monom) const
 {
     if (!MonomListHead || *MonomListHead < monom)
     {
