@@ -3,7 +3,6 @@
 
 #include <list>
 #include <string>
-
 #include "groebner_basis.h"
 #include "polynom.h"
 #include "settings_manager.h"
@@ -45,9 +44,6 @@ private:
     static std::list<CommandLineOption> CommandLineOptions;
     std::string ApplicationName;
     std::string InputFileName;
-    std::list<Polynom*> InitialSet;
-    std::list<Polynom*> InitialAnswer;
-    GroebnerBasis GBasis;
 
 public:
     Launcher();
@@ -55,7 +51,6 @@ public:
 
     bool Init(int argc, char *argv[]);
     bool Run();
-    void PrintResult() const;
 
 private:
     static void FillOptions();
@@ -64,12 +59,26 @@ private:
     void PrintVersion() const;
     bool AnalizeArguments(int argc, char *argv[]);
 
-    void ReadVariables(std::ifstream& inputFileStream);
-    void ReadPolynomList(std::ifstream& inputFileStream, std::list<Polynom*>& list);
-    bool GetTaskFromFile();
+    template<typename MonomType>
+    bool DoMonomTypeDependStuff() const;
 
-    bool CheckAnswer() const;
-    void ClearPolynomList(std::list<Polynom*>& list);
+    template<typename MonomType>
+    bool GetTaskFromFile(std::list<Polynom<MonomType>*>& initialSet, std::list<Polynom<MonomType>*>& initialAnswer) const;
+
+    template<typename MonomType>
+    void ReadVariables(std::ifstream& inputFileStream) const;
+
+    template<typename MonomType>
+    void ReadPolynomList(std::ifstream& inputFileStream, std::list<Polynom<MonomType>*>& list) const;
+
+    template<typename MonomType>
+    void ClearPolynomList(std::list<Polynom<MonomType>*>& list) const;
+
+    template<typename MonomType>
+    void PrintResult(GroebnerBasis<MonomType>& gBasis, std::list<Polynom<MonomType>*>& initialAnswer) const;
+
+    template<typename MonomType>
+    bool CheckAnswer(GroebnerBasis<MonomType>& gBasis, std::list<Polynom<MonomType>*>& initialAnswer) const;
 };
 
 #endif // LAUNCHER_H

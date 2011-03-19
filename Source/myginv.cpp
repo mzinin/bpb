@@ -1,7 +1,5 @@
 #include <iostream>
-
 #include "launcher.h"
-#include "settings_manager.h"
 
 int main(int argc, char *argv[])
 {
@@ -16,7 +14,5 @@ int main(int argc, char *argv[])
     {
         return EXIT_FAILURE;
     }
-
-    launcher.PrintResult();
     return EXIT_SUCCESS;
 }

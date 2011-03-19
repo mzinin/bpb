@@ -9,6 +9,10 @@
 
 #include "fast_allocator.h"
 #include "launcher.h"
+#include "monom.h"
+#include "monomLex.h"
+#include "monomDL.h"
+#include "monomDRL.h"
 #include "resource_counter.h"
 #include "version.h"
 
@@ -46,6 +50,8 @@ namespace
     const char MONOMIAL_ORDER_DEGLEX_COMMENT[] = "degree lexicographic order";
     const char MONOMIAL_ORDER_DEGREVLEX_VALUE[]   = "degrevlex";
     const char MONOMIAL_ORDER_DEGREVLEX_COMMENT[] = "degree reverse lexicographic order";
+    const char MONOMIAL_ORDER_OLDDRL_VALUE[]   = "old";
+    const char MONOMIAL_ORDER_OLDDRL_COMMENT[] = "";
 }
 
 Launcher::CommandLineOption::OptionValue::OptionValue(const std::string& value,
@@ -181,17 +187,12 @@ void Launcher::CommandLineOption::PrintHelp() const
 Launcher::Launcher()
     : ApplicationName()
     , InputFileName()
-    , InitialSet()
-    , InitialAnswer()
-    , GBasis()
 {
     FillOptions();
 }
 
 Launcher::~Launcher()
 {
-    ClearPolynomList(InitialSet);
-    ClearPolynomList(InitialAnswer);
 }
 
 bool Launcher::Init(int argc, char *argv[])
@@ -221,47 +222,17 @@ bool Launcher::Run()
         return false;
     }
 
-    if (!GetTaskFromFile())
+    switch(GetSettingsManager().GetMonomialOrder())
     {
-        return false;
-    }
-
-    GetResourceCounter().GroebnerBasisTimer.Start();
-    GBasis.Construct(InitialSet);
-    GetResourceCounter().GroebnerBasisTimer.Stop();
-
-    return true;
-}
-
-void Launcher::PrintResult() const
-{
-    if (!GBasis.Length())
-    {
-        return;
-    }
-
-    if (GetSettingsManager().GetPrintAnswer())
-    {
-        std::cout << GBasis << std::endl;
-    }
-
-    if (GetSettingsManager().GetCollectStatistics())
-    {
-        GetResourceCounter().PrintFullStatistics(std::cout);
-    }
-    else
-    {
-        GetResourceCounter().PrintBriefStatistics(std::cout);
-    }
-
-    if (CheckAnswer())
-    {
-        std::cout << "The answer is CORRECT" << std::endl << std::endl;
-    }
-    else
-    {
-        std::cout << "The answer is WRONG" << std::endl << std::endl;
-    }
+        case Monom::Lex:
+            return DoMonomTypeDependStuff<MonomLex>();
+        case Monom::DegLex:
+            return DoMonomTypeDependStuff<MonomDL>();
+        case Monom::DegRevLex:
+            return DoMonomTypeDependStuff<MonomDRL>();
+        default:
+            return false;
+    };
 }
 
 void Launcher::FillOptions()
@@ -400,7 +371,48 @@ bool Launcher::AnalizeArguments(int argc, char *argv[])
     return true;
 }
 
-void Launcher::ReadVariables(std::ifstream& inputFileStream)
+template<typename MonomType>
+bool Launcher::DoMonomTypeDependStuff() const
+{
+    std::list<Polynom<MonomType>*> initialSet;
+    std::list<Polynom<MonomType>*> initialAnswer;
+
+    if (!GetTaskFromFile(initialSet, initialAnswer))
+    {
+        return false;
+    }
+
+    GroebnerBasis<MonomType> gBasis;
+
+    GetResourceCounter().GroebnerBasisTimer.Start();
+    gBasis.Construct(initialSet);
+    GetResourceCounter().GroebnerBasisTimer.Stop();
+
+    PrintResult<MonomType>(gBasis, initialAnswer);
+
+    return true;
+}
+
+template<typename MonomType>
+bool Launcher::GetTaskFromFile(std::list<Polynom<MonomType>*>& initialSet, std::list<Polynom<MonomType>*>& initialAnswer) const
+{
+    std::ifstream inputFileStream(InputFileName.c_str());
+    if (!inputFileStream)
+    {
+        std::cerr << "No such file: '" << InputFileName << "'." << std::endl;
+        return false;
+    }
+
+    ReadVariables<MonomType>(inputFileStream);
+    ReadPolynomList<MonomType>(inputFileStream, initialSet);
+    ReadPolynomList<MonomType>(inputFileStream, initialAnswer);
+
+    inputFileStream.close();
+    return true;
+}
+
+template<typename MonomType>
+void Launcher::ReadVariables(std::ifstream& inputFileStream) const
 {
     char c = '0';
     std::string tmpString;
@@ -409,7 +421,7 @@ void Launcher::ReadVariables(std::ifstream& inputFileStream)
         inputFileStream >> c;
         if (c == ',' || c == ';')
         {
-            Monom::AddVariable(tmpString.c_str());
+            MonomType::AddVariable(tmpString.c_str());
             tmpString.clear();
         }
         else
@@ -419,9 +431,10 @@ void Launcher::ReadVariables(std::ifstream& inputFileStream)
     }
 }
 
-void Launcher::ReadPolynomList(std::ifstream& inputFileStream, std::list<Polynom*>& list)
+template<typename MonomType>
+void Launcher::ReadPolynomList(std::ifstream& inputFileStream, std::list<Polynom<MonomType>*>& list) const
 {
-    ClearPolynomList(list);
+    ClearPolynomList<MonomType>(list);
 
     std::auto_ptr<std::stringstream> tmpStream(new std::stringstream());
     char c = '0';
@@ -440,46 +453,73 @@ void Launcher::ReadPolynomList(std::ifstream& inputFileStream, std::list<Polynom
         }
     }
 
-    Polynom tmpPolynom;
+    Polynom<MonomType> tmpPolynom;
     while (!tmpStream->eof())
     {
         *tmpStream >> tmpPolynom;
-        list.push_back(new Polynom(tmpPolynom));
+        list.push_back(new Polynom<MonomType>(tmpPolynom));
     }
 }
 
-bool Launcher::GetTaskFromFile()
+template<typename MonomType>
+void Launcher::ClearPolynomList(std::list<Polynom<MonomType>*>& list) const
 {
-    std::ifstream inputFileStream(InputFileName.c_str());
-    if (!inputFileStream)
+    std::list<Polynom<MonomType>*>::iterator i(list.begin());
+    for (; i != list.end(); ++i)
     {
-        std::cerr << "No such file: '" << InputFileName << "'." << std::endl;
-        return false;
+        delete *i;
     }
-
-    ReadVariables(inputFileStream);
-    ReadPolynomList(inputFileStream, InitialSet);
-    ReadPolynomList(inputFileStream, InitialAnswer);
-
-    inputFileStream.close();
-    return true;
+    list.clear();
 }
 
-bool Launcher::CheckAnswer() const
+template<typename MonomType>
+void Launcher::PrintResult(GroebnerBasis<MonomType>& gBasis, std::list<Polynom<MonomType>*>& initialAnswer) const
 {
-    if (GBasis.Length() != InitialAnswer.size())
+    if (!gBasis.Length())
+    {
+        return;
+    }
+
+    if (GetSettingsManager().GetPrintAnswer())
+    {
+        std::cout << gBasis << std::endl;
+    }
+
+    if (GetSettingsManager().GetCollectStatistics())
+    {
+        GetResourceCounter().PrintFullStatistics(std::cout);
+    }
+    else
+    {
+        GetResourceCounter().PrintBriefStatistics(std::cout);
+    }
+
+    if (CheckAnswer(gBasis, initialAnswer))
+    {
+        std::cout << "The answer is CORRECT" << std::endl << std::endl;
+    }
+    else
+    {
+        std::cout << "The answer is WRONG" << std::endl << std::endl;
+    }
+}
+
+template<typename MonomType>
+bool Launcher::CheckAnswer(GroebnerBasis<MonomType>& gBasis, std::list<Polynom<MonomType>*>& initialAnswer) const
+{
+    if (gBasis.Length() != initialAnswer.size())
     {
         return false;
     }
     else
     {
-        std::list<Polynom*>::const_iterator iterAnswerList = InitialAnswer.begin();
-        for (; iterAnswerList != InitialAnswer.end(); ++iterAnswerList)
+        std::list<Polynom<MonomType>*>::const_iterator iterAnswerList = initialAnswer.begin();
+        for (; iterAnswerList != initialAnswer.end(); ++iterAnswerList)
         {
             bool foundMatch = false;
-            for (register unsigned i = 0; i < GBasis.Length(); ++i)
+            for (register unsigned i = 0; i < gBasis.Length(); ++i)
             {
-                if (GBasis[i] == **iterAnswerList)
+                if (gBasis[i] == **iterAnswerList)
                 {
                     foundMatch = true;
                     break;
@@ -493,16 +533,6 @@ bool Launcher::CheckAnswer() const
         }
     }
     return true;
-}
-
-void Launcher::ClearPolynomList(std::list<Polynom*>& list)
-{
-    std::list<Polynom*>::iterator i(list.begin());
-    for (; i != list.end(); ++i)
-    {
-        delete *i;
-    }
-    list.clear();
 }
 
 std::list<Launcher::CommandLineOption> Launcher::CommandLineOptions = std::list<Launcher::CommandLineOption>();

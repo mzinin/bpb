@@ -1,5 +1,4 @@
 #include "monom.h"
-#include "settings_manager.h"
 
 void Monom::AddVariable(const char *var)
 {
@@ -14,10 +13,10 @@ const char* Monom::GetVariable(Monom::Integer var)
     return IndependVariables->Variable(var);
 }
 
-std::istream& operator>>(std::istream& in, Monom& a)
+std::istream& operator>>(std::istream& in, Monom& monom)
 {
     std::streampos posbeg = in.tellg();
-    int var = a.IndependVariables->Read(in);
+    int var = monom.IndependVariables->Read(in);
     if (var < 0)
     {
         in.clear();
@@ -25,7 +24,7 @@ std::istream& operator>>(std::istream& in, Monom& a)
     }
     else
     {
-        a.SetOne();
+        monom.SetOne();
         int deg;
         do
         {
@@ -40,7 +39,7 @@ std::istream& operator>>(std::istream& in, Monom& a)
                     in.setstate(std::ios::failbit);
                 }
             }
-            a *= var;
+            monom.MultiplyBy(var);
             posbeg = in.tellg();
             if (in.peek() != '*')
             {
@@ -49,7 +48,7 @@ std::istream& operator>>(std::istream& in, Monom& a)
             else
             {
                 in.get();
-                var = a.IndependVariables->Read(in);
+                var = monom.IndependVariables->Read(in);
                 if (var < 0)
                 {
                     in.clear();
@@ -65,36 +64,36 @@ std::istream& operator>>(std::istream& in, Monom& a)
     return in;
 }
 
-std::ostream& operator<<(std::ostream& out, const Monom& a)
+std::ostream& operator<<(std::ostream& out, const Monom& monom)
 {
-    if (!a.Degree())
+    if (!monom.Degree())
     {
         out << '1';
     }
     else
     {
         int i = 0;
-        Variables::ConstIterator j(a.IndependVariables->Begin());
-        while(a[i] == 0)
+        Variables::ConstIterator j(monom.IndependVariables->Begin());
+        while(monom[i] == 0)
         {
             ++i;
             ++j;
         }
         out << *j;
-        if (a[i] > 1)
+        if (monom[i] > 1)
         {
-            out << '^' << a[i];
+            out << '^' << monom[i];
         }
         ++i;
         ++j;
-        while(j != a.IndependVariables->End())
+        while(j != monom.IndependVariables->End())
         {
-            if (a[i])
+            if (monom[i])
             {
                 out << '*' << *j;
-                if (a[i] > 1)
+                if (monom[i] > 1)
                 {
-                    out << '^' << a[i];
+                    out << '^' << monom[i];
                 }
             }
             ++i;
@@ -104,310 +103,6 @@ std::ostream& operator<<(std::ostream& out, const Monom& a)
     return out;
 }
 
-bool Monom::operator<(const Monom& anotherMonom) const
-{
-    switch(GetSettingsManager().GetMonomialOrder())
-    {
-        case Lex:
-            return operatorLessLex(anotherMonom);
-        case DegLex:
-            return operatorLessDegLex(anotherMonom);
-        case DegRevLex:
-            return operatorLessDegRevLex(anotherMonom);
-        default:
-            return false;
-    };
-}
-
-bool Monom::operator>(const Monom& anotherMonom) const
-{
-    switch(GetSettingsManager().GetMonomialOrder())
-    {
-        case Lex:
-            return operatorMoreLex(anotherMonom);
-        case DegLex:
-            return operatorMoreDegLex(anotherMonom);
-        case DegRevLex:
-            return operatorMoreDegRevLex(anotherMonom);
-        default:
-            return false;
-    };
-}
-
-int Monom::Compare(const Monom& anotherMonom) const
-{
-    switch(GetSettingsManager().GetMonomialOrder())
-    {
-        case Lex:
-            return CompareLex(anotherMonom);
-        case DegLex:
-            return CompareDegLex(anotherMonom);
-        case DegRevLex:
-            return CompareDegRevLex(anotherMonom);
-        default:
-            return -1;
-    };
-}
-
-bool Monom::operatorLessLex(const Monom& anotherMonom) const
-{
-    VarsListNode *iterator = ListTail,
-                 *anotherIterator = anotherMonom.ListTail;
-    while (anotherIterator && iterator)
-    {
-        if (iterator->Value < anotherIterator->Value)
-        {
-            return false;
-        }
-        if (iterator->Value > anotherIterator->Value)
-        {
-            return true;
-        }
-        iterator = iterator->Previous;
-        anotherIterator = anotherIterator->Previous;
-    }
-    return anotherIterator;
-}
-
-bool Monom::operatorLessDegLex(const Monom& anotherMonom) const
-{
-    if (TotalDegree < anotherMonom.TotalDegree)
-    {
-        return true;
-    }
-    else if (TotalDegree > anotherMonom.TotalDegree)
-    {
-        return false;
-    }
-    else
-    {
-        VarsListNode *iterator = ListTail,
-                     *anotherIterator = anotherMonom.ListTail;
-        while (anotherIterator)
-        {
-            if (iterator->Value < anotherIterator->Value)
-            {
-                return false;
-            }
-            if (iterator->Value > anotherIterator->Value)
-            {
-                return true;
-            }
-            iterator = iterator->Previous;
-            anotherIterator = anotherIterator->Previous;
-        }
-        return false;
-    }
-}
-
-bool Monom::operatorLessDegRevLex(const Monom& anotherMonom) const
-{
-    if (TotalDegree < anotherMonom.TotalDegree)
-    {
-        return true;
-    }
-    else if (TotalDegree > anotherMonom.TotalDegree)
-    {
-        return false;
-    }
-    else
-    {
-        VarsListNode *iterator = ListHead,
-                     *anotherIterator = anotherMonom.ListHead;
-        while (anotherIterator)
-        {
-            if (iterator->Value < anotherIterator->Value)
-            {
-                return false;
-            }
-            if (iterator->Value > anotherIterator->Value)
-            {
-                return true;
-            }
-            iterator = iterator->Next;
-            anotherIterator = anotherIterator->Next;
-        }
-        return false;
-    }
-}
-
-bool Monom::operatorMoreLex(const Monom& anotherMonom) const
-{
-    VarsListNode *iterator = ListTail,
-                 *anotherIterator = anotherMonom.ListTail;
-    while (anotherIterator && iterator)
-    {
-        if (iterator->Value < anotherIterator->Value)
-        {
-            return true;
-        }
-        if (iterator->Value > anotherIterator->Value)
-        {
-            return false;
-        }
-        iterator = iterator->Previous;
-        anotherIterator = anotherIterator->Previous;
-    }
-    return iterator;
-}
-
-bool Monom::operatorMoreDegLex(const Monom& anotherMonom) const
-{
-    if (TotalDegree < anotherMonom.TotalDegree)
-    {
-        return false;
-    }
-    else if (TotalDegree > anotherMonom.TotalDegree)
-    {
-        return true;
-    }
-    else
-    {
-        VarsListNode *iterator = ListTail,
-                     *anotherIterator = anotherMonom.ListTail;
-        while (anotherIterator)
-        {
-            if (iterator->Value < anotherIterator->Value)
-            {
-                return true;
-            }
-            if (iterator->Value > anotherIterator->Value)
-            {
-                return false;
-            }
-            iterator = iterator->Previous;
-            anotherIterator = anotherIterator->Previous;
-        }
-        return false;
-    }
-}
-
-bool Monom::operatorMoreDegRevLex(const Monom& anotherMonom) const
-{
-    if (TotalDegree < anotherMonom.TotalDegree)
-    {
-        return false;
-    }
-    else if (TotalDegree > anotherMonom.TotalDegree)
-    {
-        return true;
-    }
-    else
-    {
-        VarsListNode *iterator = ListHead,
-                     *anotherIterator = anotherMonom.ListHead;
-        while (anotherIterator)
-        {
-            if (iterator->Value < anotherIterator->Value)
-            {
-                return true;
-            }
-            if (iterator->Value > anotherIterator->Value)
-            {
-                return false;
-            }
-            iterator = iterator->Next;
-            anotherIterator = anotherIterator->Next;
-        }
-        return false;
-    }
-}
-
-int Monom::CompareLex(const Monom& anotherMonom) const
-{
-    VarsListNode *iterator = ListTail,
-                 *iteratorAnother = anotherMonom.ListTail;
-    while (iterator && iteratorAnother)
-    {
-        if (iterator->Value < iteratorAnother->Value)
-        {
-            return 1;
-        }
-        if (iterator->Value > iteratorAnother->Value)
-        {
-            return -1;
-        }
-        iterator = iterator->Previous;
-        iteratorAnother = iteratorAnother->Previous;
-    }
-
-    if (iterator)
-    {
-        return 1;
-    }
-    else if (iteratorAnother)
-    {
-        return -1;
-    }
-    else
-    {
-        return 0;
-    }
-}
-
-int Monom::CompareDegLex(const Monom& anotherMonom) const
-{
-    if (TotalDegree < anotherMonom.TotalDegree)
-    {
-        return -1;
-    }
-    else if (TotalDegree > anotherMonom.TotalDegree)
-    {
-        return 1;
-    }
-    else
-    {
-        VarsListNode *iterator = ListTail,
-                     *iteratorAnother = anotherMonom.ListTail;
-        while (iterator)
-        {
-            if (iterator->Value < iteratorAnother->Value)
-            {
-                return 1;
-            }
-            if (iterator->Value > iteratorAnother->Value)
-            {
-                return -1;
-            }
-            iterator = iterator->Previous;
-            iteratorAnother = iteratorAnother->Previous;
-        }
-        return 0;
-    }
-}
-
-int Monom::CompareDegRevLex(const Monom& anotherMonom) const
-{
-    if (TotalDegree < anotherMonom.TotalDegree)
-    {
-        return -1;
-    }
-    else if (TotalDegree > anotherMonom.TotalDegree)
-    {
-        return 1;
-    }
-    else
-    {
-        VarsListNode *iterator(ListHead),
-                     *iteratorAnother(anotherMonom.ListHead);
-        while (iterator)
-        {
-            if (iterator->Value < iteratorAnother->Value)
-            {
-                return 1;
-            }
-            if (iterator->Value > iteratorAnother->Value)
-            {
-                return -1;
-            }
-            iterator = iterator->Next;
-            iteratorAnother = iteratorAnother->Next;
-        }
-        return 0;
-    }
-}
-
+FastAllocator Monom::VarsListNode::Allocator(sizeof(Monom::VarsListNode));
 Variables* const Monom::IndependVariables = new Variables();
 Monom::Integer Monom::DimIndepend = 0;
-FastAllocator Monom::Allocator(sizeof(Monom));
-FastAllocator Monom::VarsListNode::Allocator(sizeof(Monom::VarsListNode));
