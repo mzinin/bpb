@@ -1,5 +1,5 @@
-#ifndef MONOMDL_H
-#define MONOMDL_H
+#ifndef MONOM_DL_H
+#define MONOM_DL_H
 
 #include <set>
 #include "fast_allocator.h"
@@ -598,4 +598,4 @@ inline std::set<MonomDL::Integer> MonomDL::GetVariablesSet() const
     return result;
 }
 
-#endif // MONOMDRL_H
+#endif // MONOM_DL_H

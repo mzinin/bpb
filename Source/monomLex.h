@@ -1,5 +1,5 @@
-#ifndef MONOMLEX_H
-#define MONOMLEX_H
+#ifndef MONOM_LEX_H
+#define MONOM_LEX_H
 
 #include <set>
 #include "fast_allocator.h"
@@ -575,4 +575,4 @@ inline std::set<MonomLex::Integer> MonomLex::GetVariablesSet() const
     return result;
 }
 
-#endif // MONOMDRL_H
+#endif // MONOM_LEX_H
