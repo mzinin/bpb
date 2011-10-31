@@ -62,31 +62,31 @@ TSet<MonomType>::~TSet()
 }
 
 template <typename MonomType>
-typename TSet<MonomType>::Iterator TSet<MonomType>::Begin()
+inline typename TSet<MonomType>::Iterator TSet<MonomType>::Begin()
 {
     return TripleList.begin();
 }
 
 template <typename MonomType>
-typename TSet<MonomType>::ConstIterator TSet<MonomType>::Begin() const
+inline typename TSet<MonomType>::ConstIterator TSet<MonomType>::Begin() const
 {
     return TripleList.begin();
 }
 
 template <typename MonomType>
-typename TSet<MonomType>::Iterator TSet<MonomType>::End()
+inline typename TSet<MonomType>::Iterator TSet<MonomType>::End()
 {
     return TripleList.end();
 }
 
 template <typename MonomType>
-typename TSet<MonomType>::ConstIterator TSet<MonomType>::End() const
+inline typename TSet<MonomType>::ConstIterator TSet<MonomType>::End() const
 {
     return TripleList.end();
 }
 
 template <typename MonomType>
-void TSet<MonomType>::Clear()
+inline void TSet<MonomType>::Clear()
 {
     JTree.Clear();
 
@@ -105,7 +105,7 @@ void TSet<MonomType>::Clear()
 }
 
 template <typename MonomType>
-typename TSet<MonomType>::Iterator TSet<MonomType>::Erase(typename TSet<MonomType>::Iterator it)
+inline typename TSet<MonomType>::Iterator TSet<MonomType>::Erase(typename TSet<MonomType>::Iterator it)
 {
     if (GetSettingsManager().GetUseNovaInvolution())
     {
@@ -124,7 +124,7 @@ typename TSet<MonomType>::Iterator TSet<MonomType>::Erase(typename TSet<MonomTyp
 }
 
 template <typename MonomType>
-void TSet<MonomType>::PushBack(Triple<MonomType>* newTriple)
+inline void TSet<MonomType>::PushBack(Triple<MonomType>* newTriple)
 {
     TripleList.push_back(newTriple);
     JTree.Insert(newTriple);
@@ -143,19 +143,19 @@ void TSet<MonomType>::PushBack(Triple<MonomType>* newTriple)
 }
 
 template <typename MonomType>
-std::size_t TSet<MonomType>::Size() const
+inline std::size_t TSet<MonomType>::Size() const
 {
     return TripleList.size();
 }
 
 template <typename MonomType>
-const Triple<MonomType>* TSet<MonomType>::Find(const MonomType& monom) const
+inline const Triple<MonomType>* TSet<MonomType>::Find(const MonomType& monom) const
 {
     return JTree.Find(monom);
 }
 
 template <typename MonomType>
-Triple<MonomType>* const TSet<MonomType>::Back() const
+inline Triple<MonomType>* const TSet<MonomType>::Back() const
 {
     return TripleList.back();
 }
@@ -200,7 +200,7 @@ void TSet<MonomType>::CollectNonMultiProlongations(typename TSet<MonomType>::Ite
         for (register typename MonomType::Integer var = 0; var < firstMultiVar; ++var)
         {
             if (!(**iterator).TestNmp(var))
-        {
+            {
                 Polynom<MonomType>* tmpPolynom = new Polynom<MonomType>(*(**iterator).GetPolynom());
                 (*tmpPolynom) *= var;
 

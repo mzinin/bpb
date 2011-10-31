@@ -56,7 +56,7 @@ QSet<MonomType>::~QSet()
 }
 
 template <typename MonomType>
-void QSet<MonomType>::Insert(std::list<Polynom<MonomType>*>& addList)
+inline void QSet<MonomType>::Insert(std::list<Polynom<MonomType>*>& addList)
 {
     typename std::list<Polynom<MonomType>*>::const_iterator itBasis(addList.begin());
     while ( itBasis != addList.end() )
@@ -71,14 +71,14 @@ void QSet<MonomType>::Insert(std::list<Polynom<MonomType>*>& addList)
 }
 
 template <typename MonomType>
-void QSet<MonomType>::Insert(std::list<Triple<MonomType>*>& addList)
+inline void QSet<MonomType>::Insert(std::list<Triple<MonomType>*>& addList)
 {
     addList.sort(Triple<MonomType>::Compare);
     TripleList.merge(addList, Triple<MonomType>::Compare);
 }
 
 template <typename MonomType>
-Triple<MonomType>* QSet<MonomType>::Get()
+inline Triple<MonomType>* QSet<MonomType>::Get()
 {
     Triple<MonomType>* result = TripleList.back();
     TripleList.pop_back();

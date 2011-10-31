@@ -67,13 +67,13 @@ template <typename MonomType>
 MonomType Polynom<MonomType>::UniteMonom;
 
 template <typename MonomType>
-Polynom<MonomType>::Polynom()
+inline Polynom<MonomType>::Polynom()
     : MonomListHead(0)
 {
 }
 
 template <typename MonomType>
-Polynom<MonomType>::Polynom(const Polynom& anotherPolynom)
+inline Polynom<MonomType>::Polynom(const Polynom& anotherPolynom)
     : MonomListHead(0)
 {
     if (!anotherPolynom.MonomListHead)
@@ -95,20 +95,20 @@ Polynom<MonomType>::Polynom(const Polynom& anotherPolynom)
 }
 
 template <typename MonomType>
-Polynom<MonomType>::~Polynom()
+inline Polynom<MonomType>::~Polynom()
 {
     SetZero();
 }
 
 template <typename MonomType>
-void Polynom<MonomType>::SetOne()
+inline void Polynom<MonomType>::SetOne()
 {
     SetZero();
     MonomListHead = new MonomType();
 }
 
 template <typename MonomType>
-void Polynom<MonomType>::SetZero()
+inline void Polynom<MonomType>::SetZero()
 {
     if (MonomListHead)
     {
@@ -123,13 +123,13 @@ void Polynom<MonomType>::SetZero()
 }
 
 template <typename MonomType>
-bool Polynom<MonomType>::IsZero() const
+inline bool Polynom<MonomType>::IsZero() const
 {
     return !MonomListHead;
 }
 
 template <typename MonomType>
-unsigned long Polynom<MonomType>::Length() const
+inline unsigned long Polynom<MonomType>::Length() const
 {
     unsigned long length = 0;
     MonomType* iterator = MonomListHead;
@@ -142,7 +142,7 @@ unsigned long Polynom<MonomType>::Length() const
 }
 
 template <typename MonomType>
-typename MonomType::Integer Polynom<MonomType>::Degree() const
+inline typename MonomType::Integer Polynom<MonomType>::Degree() const
 {
     if (!MonomListHead)
     {
@@ -155,7 +155,7 @@ typename MonomType::Integer Polynom<MonomType>::Degree() const
 }
 
 template <typename MonomType>
-const MonomType& Polynom<MonomType>::Lm() const
+inline const MonomType& Polynom<MonomType>::Lm() const
 {
     if (MonomListHead)
     {
@@ -168,7 +168,7 @@ const MonomType& Polynom<MonomType>::Lm() const
 }
 
 template <typename MonomType>
-void Polynom<MonomType>::RidOfLm()
+inline void Polynom<MonomType>::RidOfLm()
 {
     if (MonomListHead)
     {

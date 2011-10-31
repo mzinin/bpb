@@ -50,7 +50,7 @@ template <typename MonomType>
 FastAllocator Triple<MonomType>::Allocator(sizeof(Triple<MonomType>));
 
 template <typename MonomType>
-Triple<MonomType>::Triple(Polynom<MonomType>* initialPolynom)
+inline Triple<MonomType>::Triple(Polynom<MonomType>* initialPolynom)
     : Lm(0)
     , Polynomial(initialPolynom)
     , Ancestor(0)
@@ -67,11 +67,11 @@ Triple<MonomType>::Triple(Polynom<MonomType>* initialPolynom)
 }
 
 template <typename MonomType>
-Triple<MonomType>::Triple(Polynom<MonomType>* initialPolynom
-                        , const Triple<MonomType>* initialAncestor
-                        , const std::set<typename MonomType::Integer>& initialNmp
-                        , const Triple<MonomType>* weakAncestor
-                        , typename MonomType::Integer nmVar)
+inline Triple<MonomType>::Triple(Polynom<MonomType>* initialPolynom
+                               , const Triple<MonomType>* initialAncestor
+                               , const std::set<typename MonomType::Integer>& initialNmp
+                               , const Triple<MonomType>* weakAncestor
+                               , typename MonomType::Integer nmVar)
     : Lm(0)
     , Polynomial(0)
     , Ancestor(0)
@@ -108,7 +108,7 @@ Triple<MonomType>::Triple(Polynom<MonomType>* initialPolynom
 }
 
 template <typename MonomType>
-Triple<MonomType>::~Triple()
+inline Triple<MonomType>::~Triple()
 {
     delete Polynomial;
 }
@@ -126,55 +126,55 @@ void Triple<MonomType>::operator delete(void *ptr)
 }
 
 template <typename MonomType>
-const Polynom<MonomType>* Triple<MonomType>::GetPolynom() const
+inline const Polynom<MonomType>* Triple<MonomType>::GetPolynom() const
 {
     return Polynomial;
 }
 
 template <typename MonomType>
-const MonomType& Triple<MonomType>::GetPolynomLm() const
+inline const MonomType& Triple<MonomType>::GetPolynomLm() const
 {
     return *Lm;
 }
 
 template <typename MonomType>
-const Triple<MonomType>* Triple<MonomType>::GetAncestor() const
+inline const Triple<MonomType>* Triple<MonomType>::GetAncestor() const
 {
     return Ancestor;
 }
 
 template <typename MonomType>
-const Triple<MonomType>* Triple<MonomType>::GetWeakAncestor() const
+inline const Triple<MonomType>* Triple<MonomType>::GetWeakAncestor() const
 {
     return WeakAncestor;
 }
 
 template <typename MonomType>
-typename MonomType::Integer Triple<MonomType>::GetVariable() const
+inline typename MonomType::Integer Triple<MonomType>::GetVariable() const
 {
     return Variable;
 }
 
 template <typename MonomType>
-const std::set<typename MonomType::Integer>& Triple<MonomType>::GetNmp() const
+inline const std::set<typename MonomType::Integer>& Triple<MonomType>::GetNmp() const
 {
     return Nmp;
 }
 
 template <typename MonomType>
-void Triple<MonomType>::SetNmp(const std::set<typename MonomType::Integer>& newNmp)
+inline void Triple<MonomType>::SetNmp(const std::set<typename MonomType::Integer>& newNmp)
 {
     Nmp = newNmp;
 }
 
 template <typename MonomType>
-void Triple<MonomType>::SetNmp(typename MonomType::Integer var)
+inline void Triple<MonomType>::SetNmp(typename MonomType::Integer var)
 {
     Nmp.insert(var);
 }
 
 template <typename MonomType>
-bool Triple<MonomType>::TestNmp(typename MonomType::Integer var) const
+inline bool Triple<MonomType>::TestNmp(typename MonomType::Integer var) const
 {
     return Nmp.count(var);
 }

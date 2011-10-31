@@ -78,7 +78,7 @@ public:
 };
 
 template <typename MonomType>
-JanetTree<MonomType>::Node::Node(typename MonomType::Integer degree)
+inline JanetTree<MonomType>::Node::Node(typename MonomType::Integer degree)
     : Degree(degree)
     , CurrentTriple(0)
     , NextDegree(0)
@@ -87,142 +87,142 @@ JanetTree<MonomType>::Node::Node(typename MonomType::Integer degree)
 }
 
 template <typename MonomType>
-JanetTree<MonomType>::Node::~Node()
+inline JanetTree<MonomType>::Node::~Node()
 {
 }
 
 template <typename MonomType>
-JanetTree<MonomType>::ConstIterator::ConstIterator(Node* node)
+inline JanetTree<MonomType>::ConstIterator::ConstIterator(Node* node)
     : CurrentNode(node)
 {
 }
 
 template <typename MonomType>
-JanetTree<MonomType>::ConstIterator::~ConstIterator()
+inline JanetTree<MonomType>::ConstIterator::~ConstIterator()
 {
 }
 
 template <typename MonomType>
-void JanetTree<MonomType>::ConstIterator::StepNextDegree()
+inline void JanetTree<MonomType>::ConstIterator::StepNextDegree()
 {
     CurrentNode = CurrentNode->NextDegree;
 }
 
 template <typename MonomType>
-void JanetTree<MonomType>::ConstIterator::StepNextVariable()
+inline void JanetTree<MonomType>::ConstIterator::StepNextVariable()
 {
     CurrentNode = CurrentNode->NextVariable;
 }
 
 template <typename MonomType>
-JanetTree<MonomType>::ConstIterator::operator bool() const
+inline JanetTree<MonomType>::ConstIterator::operator bool() const
 {
     return CurrentNode;
 }
 
 template <typename MonomType>
-typename JanetTree<MonomType>::ConstIterator JanetTree<MonomType>::ConstIterator::GetNextDegree() const
+inline typename JanetTree<MonomType>::ConstIterator JanetTree<MonomType>::ConstIterator::GetNextDegree() const
 {
     return CurrentNode->NextDegree;
 }
 
 template <typename MonomType>
-typename JanetTree<MonomType>::ConstIterator JanetTree<MonomType>::ConstIterator::GetNextVariable() const
+inline typename JanetTree<MonomType>::ConstIterator JanetTree<MonomType>::ConstIterator::GetNextVariable() const
 {
     return CurrentNode->NextVariable;
 }
 
 template <typename MonomType>
-bool JanetTree<MonomType>::ConstIterator::HasNextDegree() const
+inline bool JanetTree<MonomType>::ConstIterator::HasNextDegree() const
 {
     return CurrentNode->NextDegree;
 }
 
 template <typename MonomType>
-bool JanetTree<MonomType>::ConstIterator::HasNextVariable() const
+inline bool JanetTree<MonomType>::ConstIterator::HasNextVariable() const
 {
     return CurrentNode->NextVariable;
 }
 
 template <typename MonomType>
-const Triple<MonomType>* JanetTree<MonomType>::ConstIterator::GetTriple() const
+inline const Triple<MonomType>* JanetTree<MonomType>::ConstIterator::GetTriple() const
 {
     return CurrentNode->CurrentTriple;
 }
 
 template <typename MonomType>
-typename MonomType::Integer JanetTree<MonomType>::ConstIterator::GetDegree() const
+inline typename MonomType::Integer JanetTree<MonomType>::ConstIterator::GetDegree() const
 {
     return CurrentNode->Degree;
 }
 
 template <typename MonomType>
-JanetTree<MonomType>::Iterator::Iterator(Node*& node)
+inline JanetTree<MonomType>::Iterator::Iterator(Node*& node)
     : CurrentNode(&node)
 {
 }
 
 template <typename MonomType>
-JanetTree<MonomType>::Iterator::~Iterator()
+inline JanetTree<MonomType>::Iterator::~Iterator()
 {
 }
 
 template <typename MonomType>
-void JanetTree<MonomType>::Iterator::StepNextDegree()
+inline void JanetTree<MonomType>::Iterator::StepNextDegree()
 {
     CurrentNode = &(*CurrentNode)->NextDegree;
 }
 
 template <typename MonomType>
-void JanetTree<MonomType>::Iterator::StepNextVariable()
+inline void JanetTree<MonomType>::Iterator::StepNextVariable()
 {
     CurrentNode = &(*CurrentNode)->NextVariable;
 }
 
 template <typename MonomType>
-JanetTree<MonomType>::Iterator::operator bool() const
+inline JanetTree<MonomType>::Iterator::operator bool() const
 {
     return *CurrentNode;
 }
 
 template <typename MonomType>
-typename JanetTree<MonomType>::ConstIterator JanetTree<MonomType>::Iterator::GetNextDegree() const
+inline typename JanetTree<MonomType>::ConstIterator JanetTree<MonomType>::Iterator::GetNextDegree() const
 {
     return (*CurrentNode)->NextDegree;
 }
 
 template <typename MonomType>
-typename JanetTree<MonomType>::ConstIterator JanetTree<MonomType>::Iterator::GetNextVariable() const
+inline typename JanetTree<MonomType>::ConstIterator JanetTree<MonomType>::Iterator::GetNextVariable() const
 {
     return (*CurrentNode)->NextVariable;
 }
 
 template <typename MonomType>
-bool JanetTree<MonomType>::Iterator::HasNextDegree() const
+inline bool JanetTree<MonomType>::Iterator::HasNextDegree() const
 {
     return (*CurrentNode)->NextDegree;
 }
 
 template <typename MonomType>
-bool JanetTree<MonomType>::Iterator::HasNextVariable() const
+inline bool JanetTree<MonomType>::Iterator::HasNextVariable() const
 {
     return (*CurrentNode)->NextVariable;
 }
 
 template <typename MonomType>
-JanetTree<MonomType>::Iterator::operator typename JanetTree<MonomType>::ConstIterator() const
+inline JanetTree<MonomType>::Iterator::operator typename JanetTree<MonomType>::ConstIterator() const
 {
     return *CurrentNode;
 }
 
 template <typename MonomType>
-Triple<MonomType>*& JanetTree<MonomType>::Iterator::GetTriple() const
+inline Triple<MonomType>*& JanetTree<MonomType>::Iterator::GetTriple() const
 {
     return (*CurrentNode)->CurrentTriple;
 }
 
 template <typename MonomType>
-typename MonomType::Integer JanetTree<MonomType>::Iterator::GetDegree() const
+inline typename MonomType::Integer JanetTree<MonomType>::Iterator::GetDegree() const
 {
     return (*CurrentNode)->Degree;
 }
@@ -251,7 +251,7 @@ void JanetTree<MonomType>::Iterator::Build(typename MonomType::Integer degree, t
 }
 
 template <typename MonomType>
-void JanetTree<MonomType>::Iterator::Delete()
+inline void JanetTree<MonomType>::Iterator::Delete()
 {
     if (*CurrentNode)
     {
