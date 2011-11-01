@@ -1,4 +1,13 @@
+#include <sstream>
 #include "monomLex.h"
+
+MonomLex::MonomLex(const std::string& str)
+    : Monom()
+    , Next(0)
+{
+    std::stringstream tmpStream(str);
+    tmpStream >> *this;
+}
 
 int MonomLex::Compare(const MonomLex& anotherMonom)
 {

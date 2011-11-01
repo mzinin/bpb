@@ -1,4 +1,28 @@
+#include <sstream>
 #include "monom.h"
+
+std::string Monom::ToString() const
+{
+    std::stringstream tmpStream;
+    tmpStream << *this;
+    return tmpStream.str();
+}
+
+std::string Monom::GetInnerStructure() const
+{
+    std::stringstream tmpStream;
+    tmpStream << TotalDegree << "(";
+
+    VarsListNode* iterator = ListHead;
+    while (iterator)
+    {
+        tmpStream << iterator->Value << "->";
+        iterator = iterator->Next;
+    }
+    tmpStream << ")";
+
+    return tmpStream.str();
+}
 
 void Monom::AddVariable(const char *var)
 {

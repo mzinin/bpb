@@ -2,6 +2,7 @@
 #define MONOM_DRL_H
 
 #include <set>
+#include <string>
 #include "fast_allocator.h"
 #include "monom.h"
 
@@ -16,6 +17,7 @@ public:
 public:
     MonomDRL();
     MonomDRL(const MonomDRL& anotherMonom);
+    MonomDRL(const std::string& str);
     ~MonomDRL();
 
     void* operator new(std::size_t);
@@ -102,32 +104,12 @@ inline MonomDRL::VarsListNode* MonomDRL::Find(const Monom::Integer var) const
         return 0;
     }
 
-    VarsListNode *previousPointer(ListHead), *currentPointer;
-    Monom::Integer range(TotalDegree), middle;
-
-    while ((middle = range >> 1) > 0)
+    VarsListNode* position = ListHead;
+    while (position && position->Next && position->Next->Value >= var)
     {
-        currentPointer = previousPointer;
-        for (register Monom::Integer i = 0; i < middle; ++i)
-        {
-            currentPointer = currentPointer->Next;
-        }
-
-        if (currentPointer->Value > var)
-        {
-            previousPointer = currentPointer;
-            range -= middle;
-        }
-        else if (currentPointer->Value < var)
-        {
-            range = middle;
-        }
-        else
-        {
-            return currentPointer;
-        }
+        position = position->Next;
     }
-    return previousPointer;
+    return position;
 }
 
 inline void MonomDRL::SetOne()
@@ -147,38 +129,8 @@ inline void MonomDRL::SetOne()
 
 inline MonomDRL::Integer MonomDRL::operator[](MonomDRL::Integer var) const
 {
-    if (!ListHead || ListHead->Value < var)
-    {
-        return 0;
-    }
-
-    VarsListNode *previousPointer(ListHead), *currentPointer;
-    Integer range(TotalDegree), middle;
-
-    while (range > 0)
-    {
-        middle = range >> 1;
-        currentPointer = previousPointer;
-        for (register Integer i = 0; i < middle; ++i)
-        {
-            currentPointer = currentPointer->Next;
-        }
-
-        if (currentPointer->Value > var)
-        {
-            previousPointer = currentPointer->Next;
-            range -= middle + 1;
-        }
-        else if (currentPointer->Value < var)
-        {
-            range = middle;
-        }
-        else
-        {
-            return 1;
-        }
-    }
-    return previousPointer && previousPointer->Value == var;
+    VarsListNode* varPosition = Find(var);
+    return varPosition && varPosition->Value == var;
 }
 
 inline const MonomDRL& MonomDRL::operator=(const MonomDRL& anotherMonom)
@@ -207,7 +159,7 @@ inline const MonomDRL& MonomDRL::operator=(const MonomDRL& anotherMonom)
 
         if (*iterator)
         {
-            VarsListNode *nodeToDelete = (*iterator)->Next;
+            VarsListNode* nodeToDelete = *iterator;
             *iterator = 0;
             while (nodeToDelete)
             {
@@ -216,17 +168,13 @@ inline const MonomDRL& MonomDRL::operator=(const MonomDRL& anotherMonom)
                 delete iteratorAnother;
             }
         }
-
-        if (iteratorAnother)
+        else while (iteratorAnother)
         {
-            while (iteratorAnother)
-            {
-                *iterator = new VarsListNode();
-                (*iterator)->Value = iteratorAnother->Value;
+            *iterator = new VarsListNode();
+            (*iterator)->Value = iteratorAnother->Value;
 
-                iterator = &((*iterator)->Next);
-                iteratorAnother = iteratorAnother->Next;
-            }
+            iterator = &((*iterator)->Next);
+            iteratorAnother = iteratorAnother->Next;
         }
     }
     return *this;

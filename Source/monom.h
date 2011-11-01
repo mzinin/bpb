@@ -44,6 +44,8 @@ protected:
 public:
     virtual ~Monom();
     virtual Integer Degree() const;
+    std::string ToString() const;
+    std::string GetInnerStructure() const;
 
     virtual void SetOne() = 0;
     virtual Integer operator[](const Integer var) const = 0;

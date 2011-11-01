@@ -1,4 +1,13 @@
+#include <sstream>
 #include "monomDRL.h"
+
+MonomDRL::MonomDRL(const std::string& str)
+    : Monom()
+    , Next(0)
+{
+    std::stringstream tmpStream(str);
+    tmpStream >> *this;
+}
 
 int MonomDRL::Compare(const MonomDRL& anotherMonom)
 {

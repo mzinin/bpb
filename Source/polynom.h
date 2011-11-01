@@ -210,7 +210,7 @@ const Polynom<MonomType>& Polynom<MonomType>::operator=(const Polynom<MonomType>
 
         if (*iterator)
         {
-            MonomType* monomToDelete = (*iterator)->Next;
+            MonomType* monomToDelete = *iterator;
             *iterator = 0;
             while (monomToDelete)
             {
@@ -219,8 +219,7 @@ const Polynom<MonomType>& Polynom<MonomType>::operator=(const Polynom<MonomType>
                 delete iteratorAnother;
             }
         }
-
-        while (iteratorAnother)
+        else while (iteratorAnother)
         {
             *iterator = new MonomType(*iteratorAnother);
             iterator = &((*iterator)->Next);

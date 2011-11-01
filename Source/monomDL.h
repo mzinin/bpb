@@ -2,6 +2,7 @@
 #define MONOM_DL_H
 
 #include <set>
+#include <string>
 #include "fast_allocator.h"
 #include "monom.h"
 
@@ -16,6 +17,7 @@ public:
 public:
     MonomDL();
     MonomDL(const MonomDL& anotherMonom);
+    MonomDL(const std::string& str);
     ~MonomDL();
 
     void* operator new(std::size_t);
@@ -102,32 +104,12 @@ inline MonomDL::VarsListNode* MonomDL::Find(const MonomDL::Integer var) const
         return 0;
     }
 
-    VarsListNode *previousPointer(ListHead), *currentPointer;
-    Integer range(TotalDegree), middle;
-
-    while ((middle = range >> 1) > 0)
+    VarsListNode* position = ListHead;
+    while (position && position->Next && position->Next->Value <= var)
     {
-        currentPointer = previousPointer;
-        for (register Integer i = 0; i < middle; ++i)
-        {
-            currentPointer = currentPointer->Next;
-        }
-
-        if (currentPointer->Value < var)
-        {
-            previousPointer = currentPointer;
-            range -= middle;
-        }
-        else if (currentPointer->Value > var)
-        {
-            range = middle;
-        }
-        else
-        {
-            return currentPointer;
-        }
+        position = position->Next;
     }
-    return previousPointer;
+    return position;
 }
 
 inline void MonomDL::SetOne()
@@ -147,38 +129,8 @@ inline void MonomDL::SetOne()
 
 inline MonomDL::Integer MonomDL::operator[](MonomDL::Integer var) const
 {
-    if (!ListHead || ListHead->Value > var)
-    {
-        return 0;
-    }
-
-    VarsListNode *previousPointer(ListHead), *currentPointer;
-    Integer range(TotalDegree), middle;
-
-    while (range > 0)
-    {
-        middle = range >> 1;
-        currentPointer = previousPointer;
-        for (register Integer i = 0; i < middle; ++i)
-        {
-            currentPointer = currentPointer->Next;
-        }
-
-        if (currentPointer->Value < var)
-        {
-            previousPointer = currentPointer->Next;
-            range -= middle + 1;
-        }
-        else if (currentPointer->Value > var)
-        {
-            range = middle;
-        }
-        else
-        {
-            return 1;
-        }
-    }
-    return previousPointer && previousPointer->Value == var;
+    VarsListNode* varPosition = Find(var);
+    return varPosition && varPosition->Value == var;
 }
 
 inline const MonomDL& MonomDL::operator=(const MonomDL& anotherMonom)
@@ -216,17 +168,13 @@ inline const MonomDL& MonomDL::operator=(const MonomDL& anotherMonom)
                 delete iteratorAnother;
             }
         }
-
-        if (iteratorAnother)
+        else while (iteratorAnother)
         {
-            while (iteratorAnother)
-            {
-                *iterator = new VarsListNode();
-                (*iterator)->Value = iteratorAnother->Value;
+            *iterator = new VarsListNode();
+            (*iterator)->Value = iteratorAnother->Value;
 
-                iterator = &((*iterator)->Next);
-                iteratorAnother = iteratorAnother->Next;
-            }
+            iterator = &((*iterator)->Next);
+            iteratorAnother = iteratorAnother->Next;
         }
     }
     return *this;
