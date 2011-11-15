@@ -11,9 +11,9 @@ SOURCE = ..\Source
 BINARY = .\
 
 
-all: myginv.exe
+all: bjb.exe
 
-myginv.exe: timer.obj \
+bjb.exe:    timer.obj \
             variables.obj \
             fast_allocator.obj \
             monom.obj \
@@ -27,10 +27,10 @@ myginv.exe: timer.obj \
             settings_manager.obj \
             version.obj \
             launcher.obj \
-            myginv.obj \
-            myginv.res
+            main.obj \
+            bjb.res
     @del $(BINARY)\*.exe 2> NUL
-    $(LINK) $(LINKFLAGS) /OUT:$(BINARY)\myginv.exe \
+    $(LINK) $(LINKFLAGS) /OUT:$(BINARY)\bjb.exe \
             $(BINARY)\timer.obj \
             $(BINARY)\variables.obj \
             $(BINARY)\fast_allocator.obj \
@@ -45,17 +45,17 @@ myginv.exe: timer.obj \
             $(BINARY)\settings_manager.obj \
             $(BINARY)\version.obj \
             $(BINARY)\launcher.obj \
-            $(BINARY)\myginv.obj \
-            $(BINARY)\myginv.res 2> NUL
+            $(BINARY)\main.obj \
+            $(BINARY)\bjb.res 2> NUL
     @del $(BINARY)\*.obj
     @del $(BINARY)\*.res
     @echo ***** Building successfully completed *****
     
-myginv.res: myginv.rc $(SOURCE)\version.h
-    $(RC) /fo myginv.res myginv.rc 2> NUL
+bjb.res: bjb.rc $(SOURCE)\version.h
+    $(RC) /fo bjb.res bjb.rc 2> NUL
 
-myginv.obj: $(SOURCE)\launcher.h
-    $(CXX) $(CXXFLAGS) $(SOURCE)\myginv.cpp /Fo $(BINARY)\myginv.obj 2> NUL
+main.obj: $(SOURCE)\launcher.h
+    $(CXX) $(CXXFLAGS) $(SOURCE)\main.cpp /Fo $(BINARY)\main.obj 2> NUL
 
 launcher.obj: $(SOURCE)\fast_allocator.h \
               $(SOURCE)\polynom.h \

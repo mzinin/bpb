@@ -3,13 +3,13 @@ CXXFLAGS = -O3 -c
 SOURCE = ../Source
 BINARY = .
 
-all: myginv
+all: bjb
 
 clear:
 	@rm $(BINARY)/*.o
-	@rm $(BINARY)/myginv
+	@rm $(BINARY)/bjb
 
-myginv: timer.o \
+bjb:    timer.o \
         variables.o \
         fast_allocator.o \
         monom.o \
@@ -23,7 +23,7 @@ myginv: timer.o \
         settings_manager.o \
         version.o \
         launcher.o \
-        myginv.o
+        main.o
 	$(CXX) \
             $(BINARY)/timer.o \
             $(BINARY)/variables.o \
@@ -39,12 +39,12 @@ myginv: timer.o \
             $(BINARY)/settings_manager.o \
             $(BINARY)/version.o \
             $(BINARY)/launcher.o \
-            $(BINARY)/myginv.o \
-            -o $(BINARY)/myginv
+            $(BINARY)/main.o \
+            -o $(BINARY)/bjb
 	@rm $(BINARY)/*.o
 
-myginv.o: $(SOURCE)/launcher.h
-	$(CXX) $(CXXFLAGS) $(SOURCE)/myginv.cpp -o $(BINARY)/myginv.o
+main.o: $(SOURCE)/launcher.h
+	$(CXX) $(CXXFLAGS) $(SOURCE)/main.cpp -o $(BINARY)/main.o
 
 launcher.o: $(SOURCE)/fast_allocator.h \
             $(SOURCE)/polynom.h \
