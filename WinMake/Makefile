@@ -11,15 +11,15 @@ SOURCE = ..\Source
 BINARY = .\
 
 
-all: myginv.exe
+all: bpb.exe
 
 clear:
     @del $(BINARY)\*.exe 2> NUL
     @del $(BINARY)\*.obj 2> NUL
     @del $(BINARY)\*.res 2> NUL
 
-myginv.exe: myginv.res \
-            myginv.obj \
+bpb.exe:    bpb.res \
+            main.obj \
             launcher.obj \
             version.obj \
             settings_manager.obj \
@@ -32,9 +32,9 @@ myginv.exe: myginv.res \
             variables.obj \
             timer.obj
     @del $(BINARY)\*.exe 2> NUL
-    $(LINK) $(LINKFLAGS) /OUT:$(BINARY)\myginv.exe \
-            $(BINARY)\myginv.res \
-            $(BINARY)\myginv.obj \
+    $(LINK) $(LINKFLAGS) /OUT:$(BINARY)\bpb.exe \
+            $(BINARY)\bpb.res \
+            $(BINARY)\main.obj \
             $(BINARY)\launcher.obj \
             $(BINARY)\version.obj \
             $(BINARY)\settings_manager.obj \
@@ -50,11 +50,11 @@ myginv.exe: myginv.res \
     @del $(BINARY)\*.res
     @echo ***** Building successfully completed *****
 
-myginv.res: myginv.rc $(SOURCE)\version.h
-    $(RC) /fo myginv.res myginv.rc 2> NUL
+bpb.res: bpb.rc $(SOURCE)\version.h
+    $(RC) /fo bpb.res bpb.rc 2> NUL
 
-myginv.obj: $(SOURCE)\launcher.h
-    $(CXX) $(CXXFLAGS) $(SOURCE)\myginv.cpp /Fo $(BINARY)\myginv.obj 2> NUL
+main.obj: $(SOURCE)\launcher.h
+    $(CXX) $(CXXFLAGS) $(SOURCE)\main.cpp /Fo $(BINARY)\main.obj 2> NUL
 
 launcher.obj: $(SOURCE)\fast_allocator.h \
               $(SOURCE)\polynom.h \
