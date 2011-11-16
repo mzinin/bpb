@@ -49,7 +49,7 @@ namespace
     const char MONOMIAL_ORDER_DEGLEX_VALUE[]   = "deglex";
     const char MONOMIAL_ORDER_DEGLEX_COMMENT[] = "degree lexicographic order";
     const char MONOMIAL_ORDER_DEGREVLEX_VALUE[]   = "degrevlex";
-    const char MONOMIAL_ORDER_DEGREVLEX_COMMENT[] = "degree reverse lexicographic order";
+    const char MONOMIAL_ORDER_DEGREVLEX_COMMENT[] = "degree reverse lexicographic order (default)";
     const char MONOMIAL_ORDER_OLDDRL_VALUE[]   = "old";
     const char MONOMIAL_ORDER_OLDDRL_COMMENT[] = "";
 }
