@@ -31,9 +31,8 @@ Variables::~Variables()
 {
     for (register unsigned i = 0; i < Size(); ++i)
     {
-        delete VariablesNames[i];
+        delete[] VariablesNames[i];
     }
-    VariablesNames.clear();
 }
 
 bool Variables::Add(const char* var) 
