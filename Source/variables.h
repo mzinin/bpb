@@ -2,30 +2,31 @@
 #define VARIABLES_H
 
 #include <cstring>
+#include <deque>
 #include <iostream>
-#include <vector>
+#include <string>
 
 class Variables
 {
 public:
-    typedef std::vector<const char*> Vector;
-    typedef std::vector<const char*>::const_iterator ConstIterator;
-
-private:
-    Vector VariablesNames;
+    typedef std::deque<std::string> Vector;
+    typedef std::deque<std::string>::const_iterator ConstIterator;
 
 public:
     Variables();
     ~Variables();
 
-    bool Add(const char* var);
-    int Find(const char* var) const;
+    bool Add(const std::string& var);
+    int Find(const std::string& var) const;
     int Read(std::istream& in) const;
 
     int Size() const;
     ConstIterator Begin() const;
     ConstIterator End() const;
-    const char* Variable(int variableNumber) const;
+    const std::string& Variable(int variableNumber) const;
+
+private:
+    Vector VariablesNames;
 };
 
 
@@ -44,7 +45,7 @@ inline Variables::ConstIterator Variables::End() const
     return VariablesNames.end();
 }
 
-inline const char* Variables::Variable(int variableNumber) const
+inline const std::string& Variables::Variable(int variableNumber) const
 {
     if (variableNumber >= Size())
     {

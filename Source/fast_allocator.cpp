@@ -1,18 +1,22 @@
 #include <cstdlib>
 #include <cmath>
+#include <iostream>
 
 #include "fast_allocator.h"
 
 FastAllocator::FastAllocator(size_t blockSize)
-    : MemoryPageSize(1048576)
-    , TSize(ceil((double)blockSize / sizeof(void*)))
-    , PageSize(floor((double)MemoryPageSize / blockSize))
+    : TSize(ceil((double)blockSize / sizeof(void*)))
+    , MemoryPageSize(blockSize * PageSize)
     , FreeBlock(0)
 {
 }
 
 FastAllocator::~FastAllocator()
 {
+    for (std::list<void*>::iterator it = AllocatedBlocks.begin(); it != AllocatedBlocks.end(); ++it)
+    {
+        free(*it);
+    }
 }
 
 unsigned long FastAllocator::GetUsedMemory()
@@ -32,6 +36,8 @@ void FastAllocator::ExpandMemory()
         exit(EXIT_FAILURE);
     }
 
+    AllocatedBlocks.push_back(static_cast<void*>(begin));
+
     *(reinterpret_cast<void***>(end)) = FreeBlock;
     FreeBlock = static_cast<void**>(begin);
     do
@@ -43,3 +49,4 @@ void FastAllocator::ExpandMemory()
 }
 
 unsigned long FastAllocator::UsedMemory = 0;
+const size_t FastAllocator::PageSize = 65536;

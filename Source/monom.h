@@ -34,7 +34,7 @@ protected:
     Integer TotalDegree;
 
     static Integer DimIndepend;
-    static Variables* const IndependVariables;
+    static Variables IndependVariables;
 
 protected:
     Monom();
@@ -53,8 +53,8 @@ public:
     virtual Integer FirstMultiVar() const = 0;
     virtual std::set<Integer> GetVariablesSet() const = 0;
 
-    static void AddVariable(const char *var);
-    static const char* GetVariable(Integer var);
+    static void AddVariable(const std::string& var);
+    static const std::string& GetVariable(Integer var);
     static Integer GetDimIndepend();
 
     friend std::istream& operator>>(std::istream& in, Monom& monom);
