@@ -272,6 +272,11 @@ void JanetTree<MonomType>::Iterator::Clear()
         }
         Delete();
     }
+    
+    if ((*CurrentNode)->NextVariable)
+    {
+        JanetTree<MonomType>::Iterator((*CurrentNode)->NextVariable).Clear();
+    }
     Delete();
 }
 

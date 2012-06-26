@@ -230,9 +230,9 @@ bool Launcher::Run()
             return DoMonomTypeDependStuff<MonomDL>();
         case Monom::DegRevLex:
             return DoMonomTypeDependStuff<MonomDRL>();
-        default:
-            return false;
     };
+
+    return false;
 }
 
 void Launcher::FillOptions()
@@ -421,7 +421,7 @@ void Launcher::ReadVariables(std::ifstream& inputFileStream) const
         inputFileStream >> c;
         if (c == ',' || c == ';') 
         {
-            MonomType::AddVariable(tmpString.c_str());
+            MonomType::AddVariable(tmpString);
             tmpString.clear();
         }
         else 
