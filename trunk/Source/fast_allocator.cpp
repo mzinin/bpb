@@ -24,7 +24,7 @@ unsigned long FastAllocator::GetUsedMemory()
     return UsedMemory; 
 }
 
-void FastAllocator::ExpandMemory()
+void FastAllocator::ExpandMemory() // throws std::bad_alloc
 {
     UsedMemory += MemoryPageSize;
     void **begin = static_cast<void**>(malloc(MemoryPageSize)),
@@ -33,7 +33,7 @@ void FastAllocator::ExpandMemory()
          
     if (!begin)
     {
-        exit(EXIT_FAILURE); 
+        throw std::bad_alloc(); 
     }
     
     AllocatedBlocks.push_back(static_cast<void*>(begin));
