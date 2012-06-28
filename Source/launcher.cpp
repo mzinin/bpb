@@ -198,39 +198,57 @@ Launcher::~Launcher()
 bool Launcher::Init(int argc, char *argv[])
 {
     ApplicationName = argv[0];
-    return AnalizeArguments(argc, argv);
+    bool result = false;
+
+    try
+    {
+        result = AnalizeArguments(argc, argv);
+    }
+    catch (const std::exception& error)
+    {
+        std::cerr << "Launcher::Init caught exception: " << error.what() << std::endl;
+    }
+
+    return result;
 }
 
 bool Launcher::Run()
 {
-    if (GetSettingsManager().GetPrintHelp())
+    try
     {
-        PrintUsage();
-        return true;
-    }
+        if (GetSettingsManager().GetPrintHelp())
+        {
+            PrintUsage();
+            return true;
+        }
 
-    if (GetSettingsManager().GetPrintVersion())
-    {
-        PrintVersion();
-        return true;
-    }
+        if (GetSettingsManager().GetPrintVersion())
+        {
+            PrintVersion();
+            return true;
+        }
 
-    if (InputFileName.empty())
-    {
-        std::cerr << "Task file name is not defined." << std::endl << std::endl;
-        PrintUsage();
-        return false;
-    }
+        if (InputFileName.empty())
+        {
+            std::cerr << "Task file name is not defined." << std::endl << std::endl;
+            PrintUsage();
+            return false;
+        }
 
-    switch(GetSettingsManager().GetMonomialOrder())
+        switch(GetSettingsManager().GetMonomialOrder())
+        {
+            case Monom::Lex:
+                return DoMonomTypeDependStuff<MonomLex>();
+            case Monom::DegLex:
+                return DoMonomTypeDependStuff<MonomDL>();
+            case Monom::DegRevLex:
+                return DoMonomTypeDependStuff<MonomDRL>();
+        }
+    }
+    catch (const std::exception& error)
     {
-        case Monom::Lex:
-            return DoMonomTypeDependStuff<MonomLex>();
-        case Monom::DegLex:
-            return DoMonomTypeDependStuff<MonomDL>();
-        case Monom::DegRevLex:
-            return DoMonomTypeDependStuff<MonomDRL>();
-    };
+        std::cerr << "Launcher::Run caught exception: " << error.what() << std::endl;
+    }
 
     return false;
 }

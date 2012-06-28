@@ -31,11 +31,11 @@ public:
     FastAllocator(const size_t blockSize);
     ~FastAllocator();
 
-    void* Allocate();
+    void* Allocate(); // throws std::bad_alloc
     void Free(void* pointer);
 
 private:
-    void ExpandMemory();
+    void ExpandMemory(); // throws std::bad_alloc
 
 private:
     const size_t TSize;
