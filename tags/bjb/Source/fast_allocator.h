@@ -21,26 +21,30 @@
 #ifndef FAST_ALLOCATOR_H
 #define FAST_ALLOCATOR_H
 
+#include <list>
+
 class FastAllocator
 {
-private:
-    const size_t MemoryPageSize;
-    const size_t TSize;
-    const size_t PageSize;
-    void**       FreeBlock;
-    static unsigned long UsedMemory;
-
 public:
     static unsigned long GetUsedMemory();
 
     FastAllocator(const size_t blockSize);
     ~FastAllocator();
 
-    void* Allocate();
+    void* Allocate(); // throws std::bad_alloc
     void Free(void* pointer);
 
 private:
-    void ExpandMemory();
+    void ExpandMemory(); // throws std::bad_alloc
+    
+private:
+    const size_t TSize;
+    const size_t MemoryPageSize;
+    void**       FreeBlock;
+    std::list<void*> AllocatedBlocks;
+    
+    static unsigned long UsedMemory;
+    static const size_t PageSize;
 };
 
 inline void* FastAllocator::Allocate()

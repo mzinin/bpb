@@ -220,6 +220,11 @@ inline void JanetTree::Iterator::Clear()
         }
         Delete();
     }
+    
+    if ((*CurrentNode)->NextVariable)
+    {
+        JanetTree::Iterator((*CurrentNode)->NextVariable).Clear();
+    }
     Delete();
 }
 

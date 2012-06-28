@@ -180,44 +180,62 @@ Launcher::~Launcher()
 bool Launcher::Init(int argc, char *argv[])
 {
     ApplicationName = argv[0];
-    return AnalizeArguments(argc, argv);
+    bool result = false;
+
+    try
+    {
+        result = AnalizeArguments(argc, argv);
+    }
+    catch (const std::exception& error)
+    {
+        std::cerr << "Launcher::Init caught exception: " << error.what() << std::endl;
+    }
+
+    return result;
 }
 
 bool Launcher::Run()
 {
-    if (GetSettingsManager().GetPrintHelp())
+    try
     {
-        PrintUsage();
-        return true;
-    }
+        if (GetSettingsManager().GetPrintHelp())
+        {
+            PrintUsage();
+            return true;
+        }
 
-    if (GetSettingsManager().GetPrintVersion())
+        if (GetSettingsManager().GetPrintVersion())
+        {
+            PrintVersion();
+            return true;
+        }
+
+        if (InputFileName.empty())
+        {
+            std::cerr << "Task file name is not defined." << std::endl << std::endl;
+            PrintUsage();
+            return false;
+        }
+
+        std::list<Polynom*> initialSet;
+        std::list<Polynom*> initialAnswer;
+
+        if (!GetTaskFromFile(initialSet, initialAnswer))
+        {
+            return false;
+        }
+        
+        GroebnerBasis gBasis;
+        GetResourceCounter().GroebnerBasisTimer.Start();
+        gBasis.Construct(initialSet);
+        GetResourceCounter().GroebnerBasisTimer.Stop();
+
+        PrintResult(gBasis, initialAnswer);
+    }
+    catch (const std::exception& error)
     {
-        PrintVersion();
-        return true;
+        std::cerr << "Launcher::Run caught exception: " << error.what() << std::endl;
     }
-
-    if (InputFileName.empty())
-    {
-        std::cerr << "Task file name is not defined." << std::endl << std::endl;
-        PrintUsage();
-        return false;
-    }
-
-    std::list<Polynom*> initialSet;
-    std::list<Polynom*> initialAnswer;
-
-    if (!GetTaskFromFile(initialSet, initialAnswer))
-    {
-        return false;
-    }
-    
-    GroebnerBasis gBasis;
-    GetResourceCounter().GroebnerBasisTimer.Start();
-    gBasis.Construct(initialSet);
-    GetResourceCounter().GroebnerBasisTimer.Stop();
-
-    PrintResult(gBasis, initialAnswer);
 
     return true;
 }

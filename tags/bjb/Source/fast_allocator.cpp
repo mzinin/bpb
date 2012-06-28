@@ -4,15 +4,18 @@
 #include "fast_allocator.h"
 
 FastAllocator::FastAllocator(size_t blockSize)
-    : MemoryPageSize(1048576)
-    , TSize(ceil((double)blockSize / sizeof(void*)))
-    , PageSize(floor((double)MemoryPageSize / blockSize))
+    : TSize(ceil((double)blockSize / sizeof(void*)))
+    , MemoryPageSize(blockSize * PageSize)
     , FreeBlock(0) 
 {
 }
 
 FastAllocator::~FastAllocator()
 {
+    for (std::list<void*>::iterator it = AllocatedBlocks.begin(); it != AllocatedBlocks.end(); ++it)
+    {
+        free(*it);
+    }
 }
 
 unsigned long FastAllocator::GetUsedMemory() 
@@ -20,7 +23,7 @@ unsigned long FastAllocator::GetUsedMemory()
     return UsedMemory; 
 }
 
-void FastAllocator::ExpandMemory()
+void FastAllocator::ExpandMemory() // throws std::bad_alloc
 {
     UsedMemory += MemoryPageSize;
     void **begin = static_cast<void**>(malloc(MemoryPageSize)),
@@ -29,8 +32,10 @@ void FastAllocator::ExpandMemory()
     
     if (!begin)
     {
-        exit(EXIT_FAILURE); 
+        throw std::bad_alloc(); 
     }
+    
+    AllocatedBlocks.push_back(static_cast<void*>(begin));
 
     *(reinterpret_cast<void***>(end)) = FreeBlock;
     FreeBlock = static_cast<void**>(begin);
@@ -43,3 +48,4 @@ void FastAllocator::ExpandMemory()
 }
 
 unsigned long FastAllocator::UsedMemory = 0;
+const size_t FastAllocator::PageSize = 65536;

@@ -4,17 +4,17 @@
 
 namespace
 {
-    int ReadVariable(std::istream& in, const char* var) 
+    int ReadVariable(std::istream& in, const std::string& var) 
     {
         in >> std::ws;
         int commonLength = 0;
         int i = 0;
-        while (var[i] && var[i] == in.get()) 
+        while (i < var.size() && var[i] == in.get()) 
         {
             ++i;
             ++commonLength;
         }
-        if (var[i])
+        if (i != var.size())
         {
             commonLength = 0;
         }
@@ -29,48 +29,37 @@ Variables::Variables()
 
 Variables::~Variables()
 {
-    for (register unsigned i = 0; i < Size(); ++i)
-    {
-        delete VariablesNames[i];
-    }
-    VariablesNames.clear();
 }
 
-bool Variables::Add(const char* var) 
+bool Variables::Add(const std::string& var) 
 {
-    int varLength = strlen(var);
-    char *name = new char[varLength + 1];
-    int k = 0;
-    while (k < varLength && isspace(var[k])) 
+    size_t k = 0;
+    while (k < var.size() && isspace(var[k])) 
     {
         ++k;
     }
 
-    int i = 0;
-    while (k < varLength && !isspace(var[k])) 
+    std::string name;
+    while (k < var.size() && !isspace(var[k])) 
     {
-        name[i] = var[k];
-        ++i;
+        name += var[k];
         ++k;
     }
-    name[i] = '\0';
 
     if (Find(name) >= 0)
     {
         return false;
     }
-    else
-    {
-        VariablesNames.push_back(name);
-        return true;
-    }
+
+    VariablesNames.push_back(name);
+    return true;
 }
 
-int Variables::Find(const char *var) const 
+int Variables::Find(const std::string& var) const 
 {
     int position = 0;
     ConstIterator i(VariablesNames.begin());
-    while (i != VariablesNames.end() && strcmp(*i, var) != 0) 
+    while (i != VariablesNames.end() && *i != var) 
     {
         ++i;
         ++position;

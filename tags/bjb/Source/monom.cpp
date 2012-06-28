@@ -4,7 +4,7 @@
 FastAllocator Monom::VarsListNode::Allocator(sizeof(Monom::VarsListNode));
 FastAllocator Monom::Allocator(sizeof(Monom));
 Monom::Integer Monom::DimIndepend(0);
-Variables* const Monom::IndependVariables(new Variables());
+Variables Monom::IndependVariables;
 
 
 Monom::Monom(const std::string& str)
@@ -23,17 +23,17 @@ std::string Monom::ToString() const
     return tmpStream.str();
 }
 
-void Monom::AddVariable(const char* var)
+void Monom::AddVariable(const std::string& var)
 {
-    if (IndependVariables->Add(var))
+    if (IndependVariables.Add(var))
     {
         ++DimIndepend;
     }
 }
 
-const char* Monom::GetVariable(Monom::Integer var)
+const std::string& Monom::GetVariable(Monom::Integer var)
 {
-    return IndependVariables->Variable(var);
+    return IndependVariables.Variable(var);
 }
 
 bool Monom::IsDivisibleBy(const Monom& anotherMonom) const
@@ -258,7 +258,7 @@ void Monom::SetLcmOf(const Monom& monomA, const Monom& monomB)
 std::istream& operator>>(std::istream& in, Monom& monom) 
 {
     std::streampos posbeg = in.tellg();
-    int var = monom.IndependVariables->Read(in);
+    int var = monom.IndependVariables.Read(in);
     if (var < 0) 
     {
         in.clear();
@@ -290,7 +290,7 @@ std::istream& operator>>(std::istream& in, Monom& monom)
             else 
             {
                 in.get();
-                var = monom.IndependVariables->Read(in);
+                var = monom.IndependVariables.Read(in);
                 if (var < 0) 
                 {
                     in.clear();
@@ -315,7 +315,7 @@ std::ostream& operator<<(std::ostream& out, const Monom& monom)
     else 
     {
         int i = 0;
-        Variables::ConstIterator j(monom.IndependVariables->Begin());
+        Variables::ConstIterator j(monom.IndependVariables.Begin());
         while(monom[i] == 0) 
         {
             ++i;
@@ -328,7 +328,7 @@ std::ostream& operator<<(std::ostream& out, const Monom& monom)
         }
         ++i;
         ++j;
-        while(j != monom.IndependVariables->End())
+        while(j != monom.IndependVariables.End())
         {
             if (monom[i]) 
             {

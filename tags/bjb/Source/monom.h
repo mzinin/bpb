@@ -48,8 +48,8 @@ public:
     void SetGcdOf(const Monom& monomA, const Monom& monomB);
     void SetLcmOf(const Monom& monomA, const Monom& monomB);
 
-    static void AddVariable(const char* var);
-    static const char* GetVariable(Integer var);
+    static void AddVariable(const std::string& var);
+    static const std::string& GetVariable(Integer var);
     static Integer GetDimIndepend();
 
     friend std::istream& operator>>(std::istream& in, Monom& monom);
@@ -78,7 +78,7 @@ private:
     Integer TotalDegree;
 
     static Integer DimIndepend;
-    static Variables* const IndependVariables;
+    static Variables IndependVariables;
     static FastAllocator Allocator;
 };
 
