@@ -1,6 +1,8 @@
-#include "..\monomDL.h"
-#include "..\monomDRL.h"
-#include "..\monomLex.h"
+#include "monomDL.h"
+#include "monomDRL.h"
+#include "monomLex.h"
+
+#include <cstdlib>
 #include <iostream>
 
 void SetVariables()

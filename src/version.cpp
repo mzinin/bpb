@@ -1,6 +1,11 @@
+#include "current_version.h"
 #include "version.h"
 
-static VersionInfo Version(MAJOR_VESION, MINOR_VERSION, REVISION);
+
+namespace
+{
+    const VersionInfo Version(MAJOR_VESION, MINOR_VERSION, REVISION);
+}
 
 VersionInfo::VersionInfo(unsigned initialMajor, unsigned initialMinor, unsigned initialRevision):
     major(initialMajor),
