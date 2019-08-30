@@ -62,14 +62,14 @@ public:
         reduceSet(true);
     }
 
-    const PolynomType& operator[](int number) const
+    const PolynomType& operator[](size_t number) const
     {
         auto it = gBasis_.begin();
         std::advance(it, length() - 1 - number);
         return **it;
     }
 
-    unsigned length() const
+    size_t length() const
     {
         return gBasis_.size();
     }
@@ -86,7 +86,7 @@ private:
         PolynomType* originalForm = nullptr;
         PolynomType* normalForm = new PolynomType();
 
-        if (triple->variable() == -1)
+        if (triple->variable() == MonomType::invalidVariable)
         {
             originalForm = new PolynomType(*triple->polynom());
         }
@@ -212,8 +212,8 @@ private:
             }
         }
 
-        unsigned tmpPolySetSize = tmpPolySet.size();
-        for (unsigned i = 0; i < tmpPolySetSize; ++i)
+        size_t tmpPolySetSize = tmpPolySet.size();
+        for (size_t i = 0; i < tmpPolySetSize; ++i)
         {
             PolynomType* currentPolynom = tmpPolySet.front();
             tmpPolySet.pop_front();
@@ -284,7 +284,7 @@ private:
                 }
             }
 
-            intermediateBasis_.pushBack(new TripleType(newNormalForm, currentAncestor, currentNmpSet, 0, -1));
+            intermediateBasis_.pushBack(new TripleType(newNormalForm, currentAncestor, currentNmpSet, 0, MonomType::invalidVariable));
             if (!newNormalForm->degree())
             {
                 return;
@@ -325,7 +325,7 @@ private:
 template <typename MonomType>
 std::ostream& operator<<(std::ostream& out, const GroebnerBasis<MonomType>& groebnerBasis)
 {
-    for (unsigned i = 0; i < groebnerBasis.length(); ++i)
+    for (size_t i = 0; i < groebnerBasis.length(); ++i)
     {
         out << '[' << i << "] = " << groebnerBasis[i] << '\n';
     }

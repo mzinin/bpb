@@ -4,8 +4,8 @@
 #include <cmath>
 
 
-FastAllocator::FastAllocator(size_t blockSize)
-    : tSize_(ceil((double)blockSize / sizeof(void*)))
+FastAllocator::FastAllocator(uint64_t blockSize)
+    : tSize_(static_cast<uint64_t>(ceil(double(blockSize) / sizeof(void*))))
     , memoryPageSize_(blockSize * pageSize_)
     , freeBlock_(nullptr)
 {
@@ -19,7 +19,7 @@ FastAllocator::~FastAllocator()
     }
 }
 
-unsigned long FastAllocator::usedMemory()
+uint64_t FastAllocator::usedMemory()
 {
     return usedMemory_;
 }
@@ -48,5 +48,5 @@ void FastAllocator::expandMemory()
     } while(begin < end);
 }
 
-unsigned long FastAllocator::usedMemory_ = 0;
-const size_t FastAllocator::pageSize_ = 65536;
+uint64_t FastAllocator::usedMemory_ = 0;
+const uint64_t FastAllocator::pageSize_ = 65536;

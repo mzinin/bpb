@@ -111,7 +111,7 @@ public:
         return jTree_.find(monom);
     }
 
-    TripleType* const back() const
+    const TripleType* back() const
     {
         return tripleList_.back();
     }

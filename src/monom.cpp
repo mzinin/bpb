@@ -4,6 +4,8 @@
 
 
 FastAllocator Monom::VarsListNode::allocator(sizeof(Monom::VarsListNode));
+
+const Monom::Integer Monom::invalidVariable = static_cast<Monom::Integer>(-1);
 Variables Monom::independVariables_;
 Monom::Integer Monom::dimIndepend_ = 0;
 
@@ -60,7 +62,7 @@ std::istream& operator>>(std::istream& in, Monom& monom)
         do
         {
             deg = 1;
-            std::streampos posbeg = in.tellg();
+            posbeg = in.tellg();
             if ((in >> std::ws).peek() == '^')
             {
                 in.get();
@@ -70,7 +72,7 @@ std::istream& operator>>(std::istream& in, Monom& monom)
                     in.setstate(std::ios::failbit);
                 }
             }
-            monom.multiplyBy(var);
+            monom.multiplyBy(static_cast<Monom::Integer>(var));
             posbeg = in.tellg();
             if (in.peek() != '*')
             {
@@ -103,7 +105,7 @@ std::ostream& operator<<(std::ostream& out, const Monom& monom)
     }
     else
     {
-        int i = 0;
+        Monom::Integer i = 0;
         Variables::ConstIterator j(monom.independVariables_.begin());
         while (monom[i] == 0)
         {

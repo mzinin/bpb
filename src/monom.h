@@ -3,6 +3,7 @@
 #include "fast_allocator.h"
 #include "variables.h"
 
+#include <cstdint>
 #include <iostream>
 #include <set>
 
@@ -10,7 +11,9 @@
 class Monom
 {
 public:
-    using Integer = short int;
+    using Integer = uint16_t;
+
+    static const Integer invalidVariable;
 
     enum Order
     {

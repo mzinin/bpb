@@ -10,7 +10,7 @@ namespace
     {
         in >> std::ws;
         int commonLength = 0;
-        int i = 0;
+        size_t i = 0;
         while (i < var.size() && var[i] == in.get())
         {
             ++i;

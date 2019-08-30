@@ -1,33 +1,34 @@
 #pragma once
 
 #include <cstddef>
+#include <cstdint>
 #include <list>
 
 
 class FastAllocator
 {
 public:
-    FastAllocator(const size_t blockSize);
+    FastAllocator(const uint64_t blockSize);
     ~FastAllocator();
 
     // throws std::bad_alloc
     void* allocate();
     void free(void* pointer);
 
-    static unsigned long usedMemory();
+    static uint64_t usedMemory();
 
 private:
     // throws std::bad_alloc
     void expandMemory();
 
 private:
-    const size_t tSize_;
-    const size_t memoryPageSize_;
+    const uint64_t tSize_;
+    const uint64_t memoryPageSize_;
     void**       freeBlock_;
     std::list<void*> allocatedBlocks_;
 
-    static unsigned long usedMemory_;
-    static const size_t pageSize_;
+    static uint64_t usedMemory_;
+    static const uint64_t pageSize_;
 };
 
 inline void* FastAllocator::allocate()

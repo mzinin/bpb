@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include <deque>
 #include <string>
 
@@ -14,19 +15,19 @@ public:
     int find(const std::string& var) const;
     int read(std::istream& in) const;
 
-    int size() const;
+    uint16_t size() const;
     ConstIterator begin() const;
     ConstIterator end() const;
-    const std::string& variable(int variableNumber) const;
+    const std::string& variable(uint16_t variableNumber) const;
 
 private:
     std::deque<std::string> variablesNames_;
 };
 
 
-inline int Variables::size() const
+inline uint16_t Variables::size() const
 {
-    return variablesNames_.size();
+    return static_cast<uint16_t>(variablesNames_.size());
 }
 
 inline Variables::ConstIterator Variables::begin() const
@@ -39,7 +40,7 @@ inline Variables::ConstIterator Variables::end() const
     return variablesNames_.end();
 }
 
-inline const std::string& Variables::variable(int variableNumber) const
+inline const std::string& Variables::variable(uint16_t variableNumber) const
 {
     if (variableNumber >= size())
     {

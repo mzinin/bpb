@@ -613,7 +613,6 @@ bool runTestGroup2()
 bool runTestGroup3()
 {
     const int groupNumber = 3;
-    int currentTestNumber = 0;
     bool result = true, currentResult = false;
 
     std::cout << "***** Running test group " << groupNumber << " *****" << std::endl;
@@ -887,7 +886,6 @@ bool runTestGroup3()
 bool runTestGroup4()
 {
     const int groupNumber = 4;
-    int currentTestNumber = 0;
     bool result = true, currentResult = false;
 
     std::cout << "***** Running test group " << groupNumber << " *****" << std::endl;

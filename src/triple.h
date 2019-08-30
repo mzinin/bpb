@@ -33,7 +33,7 @@ public:
     {
         if (polynom)
         {
-            if (variable_ == -1)
+            if (variable_ == MonomType::invalidVariable)
             {
                 polynomial_ = polynom;
                 ancestor_ = ancestor ? ancestor : this;
@@ -128,7 +128,7 @@ private:
     const Triple* ancestor_ = nullptr;
     const Triple* weakAncestor_ = nullptr;
     std::set<Integer> nmp_;
-    const Integer variable_ = -1;
+    const Integer variable_ = MonomType::invalidVariable;
 
     static FastAllocator allocator_;
 };

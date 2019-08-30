@@ -27,7 +27,7 @@ void ResourceCounter::printFullStatistics(std::ostream& out) const
 void ResourceCounter::printBriefStatistics(std::ostream& out) const
 {
     out << std::setw(19) << "Memory used" << ": ";
-    unsigned long usedMemory = FastAllocator::usedMemory();
+    auto usedMemory = FastAllocator::usedMemory();
     if (usedMemory < 1024*1024)
     {
         out << std::fixed << std::setprecision(1) << double(usedMemory) / 1024 << " Kb" << std::endl;

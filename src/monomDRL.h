@@ -47,7 +47,7 @@ public:
 
 private:
     void multiplyBy(Integer var) override;
-    VarsListNode* find(const Integer var) const;
+    VarsListNode* find(const Integer var) const override;
 
 private:
     static FastAllocator allocator_;
