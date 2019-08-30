@@ -1,89 +1,87 @@
-#ifndef SETTINGS_MANAGER_H
-#define SETTINGS_MANAGER_H
+#pragma once
 
 #include "monom.h"
+
 
 class Launcher;
 
 class SettingsManager
 {
-private:
-    bool CollectStatistics;
-    bool UseNovaInvolution;
-    bool PrintAnswer;
-    bool PrintVersion;
-    bool PrintHelp;
-    Monom::Order MonomialOrder;
-
 public:
-    ~SettingsManager();
+    SettingsManager(const SettingsManager&) = delete;
+    SettingsManager& operator=(const SettingsManager&) = delete;
 
-    bool GetCollectStatistics() const;
-    bool GetUseNovaInvolution() const;
-    bool GetPrintAnswer() const;
-    bool GetPrintVersion() const;
-    bool GetPrintHelp() const;
-    Monom::Order GetMonomialOrder() const;
+    bool collectStatistics() const;
+    bool useNovaInvolution() const;
+    bool printAnswer() const;
+    bool printVersion() const;
+    bool printHelp() const;
+    Monom::Order monomialOrder() const;
 
 private:
-    SettingsManager();
-    SettingsManager(const SettingsManager&);
-    SettingsManager& operator=(const SettingsManager&);
+    SettingsManager() = default;
 
-    void SetCollectStatisticsEnabled();
-    void SetCollectStatisticsDisabled();
+    void setCollectStatisticsEnabled();
+    void setCollectStatisticsDisabled();
 
-    void SetUseNovaInvolutionEnabled();
-    void SetUseNovaInvolutionDisabled();
+    void setUseNovaInvolutionEnabled();
+    void setUseNovaInvolutionDisabled();
 
-    void SetPrintAnswerEnabled();
-    void SetPrintAnswerDisabled();
+    void setPrintAnswerEnabled();
+    void setPrintAnswerDisabled();
 
-    void SetPrintVersionEnabled();
-    void SetPrintVersionDisabled();
+    void setPrintVersionEnabled();
+    void setPrintVersionDisabled();
 
-    void SetPrintHelpEnabled();
-    void SetPrintHelpDisabled();
+    void setPrintHelpEnabled();
+    void setPrintHelpDisabled();
 
-    void SetMonomialOrderLex();
-    void SetMonomialOrderDegLex();
-    void SetMonomialOrderDegRevLex();
+    void setMonomialOrderLex();
+    void setMonomialOrderDegLex();
+    void setMonomialOrderDegRevLex();
 
-    friend SettingsManager& GetSettingsManager();
+    friend SettingsManager& settingsManager();
     friend class Launcher;
+
+private:
+    bool collectStatistics_ = false;
+    bool useNovaInvolution_ = false;
+    bool printAnswer_ = false;
+    bool printVersion_ = false;
+    bool printHelp_ = false;
+    Monom::Order monomialOrder_ = Monom::DegRevLex;
 };
 
-SettingsManager& GetSettingsManager();
+
+SettingsManager& settingsManager();
 
 
-inline bool SettingsManager::GetCollectStatistics() const
+inline bool SettingsManager::collectStatistics() const
 {
-    return CollectStatistics;
+    return collectStatistics_;
 }
 
-inline bool SettingsManager::GetUseNovaInvolution() const
+inline bool SettingsManager::useNovaInvolution() const
 {
-    return UseNovaInvolution;
+    return useNovaInvolution_;
 }
 
-inline bool SettingsManager::GetPrintAnswer() const
+inline bool SettingsManager::printAnswer() const
 {
-    return PrintAnswer;
+    return printAnswer_;
 }
 
-inline bool SettingsManager::GetPrintVersion() const
+inline bool SettingsManager::printVersion() const
 {
-    return PrintVersion;
+    return printVersion_;
 }
 
-inline bool SettingsManager::GetPrintHelp() const
+inline bool SettingsManager::printHelp() const
 {
-    return PrintHelp;
+    return printHelp_;
 }
 
-inline Monom::Order SettingsManager::GetMonomialOrder() const
+inline Monom::Order SettingsManager::monomialOrder() const
 {
-    return MonomialOrder;
+    return monomialOrder_;
 }
-
-#endif // SETTINGS_MANAGER_H

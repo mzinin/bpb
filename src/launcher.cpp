@@ -1,20 +1,18 @@
+#include "fast_allocator.h"
+#include "launcher.h"
+#include "monom.h"
+#include "monomDL.h"
+#include "monomDRL.h"
+#include "monomLex.h"
+#include "resource_counter.h"
+#include "version.h"
+
+#include <cstring>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <sstream>
 
-#ifdef __linux__
-#include <memory>
-#endif // __linux__
-
-#include "fast_allocator.h"
-#include "launcher.h"
-#include "monom.h"
-#include "monomLex.h"
-#include "monomDL.h"
-#include "monomDRL.h"
-#include "resource_counter.h"
-#include "version.h"
 
 namespace
 {
@@ -24,185 +22,186 @@ namespace
 
     const char VERSION_SHORT_KEY   = 'v';
     const char VERSION_LONG_KEY[]  = "version";
-    const char VERSION_USAGE_COMMENT[] = "Print version";
+    const char VERSION_COMMENT[] = "Print version";
 
     const char HELP_SHORT_KEY  = 'h';
     const char HELP_LONG_KEY[] = "help";
-    const char HELP_USAGE_COMMENT[] = "Print this message";
+    const char HELP_COMMENT[] = "Print this message";
 
     const char STATISTICS_SHORT_KEY  = 's';
     const char STATISTICS_LONG_KEY[] = "collect-statistics";
-    const char STATISTICS_USAGE_COMMENT[] = "Collect and print out statistics";
+    const char STATISTICS_COMMENT[] = "Collect and print out statistics";
 
     const char NOVA_INVOLUTION_SHORT_KEY  = 'n';
     const char NOVA_INVOLUTION_LONG_KEY[] = "nova-involution";
-    const char NOVA_INVOLUTION_USAGE_COMMENT[] = "Use Nova involutive division instead of Pommaret one";
+    const char NOVA_INVOLUTION_COMMENT[] = "Use Nova involutive division instead of Pommaret one";
 
     const char PRINT_ANSWER_SHORT_KEY  = 'a';
     const char PRINT_ANSWER_LONG_KEY[] = "print-answer";
-    const char PRINT_ANSWER_USAGE_COMMENT[] = "Print out constructed Groebner Basis";
+    const char PRINT_ANSWER_COMMENT[] = "Print out constructed Groebner Basis";
 
     const char MONOMIAL_ORDER_LONG_KEY[] = "monomial-order";
-    const char MONOMIAL_ORDER_USAGE_COMMENT[] = "Define monomial order to construct Groebner Basis with respect to";
+    const char MONOMIAL_ORDER_COMMENT[] = "Define monomial order to construct Groebner Basis with respect to";
     const char MONOMIAL_ORDER_LEX_VALUE[]   = "lex";
     const char MONOMIAL_ORDER_LEX_COMMENT[] = "pure lexicographic order";
     const char MONOMIAL_ORDER_DEGLEX_VALUE[]   = "deglex";
     const char MONOMIAL_ORDER_DEGLEX_COMMENT[] = "degree lexicographic order";
     const char MONOMIAL_ORDER_DEGREVLEX_VALUE[]   = "degrevlex";
     const char MONOMIAL_ORDER_DEGREVLEX_COMMENT[] = "degree reverse lexicographic order (default)";
-    const char MONOMIAL_ORDER_OLDDRL_VALUE[]   = "old";
-    const char MONOMIAL_ORDER_OLDDRL_COMMENT[] = "";
-}
 
-Launcher::CommandLineOption::OptionValue::OptionValue(const std::string& value,
-                                                      const std::string& usageComment,
-                                                      void (SettingsManager::* const action)())
-    : Value(value)
-    , UsageComment(usageComment)
-    , Action(action)
-{
-}
-
-Launcher::CommandLineOption::OptionValue::~OptionValue()
-{
-}
-
-Launcher::CommandLineOption::CommandLineOption(const char shortKey,
-                                               const std::string& longKey,
-                                               const std::string& usageComment,
-                                               void (SettingsManager::* const action)())
-    : ShortKey(shortKey)
-    , LongKey(longKey)
-    , UsageComment(usageComment)
-    , Action(action)
-    , Values()
-    , ChosenValue(Values.end())
-{
-}
-
-Launcher::CommandLineOption::CommandLineOption(const std::string& longKey,
-                                               const std::string& usageComment,
-                                               const std::list<OptionValue>& values)
-    : ShortKey(0)
-    , LongKey(longKey)
-    , UsageComment(usageComment)
-    , Action(0)
-    , Values(values)
-    , ChosenValue(Values.end())
-{
-}
-
-Launcher::CommandLineOption::~CommandLineOption()
-{
-}
-
-bool Launcher::CommandLineOption::DetectKey(const std::string& option) const
-{
-    if (Values.empty())
+    struct OptionValue
     {
-        return LongKey == option || option.size() == 1 && option[0] == ShortKey;
-    }
+        const std::string value;
+        const std::string comment;
+        void (SettingsManager::* const action)();
 
-    std::size_t position = option.find(OPTION_VALUE_DELIMITER);
-    std::string givenOption = option.substr(0, position);
-    if (LongKey != givenOption)
-    {
-        return false;
-    }
-
-    if (option.size() < position + 2)
-    {
-        std::cerr << "Option '" << OPTION_LONG_PREFIX << LongKey << "' requires value, but didn't get one" << std::endl;
-        return false;
-    }
-
-    std::string givenValue = option.substr(position + 1);
-    ChosenValue = Values.begin();
-    for (; ChosenValue != Values.end(); ++ChosenValue)
-    {
-        if (ChosenValue->Value == givenValue)
+        OptionValue(const std::string& v, const std::string& c, void (SettingsManager::* const a)())
+            : value(v)
+            , comment(c)
+            , action(a)
         {
-            break;
         }
-    }
+    };
 
-    if (ChosenValue == Values.end())
+    class CommandLineOption
     {
-        std::cerr << "Option '" << OPTION_LONG_PREFIX << LongKey << "' got an unknown value '" << givenValue << "'." << std::endl;
-        return false;
-    }
-
-    return true;
-}
-
-void Launcher::CommandLineOption::Activate() const
-{
-    if (Action && Values.empty())
-    {
-        (GetSettingsManager().*Action)();
-    }
-    if (!Values.empty() && ChosenValue != Values.end())
-    {
-        (GetSettingsManager().*(ChosenValue->Action))();
-    }
-}
-
-void Launcher::CommandLineOption::PrintHelp() const
-{
-    if (Values.empty())
-    {
-        std::cout << OPTION_SHORT_PREFIX << ShortKey << ", " << OPTION_LONG_PREFIX << LongKey << std::endl;
-        std::cout << "\t" << UsageComment << ";" << std::endl;
-    }
-    else
-    {
-        std::cout << OPTION_LONG_PREFIX << LongKey << OPTION_VALUE_DELIMITER << "<value>" << std::endl;
-        std::cout << "\t" << UsageComment << "," << std::endl;
-        std::cout << "\tAdmissible values are:" << std::endl;
-
-        unsigned valueFieldWidth = 0;
-        for (std::list<OptionValue>::const_iterator i = Values.begin(); i != Values.end(); ++i)
+    public:
+        CommandLineOption(const char shortKey,
+                          const std::string& longKey,
+                          const std::string& comment,
+                          void (SettingsManager::* const action)())
+            : shortKey_(shortKey)
+            , longKey_(longKey)
+            , comment_(comment)
+            , action_(action)
         {
-            if (i->UsageComment.empty())
+        }
+
+        CommandLineOption(const std::string& longKey,
+                          const std::string& comment,
+                          const std::list<OptionValue>& values)
+            : longKey_(longKey)
+            , comment_(comment)
+            , values_(values)
+        {
+        }
+
+        bool detectKey(const std::string& option) const
+        {
+            if (values_.empty())
             {
-                continue;
+                return longKey_ == option || (option.size() == 1 && option[0] == shortKey_);
             }
-            if (i->Value.size() > valueFieldWidth)
+
+            std::size_t position = option.find(OPTION_VALUE_DELIMITER);
+            std::string givenOption = option.substr(0, position);
+            if (longKey_ != givenOption)
             {
-                valueFieldWidth = i->Value.size();
+                return false;
+            }
+
+            if (option.size() < position + 2)
+            {
+                std::cerr << "Option '" << OPTION_LONG_PREFIX << longKey_ << "' requires value, but didn't get one" << std::endl;
+                return false;
+            }
+
+            std::string givenValue = option.substr(position + 1);
+            chosenValue_ = values_.begin();
+            for (; chosenValue_ != values_.end(); ++chosenValue_)
+            {
+                if (chosenValue_->value == givenValue)
+                {
+                    break;
+                }
+            }
+
+            if (chosenValue_ == values_.end())
+            {
+                std::cerr << "Option '" << OPTION_LONG_PREFIX << longKey_ << "' got an unknown value '" << givenValue << "'." << std::endl;
+                return false;
+            }
+
+            return true;
+        }
+
+        void activate() const
+        {
+            if (action_ && values_.empty())
+            {
+                (settingsManager().*action_)();
+            }
+            if (!values_.empty() && chosenValue_ != values_.end())
+            {
+                (settingsManager().*(chosenValue_->action))();
             }
         }
-        for (std::list<OptionValue>::const_iterator i = Values.begin(); i != Values.end(); ++i)
+
+        void printHelp() const
         {
-            if (i->UsageComment.empty())
+            if (values_.empty())
             {
-                continue;
+                std::cout << OPTION_SHORT_PREFIX << shortKey_ << ", " << OPTION_LONG_PREFIX << longKey_ << std::endl;
+                std::cout << "\t" << comment_ << ";" << std::endl;
             }
-            std::cout << "\t\t" << std::setw(valueFieldWidth) << std::left << i->Value << " - ";
-            std::cout  << i->UsageComment << (i == Values.end()-- ? "," : ";") << std::endl;
+            else
+            {
+                std::cout << OPTION_LONG_PREFIX << longKey_ << OPTION_VALUE_DELIMITER << "<value>" << std::endl;
+                std::cout << "\t" << comment_ << "," << std::endl;
+                std::cout << "\tAdmissible values are:" << std::endl;
+
+                size_t valueFieldWidth = 0;
+                for (auto i = values_.begin(); i != values_.end(); ++i)
+                {
+                    if (i->comment.empty())
+                    {
+                        continue;
+                    }
+                    if (i->value.size() > valueFieldWidth)
+                    {
+                        valueFieldWidth = i->value.size();
+                    }
+                }
+                for (auto i = values_.begin(); i != values_.end(); ++i)
+                {
+                    if (i->comment.empty())
+                    {
+                        continue;
+                    }
+                    std::cout << "\t\t" << std::setw(static_cast<int>(valueFieldWidth)) << std::left << i->value << " - ";
+                    std::cout  << i->comment << (i == values_.end()-- ? "," : ";") << std::endl;
+                }
+            }
         }
-    }
+
+    private:
+        const char shortKey_ = 0;
+        const std::string longKey_;
+        const std::string comment_;
+        void (SettingsManager::* const action_)() = nullptr;
+
+        const std::list<OptionValue> values_;
+        mutable std::list<OptionValue>::const_iterator chosenValue_ = values_.end();
+    };
+
+    std::list<CommandLineOption> commandLineOptions;
 }
 
 Launcher::Launcher()
-    : ApplicationName()
-    , InputFileName()
+    : applicationName_()
+    , inputFileName_()
 {
-    FillOptions();
+    fillOptions();
 }
 
-Launcher::~Launcher()
+bool Launcher::init(int argc, char* argv[])
 {
-}
-
-bool Launcher::Init(int argc, char *argv[])
-{
-    ApplicationName = argv[0];
+    applicationName_ = argv[0];
     bool result = false;
 
     try
     {
-        result = AnalizeArguments(argc, argv);
+        result = analizeArguments(argc, argv);
     }
     catch (const std::exception& error)
     {
@@ -212,37 +211,39 @@ bool Launcher::Init(int argc, char *argv[])
     return result;
 }
 
-bool Launcher::Run()
+bool Launcher::run()
 {
     try
     {
-        if (GetSettingsManager().GetPrintHelp())
+        if (settingsManager().printHelp())
         {
-            PrintUsage();
+            printUsage();
             return true;
         }
 
-        if (GetSettingsManager().GetPrintVersion())
+        if (settingsManager().printVersion())
         {
-            PrintVersion();
+            printVersion();
             return true;
         }
 
-        if (InputFileName.empty())
+        if (inputFileName_.empty())
         {
             std::cerr << "Task file name is not defined." << std::endl << std::endl;
-            PrintUsage();
+            printUsage();
             return false;
         }
 
-        switch(GetSettingsManager().GetMonomialOrder())
+        switch(settingsManager().monomialOrder())
         {
             case Monom::Lex:
-                return DoMonomTypeDependStuff<MonomLex>();
+                return doMonomTypeDependStuff<MonomLex>();
+
             case Monom::DegLex:
-                return DoMonomTypeDependStuff<MonomDL>();
+                return doMonomTypeDependStuff<MonomDL>();
+
             case Monom::DegRevLex:
-                return DoMonomTypeDependStuff<MonomDRL>();
+                return doMonomTypeDependStuff<MonomDRL>();
         }
     }
     catch (const std::exception& error)
@@ -253,84 +254,53 @@ bool Launcher::Run()
     return false;
 }
 
-void Launcher::FillOptions()
+void Launcher::fillOptions()
 {
-    if (!CommandLineOptions.empty())
+    if (!commandLineOptions.empty())
     {
         return;
     }
 
-    // add help option
-    CommandLineOptions.push_back(CommandLineOption(HELP_SHORT_KEY,
-                                                   HELP_LONG_KEY,
-                                                   HELP_USAGE_COMMENT,
-                                                   &SettingsManager::SetPrintHelpEnabled));
-
-    // add version option
-    CommandLineOptions.push_back(CommandLineOption(VERSION_SHORT_KEY,
-                                                   VERSION_LONG_KEY,
-                                                   VERSION_USAGE_COMMENT,
-                                                   &SettingsManager::SetPrintVersionEnabled));
-
-    // add statistics option
-    CommandLineOptions.push_back(CommandLineOption(STATISTICS_SHORT_KEY,
-                                                   STATISTICS_LONG_KEY,
-                                                   STATISTICS_USAGE_COMMENT,
-                                                   &SettingsManager::SetCollectStatisticsEnabled));
-
-    // add nova involution option
-    CommandLineOptions.push_back(CommandLineOption(NOVA_INVOLUTION_SHORT_KEY,
-                                                   NOVA_INVOLUTION_LONG_KEY,
-                                                   NOVA_INVOLUTION_USAGE_COMMENT,
-                                                   &SettingsManager::SetUseNovaInvolutionEnabled));
-
-    // add print answer option
-    CommandLineOptions.push_back(CommandLineOption(PRINT_ANSWER_SHORT_KEY,
-                                                   PRINT_ANSWER_LONG_KEY,
-                                                   PRINT_ANSWER_USAGE_COMMENT,
-                                                   &SettingsManager::SetPrintAnswerEnabled));
+    commandLineOptions.emplace_back(HELP_SHORT_KEY, HELP_LONG_KEY, HELP_COMMENT, &SettingsManager::setPrintHelpEnabled);
+    commandLineOptions.emplace_back(VERSION_SHORT_KEY, VERSION_LONG_KEY, VERSION_COMMENT, &SettingsManager::setPrintVersionEnabled);
+    commandLineOptions.emplace_back(STATISTICS_SHORT_KEY, STATISTICS_LONG_KEY, STATISTICS_COMMENT, &SettingsManager::setCollectStatisticsEnabled);
+    commandLineOptions.emplace_back(NOVA_INVOLUTION_SHORT_KEY, NOVA_INVOLUTION_LONG_KEY, NOVA_INVOLUTION_COMMENT, &SettingsManager::setUseNovaInvolutionEnabled);
+    commandLineOptions.emplace_back(PRINT_ANSWER_SHORT_KEY, PRINT_ANSWER_LONG_KEY, PRINT_ANSWER_COMMENT, &SettingsManager::setPrintAnswerEnabled);
 
     // add monomial order option with values
-    std::list<CommandLineOption::OptionValue> monomialOrderValues;
-    monomialOrderValues.push_back(CommandLineOption::OptionValue(MONOMIAL_ORDER_LEX_VALUE,
-                                                                 MONOMIAL_ORDER_LEX_COMMENT,
-                                                                 &SettingsManager::SetMonomialOrderLex));
-    monomialOrderValues.push_back(CommandLineOption::OptionValue(MONOMIAL_ORDER_DEGLEX_VALUE,
-                                                                 MONOMIAL_ORDER_DEGLEX_COMMENT,
-                                                                 &SettingsManager::SetMonomialOrderDegLex));
-    monomialOrderValues.push_back(CommandLineOption::OptionValue(MONOMIAL_ORDER_DEGREVLEX_VALUE,
-                                                                 MONOMIAL_ORDER_DEGREVLEX_COMMENT,
-                                                                 &SettingsManager::SetMonomialOrderDegRevLex));
-    CommandLineOptions.push_back(CommandLineOption(MONOMIAL_ORDER_LONG_KEY,
-                                                   MONOMIAL_ORDER_USAGE_COMMENT,
-                                                   monomialOrderValues));
+    std::list<OptionValue> monomialOrderValues;
+    monomialOrderValues.emplace_back(MONOMIAL_ORDER_LEX_VALUE, MONOMIAL_ORDER_LEX_COMMENT, &SettingsManager::setMonomialOrderLex);
+    monomialOrderValues.emplace_back(MONOMIAL_ORDER_DEGLEX_VALUE, MONOMIAL_ORDER_DEGLEX_COMMENT, &SettingsManager::setMonomialOrderDegLex);
+    monomialOrderValues.emplace_back(MONOMIAL_ORDER_DEGREVLEX_VALUE, MONOMIAL_ORDER_DEGREVLEX_COMMENT, &SettingsManager::setMonomialOrderDegRevLex);
+
+    commandLineOptions.emplace_back(MONOMIAL_ORDER_LONG_KEY, MONOMIAL_ORDER_COMMENT, monomialOrderValues);
 }
 
-void Launcher::PrintUsage() const
+void Launcher::printUsage() const
 {
     std::cout << "Usage:" << std::endl;
-    std::cout << "\t" << ApplicationName << " [options] <file_name.gnv> - execute given task;" << std::endl << std::endl;
+    std::cout << "\t" << applicationName_ << " [options] <file_name.gnv> - execute given task;" << std::endl << std::endl;
 
     std::cout << "Options:" << std::endl;
-    for (std::list<CommandLineOption>::const_iterator i = CommandLineOptions.begin(); i != CommandLineOptions.end(); ++i)
+    for (const auto& option : commandLineOptions)
     {
-        i->PrintHelp();
+        option.printHelp();
         std::cout << std::endl;
     }
 }
 
-void Launcher::PrintVersion() const
+void Launcher::printVersion() const
 {
-    std::cout << "\t" << ApplicationName << std::endl;
-    std::cout << "\tVersion " << GetVersion().GetMajor() << "." << GetVersion().GetMinor() << "." << GetVersion().GetRevision() << std::endl;
+    std::cout << "\t" << applicationName_ << std::endl;
+    std::cout << "\tVersion " << currentVersion().major() << "." << currentVersion().minor() << "." << currentVersion().revision() << std::endl;
 }
 
-bool Launcher::AnalizeArguments(int argc, char *argv[])
+bool Launcher::analizeArguments(int argc, char* argv[])
 {
     if (argc == 1)
     {
         std::cerr << "Arguments are missing." << std::endl << std::endl;
-        PrintUsage();
+        printUsage();
         return false;
     }
 
@@ -345,43 +315,40 @@ bool Launcher::AnalizeArguments(int argc, char *argv[])
         }
         else if (currentArgument.size() > 1 && currentArgument.find(OPTION_SHORT_PREFIX) == 0)
         {
-            for (register int p = strlen(OPTION_SHORT_PREFIX); p < currentArgument.size(); ++p)
+            for (auto p = strlen(OPTION_SHORT_PREFIX); p < currentArgument.size(); ++p)
             {
                 arguments.push_back(std::string(1, currentArgument[p]));
             }
         }
         else if (i == argc - 1)
         {
-            InputFileName = argv[i];
+            inputFileName_ = argv[i];
         }
         else
         {
             std::cerr << "'" << argv[i] << "' - task file name should be the last argument." << std::endl << std::endl;
-            PrintUsage();
+            printUsage();
             return false;
         }
     }
 
-    std::list<std::string>::const_iterator argumentsIterator = arguments.begin();
-    for (; argumentsIterator != arguments.end(); ++argumentsIterator)
+    for (const auto& argument : arguments)
     {
-        std::list<CommandLineOption>::const_iterator optionsIterator = CommandLineOptions.begin();
-        for (; optionsIterator != CommandLineOptions.end(); ++optionsIterator)
+        bool found = false;
+        for (const auto& option : commandLineOptions)
         {
-            if (optionsIterator->DetectKey(*argumentsIterator))
+            if (option.detectKey(argument))
             {
+                option.activate();
+                found = true;
                 break;
             }
         }
 
-        if (optionsIterator != CommandLineOptions.end())
+        if (!found)
         {
-            optionsIterator->Activate();
-        }
-        else
-        {
-            std::cerr << "Unknown option: '" << *argumentsIterator << "'." << std::endl << std::endl;
-            PrintUsage();
+            std::cerr << "Unknown option: '" << argument << "'." << std::endl << std::endl;
+            printUsage();
             return false;
         }
     }
@@ -389,48 +356,47 @@ bool Launcher::AnalizeArguments(int argc, char *argv[])
     return true;
 }
 
-template<typename MonomType>
-bool Launcher::DoMonomTypeDependStuff() const
+template <typename MonomType>
+bool Launcher::doMonomTypeDependStuff() const
 {
     std::list<Polynom<MonomType>*> initialSet;
     std::list<Polynom<MonomType>*> initialAnswer;
 
-    if (!GetTaskFromFile(initialSet, initialAnswer))
+    if (!getTaskFromFile(initialSet, initialAnswer))
     {
         return false;
     }
 
     GroebnerBasis<MonomType> gBasis;
 
-    GetResourceCounter().GroebnerBasisTimer.Start();
-    gBasis.Construct(initialSet);
-    GetResourceCounter().GroebnerBasisTimer.Stop();
+    resourceCounter().groebnerBasisTimer.start();
+    gBasis.construct(initialSet);
+    resourceCounter().groebnerBasisTimer.stop();
 
-    PrintResult<MonomType>(gBasis, initialAnswer);
+    printResult<MonomType>(gBasis, initialAnswer);
 
     return true;
 }
 
-template<typename MonomType>
-bool Launcher::GetTaskFromFile(std::list<Polynom<MonomType>*>& initialSet, std::list<Polynom<MonomType>*>& initialAnswer) const
+template <typename MonomType>
+bool Launcher::getTaskFromFile(std::list<Polynom<MonomType>*>& initialSet, std::list<Polynom<MonomType>*>& initialAnswer) const
 {
-    std::ifstream inputFileStream(InputFileName.c_str());
+    std::ifstream inputFileStream(inputFileName_);
     if (!inputFileStream)
     {
-        std::cerr << "No such file: '" << InputFileName << "'." << std::endl;
+        std::cerr << "No such file: '" << inputFileName_ << "'." << std::endl;
         return false;
     }
 
-    ReadVariables<MonomType>(inputFileStream);
-    ReadPolynomList<MonomType>(inputFileStream, initialSet);
-    ReadPolynomList<MonomType>(inputFileStream, initialAnswer);
+    readVariables<MonomType>(inputFileStream);
+    readPolynomList<MonomType>(inputFileStream, initialSet);
+    readPolynomList<MonomType>(inputFileStream, initialAnswer);
 
-    inputFileStream.close();
     return true;
 }
 
-template<typename MonomType>
-void Launcher::ReadVariables(std::ifstream& inputFileStream) const
+template <typename MonomType>
+void Launcher::readVariables(std::ifstream& inputFileStream) const
 {
     char c = '0';
     std::string tmpString;
@@ -439,7 +405,7 @@ void Launcher::ReadVariables(std::ifstream& inputFileStream) const
         inputFileStream >> c;
         if (c == ',' || c == ';')
         {
-            MonomType::AddVariable(tmpString);
+            MonomType::addVariable(tmpString);
             tmpString.clear();
         }
         else
@@ -449,12 +415,12 @@ void Launcher::ReadVariables(std::ifstream& inputFileStream) const
     }
 }
 
-template<typename MonomType>
-void Launcher::ReadPolynomList(std::ifstream& inputFileStream, std::list<Polynom<MonomType>*>& list) const
+template <typename MonomType>
+void Launcher::readPolynomList(std::ifstream& inputFileStream, std::list<Polynom<MonomType>*>& list) const
 {
-    ClearPolynomList<MonomType>(list);
+    clearPolynomList<MonomType>(list);
 
-    std::auto_ptr<std::stringstream> tmpStream(new std::stringstream());
+    std::stringstream tmpStream;
     char c = '0';
     std::string tmpString;
     while (c != ';' && !inputFileStream.eof())
@@ -462,7 +428,7 @@ void Launcher::ReadPolynomList(std::ifstream& inputFileStream, std::list<Polynom
         inputFileStream >> c;
         if (c == ',' || c == ';')
         {
-            *tmpStream << tmpString << std::endl;
+            tmpStream << tmpString << std::endl;
             tmpString.clear();
         }
         else
@@ -472,47 +438,46 @@ void Launcher::ReadPolynomList(std::ifstream& inputFileStream, std::list<Polynom
     }
 
     Polynom<MonomType> tmpPolynom;
-    while (!tmpStream->eof())
+    while (!tmpStream.eof())
     {
-        *tmpStream >> tmpPolynom;
+        tmpStream >> tmpPolynom;
         list.push_back(new Polynom<MonomType>(tmpPolynom));
     }
 }
 
-template<typename MonomType>
-void Launcher::ClearPolynomList(std::list<Polynom<MonomType>*>& list) const
+template <typename MonomType>
+void Launcher::clearPolynomList(std::list<Polynom<MonomType>*>& list) const
 {
-    typename std::list<Polynom<MonomType>*>::iterator i(list.begin());
-    for (; i != list.end(); ++i)
+    for (auto* polynom : list)
     {
-        delete *i;
+        delete polynom;
     }
     list.clear();
 }
 
-template<typename MonomType>
-void Launcher::PrintResult(GroebnerBasis<MonomType>& gBasis, std::list<Polynom<MonomType>*>& initialAnswer) const
+template <typename MonomType>
+void Launcher::printResult(GroebnerBasis<MonomType>& gBasis, std::list<Polynom<MonomType>*>& initialAnswer) const
 {
-    if (!gBasis.Length())
+    if (!gBasis.length())
     {
         return;
     }
 
-    if (GetSettingsManager().GetPrintAnswer())
+    if (settingsManager().printAnswer())
     {
         std::cout << gBasis << std::endl;
     }
 
-    if (GetSettingsManager().GetCollectStatistics())
+    if (settingsManager().collectStatistics())
     {
-        GetResourceCounter().PrintFullStatistics(std::cout);
+        resourceCounter().printFullStatistics(std::cout);
     }
     else
     {
-        GetResourceCounter().PrintBriefStatistics(std::cout);
+        resourceCounter().printBriefStatistics(std::cout);
     }
 
-    if (CheckAnswer(gBasis, initialAnswer))
+    if (checkAnswer(gBasis, initialAnswer))
     {
         std::cout << "The answer is CORRECT" << std::endl << std::endl;
     }
@@ -522,22 +487,21 @@ void Launcher::PrintResult(GroebnerBasis<MonomType>& gBasis, std::list<Polynom<M
     }
 }
 
-template<typename MonomType>
-bool Launcher::CheckAnswer(GroebnerBasis<MonomType>& gBasis, std::list<Polynom<MonomType>*>& initialAnswer) const
+template <typename MonomType>
+bool Launcher::checkAnswer(GroebnerBasis<MonomType>& gBasis, std::list<Polynom<MonomType>*>& initialAnswer) const
 {
-    if (gBasis.Length() != initialAnswer.size())
+    if (gBasis.length() != initialAnswer.size())
     {
         return false;
     }
     else
     {
-        typename std::list<Polynom<MonomType>*>::const_iterator iterAnswerList = initialAnswer.begin();
-        for (; iterAnswerList != initialAnswer.end(); ++iterAnswerList)
+        for (const auto* asnwerItem : initialAnswer)
         {
             bool foundMatch = false;
-            for (register unsigned i = 0; i < gBasis.Length(); ++i)
+            for (unsigned i = 0; i < gBasis.length(); ++i)
             {
-                if (gBasis[i] == **iterAnswerList)
+                if (gBasis[i] == *asnwerItem)
                 {
                     foundMatch = true;
                     break;
@@ -545,12 +509,10 @@ bool Launcher::CheckAnswer(GroebnerBasis<MonomType>& gBasis, std::list<Polynom<M
             }
             if (!foundMatch)
             {
-                std::cout << "The mistake is here " << **iterAnswerList << std::endl;
+                std::cout << "The mistake is here " << *asnwerItem << std::endl;
                 return false;
             }
         }
     }
     return true;
 }
-
-std::list<Launcher::CommandLineOption> Launcher::CommandLineOptions = std::list<Launcher::CommandLineOption>();

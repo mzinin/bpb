@@ -1,15 +1,17 @@
-#ifndef MONOM_H
-#define MONOM_H
+#pragma once
+
+#include "fast_allocator.h"
+#include "variables.h"
 
 #include <iostream>
 #include <set>
-#include "fast_allocator.h"
-#include "variables.h"
+
 
 class Monom
 {
 public:
-    typedef short int Integer;
+    using Integer = short int;
+
     enum Order
     {
         Lex,
@@ -17,88 +19,69 @@ public:
         DegRevLex
     };
 
+public:
+    virtual ~Monom() = default;
+
+    virtual Integer degree() const;
+
+    std::string toString() const;
+    std::string innerStructure() const;
+
+    virtual void setOne() = 0;
+    virtual Integer operator[](Integer var) const = 0;
+
+    virtual Integer firstMultiVar() const = 0;
+    virtual std::set<Integer> variablesSet() const = 0;
+
+    static void addVariable(const std::string& var);
+    static const std::string& variable(Integer var);
+    static Integer dimIndepend();
+
+    friend std::istream& operator>>(std::istream& in, Monom& monom);
+    friend std::ostream& operator<<(std::ostream& out, const Monom& monom);
+
 protected:
     struct VarsListNode
     {
-        Integer Value;
-        VarsListNode* Next;
-        static FastAllocator Allocator;
+        Integer value = 0;
+        VarsListNode* next = nullptr;
 
-        VarsListNode();
-        ~VarsListNode();
+        static FastAllocator allocator;
 
         void* operator new(size_t);
         void operator delete(void* ptr);
     };
-    VarsListNode* ListHead;
-    Integer TotalDegree;
-
-    static Integer DimIndepend;
-    static Variables IndependVariables;
 
 protected:
-    Monom();
-    virtual void MultiplyBy(Integer var) = 0;
-    virtual VarsListNode* Find(const Integer var) const = 0;
+    Monom() = default;
+    virtual void multiplyBy(Integer var) = 0;
+    virtual VarsListNode* find(Integer var) const = 0;
 
-public:
-    virtual ~Monom();
-    virtual Integer Degree() const;
-    std::string ToString() const;
-    std::string GetInnerStructure() const;
+protected:
+    VarsListNode* listHead_ = nullptr;
+    Integer totalDegree_ = 0;
 
-    virtual void SetOne() = 0;
-    virtual Integer operator[](const Integer var) const = 0;
-
-    virtual Integer FirstMultiVar() const = 0;
-    virtual std::set<Integer> GetVariablesSet() const = 0;
-
-    static void AddVariable(const std::string& var);
-    static const std::string& GetVariable(Integer var);
-    static Integer GetDimIndepend();
-
-    friend std::istream& operator>>(std::istream& in, Monom& monom);
-    friend std::ostream& operator<<(std::ostream& out, const Monom& monom);
+    static Integer dimIndepend_;
+    static Variables independVariables_;
 };
 
-inline Monom::VarsListNode::VarsListNode()
-    : Value(0)
-    , Next(0)
-{
-}
-
-inline Monom::VarsListNode::~VarsListNode()
-{
-}
 
 inline void* Monom::VarsListNode::operator new(std::size_t)
 {
-    return Allocator.Allocate();
+    return allocator.allocate();
 }
 
 inline void Monom::VarsListNode::operator delete(void* ptr)
 {
-    Allocator.Free(ptr);
+    allocator.free(ptr);
 }
 
-inline Monom::Monom()
-    : ListHead(0)
-    , TotalDegree(0)
+inline Monom::Integer Monom::degree() const
 {
+    return totalDegree_;
 }
 
-inline Monom::~Monom()
+inline Monom::Integer Monom::dimIndepend()
 {
+    return dimIndepend_;
 }
-
-inline Monom::Integer Monom::Degree() const
-{
-    return TotalDegree;
-}
-
-inline Monom::Integer Monom::GetDimIndepend()
-{
-    return DimIndepend;
-}
-
-#endif

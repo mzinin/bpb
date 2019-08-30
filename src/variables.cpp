@@ -1,10 +1,12 @@
+#include "variables.h"
+
+#include <cctype>
 #include <iostream>
 
-#include "variables.h"
 
 namespace
 {
-    int ReadVariable(std::istream& in, const std::string& var)
+    int readVariable(std::istream& in, const std::string& var)
     {
         in >> std::ws;
         int commonLength = 0;
@@ -22,16 +24,7 @@ namespace
     }
 }
 
-Variables::Variables()
-    : VariablesNames()
-{
-}
-
-Variables::~Variables()
-{
-}
-
-bool Variables::Add(const std::string& var)
+bool Variables::add(const std::string& var)
 {
     size_t k = 0;
     while (k < var.size() && isspace(var[k]))
@@ -46,26 +39,26 @@ bool Variables::Add(const std::string& var)
         ++k;
     }
 
-    if (Find(name) >= 0)
+    if (find(name) >= 0)
     {
         return false;
     }
 
-    VariablesNames.push_back(name);
+    variablesNames_.push_back(name);
     return true;
 }
 
-int Variables::Find(const std::string& var) const
+int Variables::find(const std::string& var) const
 {
     int position = 0;
-    ConstIterator i(VariablesNames.begin());
-    while (i != VariablesNames.end() && *i != var)
+    ConstIterator i(variablesNames_.begin());
+    while (i != variablesNames_.end() && *i != var)
     {
         ++i;
         ++position;
     }
 
-    if (i == VariablesNames.end())
+    if (i == variablesNames_.end())
     {
         position = -1;
     }
@@ -73,16 +66,17 @@ int Variables::Find(const std::string& var) const
     return position;
 }
 
-int Variables::Read(std::istream& in) const
+int Variables::read(std::istream& in) const
 {
    std::streampos startPosition = in.tellg(), endPosition = 0;
    int currentVariable = 0, foundVariable = -1;
    int currentCommonLength = 0, maxCommonLength = 0;
-   ConstIterator i = VariablesNames.begin();
-   while (i != VariablesNames.end())
+   ConstIterator i = variablesNames_.begin();
+
+   while (i != variablesNames_.end())
    {
         in.seekg(startPosition);
-        currentCommonLength = ReadVariable(in, *i);
+        currentCommonLength = readVariable(in, *i);
         if (currentCommonLength > 0)
         {
             foundVariable = currentVariable;
@@ -94,10 +88,10 @@ int Variables::Read(std::istream& in) const
         ++i;
    }
 
-    while (i != VariablesNames.end())
+    while (i != variablesNames_.end())
     {
         in.seekg(startPosition);
-        currentCommonLength = ReadVariable(in, *i);
+        currentCommonLength = readVariable(in, *i);
         if (currentCommonLength > maxCommonLength)
         {
             foundVariable = currentVariable;

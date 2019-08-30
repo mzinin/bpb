@@ -1,320 +1,47 @@
-#ifndef JANETTREE_H
-#define JANETTREE_H
+#pragma once
 
 #include "triple.h"
+
 
 template <typename MonomType>
 class JanetTree
 {
-private:
-    struct Node
-    {
-        typename MonomType::Integer Degree;
-        Triple<MonomType>* CurrentTriple;
-        Node* NextDegree;
-        Node* NextVariable;
-
-        Node(typename MonomType::Integer degree);
-        ~Node();
-    };
-
-    class ConstIterator
-    {
-    private:
-        Node* CurrentNode;
-
-    public:
-        ConstIterator(Node* node);
-        ~ConstIterator();
-
-        void StepNextDegree();
-        void StepNextVariable();
-        operator bool() const;
-        ConstIterator GetNextDegree() const;
-        ConstIterator GetNextVariable() const;
-        bool HasNextDegree() const;
-        bool HasNextVariable() const;
-        const Triple<MonomType>* GetTriple() const;
-        typename MonomType::Integer GetDegree() const;
-    };
-
-    class Iterator
-    {
-    private:
-        Node** CurrentNode;
-
-    public:
-        Iterator(Node* &node);
-        ~Iterator();
-
-        void StepNextDegree();
-        void StepNextVariable();
-        operator bool() const;
-        ConstIterator GetNextDegree() const;
-        ConstIterator GetNextVariable() const;
-        bool HasNextDegree() const;
-        bool HasNextVariable() const;
-        operator ConstIterator() const;
-        Triple<MonomType>*& GetTriple() const;
-        typename MonomType::Integer GetDegree() const;
-        void Build(typename MonomType::Integer degree, typename MonomType::Integer var, Triple<MonomType>* triple);
-        void Delete();
-        void Exclude();
-        void Clear();
-    };
-
-    Node* Root;
+public:
+    using TripleType = Triple<MonomType>;
+    using Integer = typename MonomType::Integer;
 
 public:
-    JanetTree();
-    ~JanetTree();
-
-    const Triple<MonomType>* Find(const MonomType& monom) const;
-    void Insert(Triple<MonomType>* triple);
-    void Delete(const Triple<MonomType>* triple);
-    void Clear();
-
-    std::set<typename MonomType::Integer> NonMulti(const Triple<MonomType>* triple) const;
-};
-
-template <typename MonomType>
-inline JanetTree<MonomType>::Node::Node(typename MonomType::Integer degree)
-    : Degree(degree)
-    , CurrentTriple(0)
-    , NextDegree(0)
-    , NextVariable(0)
-{
-}
-
-template <typename MonomType>
-inline JanetTree<MonomType>::Node::~Node()
-{
-}
-
-template <typename MonomType>
-inline JanetTree<MonomType>::ConstIterator::ConstIterator(Node* node)
-    : CurrentNode(node)
-{
-}
-
-template <typename MonomType>
-inline JanetTree<MonomType>::ConstIterator::~ConstIterator()
-{
-}
-
-template <typename MonomType>
-inline void JanetTree<MonomType>::ConstIterator::StepNextDegree()
-{
-    CurrentNode = CurrentNode->NextDegree;
-}
-
-template <typename MonomType>
-inline void JanetTree<MonomType>::ConstIterator::StepNextVariable()
-{
-    CurrentNode = CurrentNode->NextVariable;
-}
-
-template <typename MonomType>
-inline JanetTree<MonomType>::ConstIterator::operator bool() const
-{
-    return CurrentNode;
-}
-
-template <typename MonomType>
-inline typename JanetTree<MonomType>::ConstIterator JanetTree<MonomType>::ConstIterator::GetNextDegree() const
-{
-    return CurrentNode->NextDegree;
-}
-
-template <typename MonomType>
-inline typename JanetTree<MonomType>::ConstIterator JanetTree<MonomType>::ConstIterator::GetNextVariable() const
-{
-    return CurrentNode->NextVariable;
-}
-
-template <typename MonomType>
-inline bool JanetTree<MonomType>::ConstIterator::HasNextDegree() const
-{
-    return CurrentNode->NextDegree;
-}
-
-template <typename MonomType>
-inline bool JanetTree<MonomType>::ConstIterator::HasNextVariable() const
-{
-    return CurrentNode->NextVariable;
-}
-
-template <typename MonomType>
-inline const Triple<MonomType>* JanetTree<MonomType>::ConstIterator::GetTriple() const
-{
-    return CurrentNode->CurrentTriple;
-}
-
-template <typename MonomType>
-inline typename MonomType::Integer JanetTree<MonomType>::ConstIterator::GetDegree() const
-{
-    return CurrentNode->Degree;
-}
-
-template <typename MonomType>
-inline JanetTree<MonomType>::Iterator::Iterator(Node*& node)
-    : CurrentNode(&node)
-{
-}
-
-template <typename MonomType>
-inline JanetTree<MonomType>::Iterator::~Iterator()
-{
-}
-
-template <typename MonomType>
-inline void JanetTree<MonomType>::Iterator::StepNextDegree()
-{
-    CurrentNode = &(*CurrentNode)->NextDegree;
-}
-
-template <typename MonomType>
-inline void JanetTree<MonomType>::Iterator::StepNextVariable()
-{
-    CurrentNode = &(*CurrentNode)->NextVariable;
-}
-
-template <typename MonomType>
-inline JanetTree<MonomType>::Iterator::operator bool() const
-{
-    return *CurrentNode;
-}
-
-template <typename MonomType>
-inline typename JanetTree<MonomType>::ConstIterator JanetTree<MonomType>::Iterator::GetNextDegree() const
-{
-    return (*CurrentNode)->NextDegree;
-}
-
-template <typename MonomType>
-inline typename JanetTree<MonomType>::ConstIterator JanetTree<MonomType>::Iterator::GetNextVariable() const
-{
-    return (*CurrentNode)->NextVariable;
-}
-
-template <typename MonomType>
-inline bool JanetTree<MonomType>::Iterator::HasNextDegree() const
-{
-    return (*CurrentNode)->NextDegree;
-}
-
-template <typename MonomType>
-inline bool JanetTree<MonomType>::Iterator::HasNextVariable() const
-{
-    return (*CurrentNode)->NextVariable;
-}
-
-template <typename MonomType>
-inline JanetTree<MonomType>::Iterator::operator typename JanetTree<MonomType>::ConstIterator() const
-{
-    return *CurrentNode;
-}
-
-template <typename MonomType>
-inline Triple<MonomType>*& JanetTree<MonomType>::Iterator::GetTriple() const
-{
-    return (*CurrentNode)->CurrentTriple;
-}
-
-template <typename MonomType>
-inline typename MonomType::Integer JanetTree<MonomType>::Iterator::GetDegree() const
-{
-    return (*CurrentNode)->Degree;
-}
-
-template <typename MonomType>
-void JanetTree<MonomType>::Iterator::Build(typename MonomType::Integer degree, typename MonomType::Integer var, Triple<MonomType>* triple)
-{
-    if (!triple)
+    ~JanetTree()
     {
-        return;
+        clear();
+        delete root_;
     }
 
-    Node* r =  new JanetTree<MonomType>::Node(triple->GetPolynomLm()[var]);
-    Node* j = r;
-    while(degree > triple->GetPolynomLm()[var])
+    const TripleType* find(const MonomType& monom) const
     {
-        degree -= triple->GetPolynomLm()[var];
-        ++var;
-        j->NextVariable = new JanetTree<MonomType>::Node(triple->GetPolynomLm()[var]);
-        j = j->NextVariable;
-    }
-    j->CurrentTriple = triple;
-
-    r->NextDegree = *CurrentNode;
-    *CurrentNode = r;
-}
-
-template <typename MonomType>
-inline void JanetTree<MonomType>::Iterator::Delete()
-{
-    if (*CurrentNode)
-    {
-        Node* tmp = *CurrentNode;
-        *CurrentNode = tmp->NextDegree;
-        delete tmp;
-    }
-}
-
-template <typename MonomType>
-void JanetTree<MonomType>::Iterator::Clear()
-{
-    while (HasNextDegree())
-    {
-        if ((*CurrentNode)->NextVariable)
+        if (!root_)
         {
-            JanetTree<MonomType>::Iterator((*CurrentNode)->NextVariable).Clear();
+            return nullptr;
         }
-        Delete();
-    }
 
-    if ((*CurrentNode)->NextVariable)
-    {
-        JanetTree<MonomType>::Iterator((*CurrentNode)->NextVariable).Clear();
-    }
-    Delete();
-}
+        const TripleType* triple = nullptr;
 
-template <typename MonomType>
-JanetTree<MonomType>::JanetTree()
-    : Root(0)
-{
-}
+        ConstIterator nodeIterator = root_;
+        Integer degree = monom.degree();
+        Integer var = 0;
 
-template <typename MonomType>
-JanetTree<MonomType>::~JanetTree()
-{
-    Clear();
-    delete Root;
-}
-
-template <typename MonomType>
-const Triple<MonomType>* JanetTree<MonomType>::Find(const MonomType& monom) const
-{
-    const Triple<MonomType>* triple = 0;
-
-    if (Root)
-    {
-        ConstIterator nodeIterator = Root;
-        typename MonomType::Integer degree = monom.Degree();
-        typename MonomType::Integer var = 0;
         do
         {
-            if (nodeIterator.GetDegree() != monom[var] && nodeIterator.HasNextDegree())
+            if (nodeIterator.degree() != monom[var] && nodeIterator.hasNextDegree())
             {
-                nodeIterator.StepNextDegree();
+                nodeIterator.stepNextDegree();
             }
 
-            if (nodeIterator.GetDegree() != monom[var])
+            if (nodeIterator.degree() != monom[var])
             {
                 break;
             }
-            else if (nodeIterator.HasNextVariable())
+            else if (nodeIterator.hasNextVariable())
             {
                 degree -= monom[var];
                 if (!degree)
@@ -322,231 +49,391 @@ const Triple<MonomType>* JanetTree<MonomType>::Find(const MonomType& monom) cons
                     break;
                 }
                 ++var;
-                nodeIterator.StepNextVariable();
+                nodeIterator.stepNextVariable();
             }
             else
             {
-                triple = nodeIterator.GetTriple();
+                triple = nodeIterator.triple();
                 break;
             }
-        } while(true);
-    }
-    return triple;
-}
+        } while (true);
 
-template <typename MonomType>
-void JanetTree<MonomType>::Insert(Triple<MonomType>* triple)
-{
-    if (!triple)
-    {
-        return;
+        return triple;
     }
 
-    typename MonomType::Integer degree = triple->GetPolynomLm().Degree();
-    JanetTree<MonomType>::Iterator nodeIterator(Root);
+    void insert(TripleType* triple)
+    {
+        if (!triple)
+        {
+            return;
+        }
 
-    if (!Root)
-    {
-        nodeIterator.Build(degree, 0, triple);
-    }
-    else
-    {
-        typename MonomType::Integer var = 0;
+        Iterator nodeIterator = root_;
+        Integer degree = triple->polynomLm().degree();
+        if (!root_)
+        {
+            nodeIterator.build(degree, 0, triple);
+            return;
+        }
+
+        Integer var = 0;
         do
         {
-            while(nodeIterator.GetDegree() < triple->GetPolynomLm()[var] && nodeIterator.HasNextDegree())
+            while (nodeIterator.degree() < triple->polynomLm()[var] && nodeIterator.hasNextDegree())
             {
-                nodeIterator.StepNextDegree();
+                nodeIterator.stepNextDegree();
             }
 
-            if (nodeIterator.GetDegree() > triple->GetPolynomLm()[var])
+            if (nodeIterator.degree() > triple->polynomLm()[var])
             {
-                nodeIterator.Build(degree, var, triple);
+                nodeIterator.build(degree, var, triple);
                 break;
             }
-            else if (nodeIterator.GetDegree() == triple->GetPolynomLm()[var])
+            else if (nodeIterator.degree() == triple->polynomLm()[var])
             {
-                degree -= triple->GetPolynomLm()[var];
+                degree -= triple->polynomLm()[var];
                 ++var;
-                nodeIterator.StepNextVariable();
+                nodeIterator.stepNextVariable();
             }
             else
             {
-                nodeIterator.StepNextDegree();
-                nodeIterator.Build(degree, var, triple);
+                nodeIterator.stepNextDegree();
+                nodeIterator.build(degree, var, triple);
                 break;
             }
-        } while(true);
-    }
-}
-
-template <typename MonomType>
-void JanetTree<MonomType>::Delete(const Triple<MonomType>* triple)
-{
-    if (!triple)
-    {
-        return;
+        } while (true);
     }
 
-    Iterator nodeIterator = Root;
-    //count bifurcations
-    typename MonomType::Integer var = 0;
-    unsigned bifurcations = 0;
-
-    if (nodeIterator.HasNextDegree() && nodeIterator.HasNextVariable())
+    void erase(const TripleType* triple)
     {
-        ++bifurcations;
-    }
-
-    do
-    {
-        while(nodeIterator.GetDegree() < triple->GetPolynomLm()[var])
+        if (!triple)
         {
-            nodeIterator.StepNextDegree();
-            if (nodeIterator.HasNextDegree() && nodeIterator.HasNextVariable())
+            return;
+        }
+
+        Iterator nodeIterator = root_;
+        Integer var = 0;
+        unsigned bifurcations = 0;
+
+        // count bifurcations
+        if (nodeIterator.hasNextDegree() && nodeIterator.hasNextVariable())
+        {
+            ++bifurcations;
+        }
+
+        do
+        {
+            while (nodeIterator.degree() < triple->polynomLm()[var])
             {
-                ++bifurcations;
+                nodeIterator.stepNextDegree();
+                if (nodeIterator.hasNextDegree() && nodeIterator.hasNextVariable())
+                {
+                    ++bifurcations;
+                }
             }
-        }
 
-        if (nodeIterator.HasNextVariable())
-        {
-            ++var;
-            nodeIterator.StepNextVariable();
-            if (nodeIterator.HasNextDegree() && nodeIterator.HasNextVariable())
+            if (nodeIterator.hasNextVariable())
             {
-                ++bifurcations;
-            }
-        }
-        else
-        {
-            break;
-        }
-    } while(true);
-
-    //deletion
-    nodeIterator = Root;
-    var = 0;
-    bool varDirection = false;
-
-    if (nodeIterator.HasNextDegree() && nodeIterator.HasNextVariable())
-    {
-        --bifurcations;
-    }
-    if (!bifurcations)
-    {
-        if (nodeIterator.GetDegree() < triple->GetPolynomLm()[var])
-        {
-            nodeIterator.StepNextDegree();
-        }
-        else
-        {
-            varDirection = true;
-        }
-    }
-
-    while (bifurcations > 0)
-    {
-        while(nodeIterator.GetDegree() < triple->GetPolynomLm()[var] && bifurcations > 0)
-        {
-            nodeIterator.StepNextDegree();
-            if (nodeIterator.HasNextDegree() && nodeIterator.HasNextVariable())
-            {
-                --bifurcations;
-            }
-        }
-
-        if (!bifurcations)
-        {
-            if (nodeIterator.GetDegree() < triple->GetPolynomLm()[var])
-            {
-                nodeIterator.StepNextDegree();
-                break;
+                ++var;
+                nodeIterator.stepNextVariable();
+                if (nodeIterator.hasNextDegree() && nodeIterator.hasNextVariable())
+                {
+                    ++bifurcations;
+                }
             }
             else
             {
-                varDirection = true;
                 break;
             }
-        }
+        } while (true);
 
-        ++var;
-        nodeIterator.StepNextVariable();
-        if (nodeIterator.HasNextDegree() && nodeIterator.HasNextVariable())
+        // remove node
+        nodeIterator = root_;
+        var = 0;
+        bool varDirection = false;
+
+        if (nodeIterator.hasNextDegree() && nodeIterator.hasNextVariable())
         {
             --bifurcations;
         }
         if (!bifurcations)
         {
-            if (nodeIterator.GetDegree() < triple->GetPolynomLm()[var])
+            if (nodeIterator.degree() < triple->polynomLm()[var])
             {
-                nodeIterator.StepNextDegree();
-                break;
+                nodeIterator.stepNextDegree();
             }
             else
             {
                 varDirection = true;
-                break;
             }
         }
-    }
 
-    if (varDirection)
-    {
-        Iterator tmpIterator = nodeIterator;
-        tmpIterator.StepNextVariable();
-        tmpIterator.Clear();
-        nodeIterator.Delete();
-    }
-    else
-    {
-        nodeIterator.Clear();
-    }
-}
-
-template <typename MonomType>
-void JanetTree<MonomType>::Clear()
-{
-    if (Root)
-    {
-        JanetTree<MonomType>::Iterator nodeIterator(Root);
-        nodeIterator.Clear();
-    }
-}
-
-template <typename MonomType>
-std::set<typename MonomType::Integer> JanetTree<MonomType>::NonMulti(const Triple<MonomType>* triple) const
-{
-    std::set<typename MonomType::Integer> result;
-
-    if (triple && Root)
-    {
-        ConstIterator nodeIterator(Root);
-        typename MonomType::Integer var = 0;
-        do
+        while (bifurcations > 0)
         {
-            while (nodeIterator.GetDegree() < triple->GetPolynomLm()[var])
+            while (nodeIterator.degree() < triple->polynomLm()[var] && bifurcations > 0)
             {
-                nodeIterator.StepNextDegree();
+                nodeIterator.stepNextDegree();
+                if (nodeIterator.hasNextDegree() && nodeIterator.hasNextVariable())
+                {
+                    --bifurcations;
+                }
             }
-            if (nodeIterator.HasNextDegree())
+
+            if (!bifurcations)
             {
-                result.insert(var);
+                if (nodeIterator.degree() < triple->polynomLm()[var])
+                {
+                    nodeIterator.stepNextDegree();
+                    break;
+                }
+                else
+                {
+                    varDirection = true;
+                    break;
+                }
             }
 
             ++var;
-            if (nodeIterator.HasNextVariable())
+            nodeIterator.stepNextVariable();
+            if (nodeIterator.hasNextDegree() && nodeIterator.hasNextVariable())
             {
-                nodeIterator.StepNextVariable();
+                --bifurcations;
             }
-            else
+            if (!bifurcations)
             {
-                break;
+                if (nodeIterator.degree() < triple->polynomLm()[var])
+                {
+                    nodeIterator.stepNextDegree();
+                    break;
+                }
+                else
+                {
+                    varDirection = true;
+                    break;
+                }
             }
-        } while(true);
+        }
+
+        if (varDirection)
+        {
+            Iterator tmpIterator = nodeIterator;
+            tmpIterator.stepNextVariable();
+            tmpIterator.clear();
+            nodeIterator.erase();
+        }
+        else
+        {
+            nodeIterator.clear();
+        }
     }
 
-    return result;
-}
+    void clear()
+    {
+        if (root_)
+        {
+            Iterator nodeIterator = root_;
+            nodeIterator.clear();
+        }
+    }
 
-#endif //JANETTREE_H
+    std::set<Integer> nonMulti(const TripleType* triple) const
+    {
+        std::set<Integer> result;
+
+        if (triple && root_)
+        {
+            ConstIterator nodeIterator = root_;
+            Integer var = 0;
+
+            do
+            {
+                while (nodeIterator.degree() < triple->polynomLm()[var])
+                {
+                    nodeIterator.stepNextDegree();
+                }
+                if (nodeIterator.hasNextDegree())
+                {
+                    result.insert(var);
+                }
+
+                ++var;
+                if (nodeIterator.hasNextVariable())
+                {
+                    nodeIterator.stepNextVariable();
+                }
+                else
+                {
+                    break;
+                }
+            } while (true);
+        }
+
+        return result;
+    }
+
+private:
+    struct Node
+    {
+        Integer degree;
+        TripleType* currentTriple = nullptr;
+        Node* nextDegree = nullptr;
+        Node* nextVariable = nullptr;
+
+        Node(Integer deg)
+            : degree(deg)
+        {
+        }
+    };
+
+    class ConstIterator
+    {
+    public:
+        ConstIterator(Node* node)
+            : currentNode_(node)
+        {
+        }
+
+        void stepNextDegree()
+        {
+            currentNode_ = currentNode_->nextDegree;
+        }
+
+        void stepNextVariable()
+        {
+            currentNode_ = currentNode_->nextVariable;
+        }
+
+        operator bool() const
+        {
+            return currentNode_;
+        }
+
+        bool hasNextDegree() const
+        {
+            return currentNode_->nextDegree;
+        }
+
+        bool hasNextVariable() const
+        {
+            return currentNode_->nextVariable;
+        }
+
+        const TripleType* triple() const
+        {
+            return currentNode_->currentTriple;
+        }
+
+        Integer degree() const
+        {
+            return currentNode_->degree;
+        }
+
+    private:
+        Node* currentNode_;
+    };
+
+    class Iterator
+    {
+    public:
+        Iterator(Node*& node)
+            : currentNode_(&node)
+        {
+        }
+
+        void stepNextDegree()
+        {
+            currentNode_ = &(*currentNode_)->nextDegree;
+        }
+
+        void stepNextVariable()
+        {
+            currentNode_ = &(*currentNode_)->nextVariable;
+        }
+
+        operator bool() const
+        {
+            return *currentNode_;
+        }
+
+        bool hasNextDegree() const
+        {
+            return (*currentNode_)->nextDegree;
+        }
+
+        bool hasNextVariable() const
+        {
+            return (*currentNode_)->nextVariable;
+        }
+
+        operator ConstIterator() const
+        {
+            return *currentNode_;
+        }
+
+        TripleType*& triple() const
+        {
+            return (*currentNode_)->currentTriple;
+        }
+
+        Integer degree() const
+        {
+            return (*currentNode_)->degree;
+        }
+
+        void build(Integer degree, Integer var, TripleType* triple)
+        {
+            if (!triple)
+            {
+                return;
+            }
+
+            Node* r =  new Node(triple->polynomLm()[var]);
+            Node* j = r;
+            while (degree > triple->polynomLm()[var])
+            {
+                degree -= triple->polynomLm()[var];
+                ++var;
+                j->nextVariable = new Node(triple->polynomLm()[var]);
+                j = j->nextVariable;
+            }
+            j->currentTriple = triple;
+
+            r->nextDegree = *currentNode_;
+            *currentNode_ = r;
+        }
+
+        void erase()
+        {
+            if (*currentNode_)
+            {
+                Node* tmp = *currentNode_;
+                *currentNode_ = tmp->nextDegree;
+                delete tmp;
+            }
+        }
+
+        void clear()
+        {
+            while (hasNextDegree())
+            {
+                if ((*currentNode_)->nextVariable)
+                {
+                    Iterator((*currentNode_)->nextVariable).clear();
+                }
+                erase();
+            }
+
+            if ((*currentNode_)->nextVariable)
+            {
+                Iterator((*currentNode_)->nextVariable).clear();
+            }
+            erase();
+        }
+
+    private:
+        Node** currentNode_;
+    };
+
+private:
+    Node* root_ = nullptr;
+};

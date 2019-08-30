@@ -1,43 +1,42 @@
-#include <sstream>
 #include "monomDRL.h"
 
+#include <sstream>
+
+
+FastAllocator MonomDRL::allocator_(sizeof(MonomDRL));
+
+
 MonomDRL::MonomDRL(const std::string& str)
-    : Monom()
-    , Next(0)
 {
     std::stringstream tmpStream(str);
     tmpStream >> *this;
 }
 
-int MonomDRL::Compare(const MonomDRL& anotherMonom)
+int MonomDRL::compare(const MonomDRL& anotherMonom)
 {
-    if (TotalDegree < anotherMonom.TotalDegree)
+    if (totalDegree_ < anotherMonom.totalDegree_)
     {
         return -1;
     }
-    else if (TotalDegree > anotherMonom.TotalDegree)
+    else if (totalDegree_ > anotherMonom.totalDegree_)
     {
         return 1;
     }
-    else
-    {
-        VarsListNode *iterator(ListHead),
-                     *iteratorAnother(anotherMonom.ListHead);
-        while (iterator)
-        {
-            if (iterator->Value < iteratorAnother->Value)
-            {
-                return 1;
-            }
-            if (iterator->Value > iteratorAnother->Value)
-            {
-                return -1;
-            }
-            iterator = iterator->Next;
-            iteratorAnother = iteratorAnother->Next;
-        }
-        return 0;
-    }
-}
 
-FastAllocator MonomDRL::Allocator(sizeof(MonomDRL));
+    VarsListNode *iterator(listHead_),
+                 *iteratorAnother(anotherMonom.listHead_);
+    while (iterator)
+    {
+        if (iterator->value < iteratorAnother->value)
+        {
+            return 1;
+        }
+        if (iterator->value > iteratorAnother->value)
+        {
+            return -1;
+        }
+        iterator = iterator->next;
+        iteratorAnother = iteratorAnother->next;
+    }
+    return 0;
+}

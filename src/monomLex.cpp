@@ -1,30 +1,33 @@
-#include <sstream>
 #include "monomLex.h"
 
+#include <sstream>
+
+
+FastAllocator MonomLex::allocator_(sizeof(MonomLex));
+
+
 MonomLex::MonomLex(const std::string& str)
-    : Monom()
-    , Next(0)
 {
     std::stringstream tmpStream(str);
     tmpStream >> *this;
 }
 
-int MonomLex::Compare(const MonomLex& anotherMonom)
+int MonomLex::compare(const MonomLex& anotherMonom)
 {
-    VarsListNode *iterator = ListHead,
-                 *iteratorAnother = anotherMonom.ListHead;
+    VarsListNode *iterator = listHead_,
+                 *iteratorAnother = anotherMonom.listHead_;
     while (iterator && iteratorAnother)
     {
-        if (iterator->Value < iteratorAnother->Value)
+        if (iterator->value < iteratorAnother->value)
         {
             return 1;
         }
-        if (iterator->Value > iteratorAnother->Value)
+        if (iterator->value > iteratorAnother->value)
         {
             return -1;
         }
-        iterator = iterator->Next;
-        iteratorAnother = iteratorAnother->Next;
+        iterator = iterator->next;
+        iteratorAnother = iteratorAnother->next;
     }
 
     if (iterator)
@@ -35,10 +38,5 @@ int MonomLex::Compare(const MonomLex& anotherMonom)
     {
         return -1;
     }
-    else
-    {
-        return 0;
-    }
+    return 0;
 }
-
-FastAllocator MonomLex::Allocator(sizeof(MonomLex));

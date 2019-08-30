@@ -1,188 +1,137 @@
-#ifndef TRIPLE_H
-#define TRIPLE_H
+#pragma once
 
-#include <set>
 #include "fast_allocator.h"
 #include "polynom.h"
+
+#include <set>
+
 
 template <typename MonomType>
 class Triple
 {
-private:
-    const MonomType* Lm;
-    Polynom<MonomType>* Polynomial;
-    const Triple* Ancestor;
-    const Triple* WeakAncestor;
-    std::set<typename MonomType::Integer> Nmp;
-    const typename MonomType::Integer Variable;
-
-    static FastAllocator Allocator;
+public:
+    using PolynomType = Polynom<MonomType>;
+    using Integer = typename MonomType::Integer;
 
 public:
-    Triple(Polynom<MonomType>* initialPolynom);
-
-    Triple(Polynom<MonomType>* initialPolynom
-         , const Triple* initialAncestor
-         , const std::set<typename MonomType::Integer>& initialNmp
-         , const Triple* weakAncestor
-         , typename MonomType::Integer nmVar);
-
-    ~Triple();
-
-    void* operator new(std::size_t);
-    void operator delete(void *ptr);
-
-    const Polynom<MonomType>* GetPolynom() const;
-    const MonomType& GetPolynomLm() const;
-    const Triple* GetAncestor() const;
-    const Triple* GetWeakAncestor() const;
-    typename MonomType::Integer GetVariable() const;
-    const std::set<typename MonomType::Integer>& GetNmp() const;
-
-    void SetNmp(const std::set<typename MonomType::Integer>& newNmp);
-    void SetNmp(typename MonomType::Integer variable);
-    bool TestNmp(typename MonomType::Integer variable) const;
-
-    static bool Compare(const Triple* tripleA, const Triple* tripleB);
-};
-
-template <typename MonomType>
-FastAllocator Triple<MonomType>::Allocator(sizeof(Triple<MonomType>));
-
-template <typename MonomType>
-inline Triple<MonomType>::Triple(Polynom<MonomType>* initialPolynom)
-    : Lm(0)
-    , Polynomial(initialPolynom)
-    , Ancestor(0)
-    , WeakAncestor(0)
-    , Nmp()
-    , Variable(-1)
-{
-    if (Polynomial)
+    Triple(PolynomType* initialPolynom)
+        : polynomial_(initialPolynom)
     {
-        Lm = &Polynomial->Lm();
-        Ancestor = this;
-        Nmp = std::set<typename MonomType::Integer>();
-    }
-}
-
-template <typename MonomType>
-inline Triple<MonomType>::Triple(Polynom<MonomType>* initialPolynom
-                               , const Triple<MonomType>* initialAncestor
-                               , const std::set<typename MonomType::Integer>& initialNmp
-                               , const Triple<MonomType>* weakAncestor
-                               , typename MonomType::Integer nmVar)
-    : Lm(0)
-    , Polynomial(0)
-    , Ancestor(0)
-    , WeakAncestor(0)
-    , Nmp()
-    , Variable(nmVar)
-{
-    if (initialPolynom)
-    {
-        if (Variable == -1)
+        if (polynomial_)
         {
-            Polynomial = initialPolynom;
-            if (initialAncestor)
+            lm_ = &polynomial_->lm();
+            ancestor_ = this;
+        }
+    }
+
+    Triple(PolynomType* polynom,
+           const Triple* ancestor,
+           const std::set<Integer>& nmp,
+           const Triple* weakAncestor,
+           Integer nmVar)
+        : variable_(nmVar)
+    {
+        if (polynom)
+        {
+            if (variable_ == -1)
             {
-                Ancestor = initialAncestor;
+                polynomial_ = polynom;
+                ancestor_ = ancestor ? ancestor : this;
             }
             else
             {
-                Ancestor = this;
+                polynomial_ = new PolynomType();
+                (*polynomial_) += polynom->lm();
+
+                ancestor_ = ancestor;
+                weakAncestor_ = weakAncestor;
             }
-        }
-        else
-        {
-            Polynomial = new Polynom<MonomType>();
-            (*Polynomial) += initialPolynom->Lm();
 
-            Ancestor = initialAncestor;
-            WeakAncestor = weakAncestor;
+            lm_ = &polynomial_->lm();
+            nmp_ = nmp;
         }
-
-        Lm = &Polynomial->Lm();
-        Nmp = initialNmp;
     }
-}
+
+    ~Triple()
+    {
+        delete polynomial_;
+    }
+
+    void* operator new(std::size_t)
+    {
+        return allocator_.allocate();
+    }
+
+    void operator delete(void *ptr)
+    {
+        allocator_.free(ptr);
+    }
+
+    const PolynomType* polynom() const
+    {
+        return polynomial_;
+    }
+
+    PolynomType* polynom()
+    {
+        return polynomial_;
+    }
+
+    const MonomType& polynomLm() const
+    {
+        return *lm_;
+    }
+
+    const Triple* ancestor() const
+    {
+        return ancestor_;
+    }
+
+    const Triple* weakAncestor() const
+    {
+        return weakAncestor_;
+    }
+
+    Integer variable() const
+    {
+        return variable_;
+    }
+
+    const std::set<Integer>& nmp() const
+    {
+        return nmp_;
+    }
+
+    void setNmp(const std::set<Integer>& nmp)
+    {
+        nmp_ = nmp;
+    }
+
+    void setNmp(Integer variable)
+    {
+        nmp_.insert(variable);
+    }
+
+    bool testNmp(Integer variable) const
+    {
+        return nmp_.count(variable);
+    }
+
+    static bool compare(const Triple* tripleA, const Triple* tripleB)
+    {
+        return *tripleA->lm_ > *tripleB->lm_;
+    }
+
+private:
+    const MonomType* lm_ = nullptr;
+    PolynomType* polynomial_ = nullptr;
+    const Triple* ancestor_ = nullptr;
+    const Triple* weakAncestor_ = nullptr;
+    std::set<Integer> nmp_;
+    const Integer variable_ = -1;
+
+    static FastAllocator allocator_;
+};
 
 template <typename MonomType>
-inline Triple<MonomType>::~Triple()
-{
-    delete Polynomial;
-}
-
-template <typename MonomType>
-void* Triple<MonomType>::operator new(std::size_t)
-{
-    return Allocator.Allocate();
-}
-
-template <typename MonomType>
-void Triple<MonomType>::operator delete(void *ptr)
-{
-    Allocator.Free(ptr);
-}
-
-template <typename MonomType>
-inline const Polynom<MonomType>* Triple<MonomType>::GetPolynom() const
-{
-    return Polynomial;
-}
-
-template <typename MonomType>
-inline const MonomType& Triple<MonomType>::GetPolynomLm() const
-{
-    return *Lm;
-}
-
-template <typename MonomType>
-inline const Triple<MonomType>* Triple<MonomType>::GetAncestor() const
-{
-    return Ancestor;
-}
-
-template <typename MonomType>
-inline const Triple<MonomType>* Triple<MonomType>::GetWeakAncestor() const
-{
-    return WeakAncestor;
-}
-
-template <typename MonomType>
-inline typename MonomType::Integer Triple<MonomType>::GetVariable() const
-{
-    return Variable;
-}
-
-template <typename MonomType>
-inline const std::set<typename MonomType::Integer>& Triple<MonomType>::GetNmp() const
-{
-    return Nmp;
-}
-
-template <typename MonomType>
-inline void Triple<MonomType>::SetNmp(const std::set<typename MonomType::Integer>& newNmp)
-{
-    Nmp = newNmp;
-}
-
-template <typename MonomType>
-inline void Triple<MonomType>::SetNmp(typename MonomType::Integer var)
-{
-    Nmp.insert(var);
-}
-
-template <typename MonomType>
-inline bool Triple<MonomType>::TestNmp(typename MonomType::Integer var) const
-{
-    return Nmp.count(var);
-}
-
-template <typename MonomType>
-bool Triple<MonomType>::Compare(const Triple<MonomType>* tripleA, const Triple<MonomType>* tripleB)
-{
-    return *tripleA->Lm > *tripleB->Lm;
-}
-
-#endif // TRIPLE_H
+FastAllocator Triple<MonomType>::allocator_(sizeof(Triple<MonomType>));

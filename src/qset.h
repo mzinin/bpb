@@ -1,135 +1,96 @@
-#ifndef QSET_H
-#define QSET_H
+#pragma once
 
-#include <list>
-#include <algorithm>
 #include "triple.h"
+
+#include <algorithm>
+#include <list>
+
 
 template <typename MonomType>
 class QSet
 {
-private:
-    std::list<Triple<MonomType>*> TripleList;
+public:
+    using PolynomType = Polynom<MonomType>;
+    using TripleType = Triple<MonomType>;
 
 public:
-    QSet();
-    QSet(const std::list<Polynom<MonomType>*>& basis);
-    ~QSet();
+    QSet() = default;
 
-    void Insert(std::list<Polynom<MonomType>*>& addList);
-    void Insert(std::list<Triple<MonomType>*>& addList);
+    QSet(const std::list<PolynomType*>& basis)
+    {
+        insert(basis);
+    }
 
-    Triple<MonomType>* Get();
+    ~QSet()
+    {
+        clear();
+    }
 
-    void Clear();
-    bool Empty() const;
-    std::size_t Size() const;
-    void DeleteDescendants(const Triple<MonomType>* ancestor);
+    void insert(const std::list<PolynomType*>& addList)
+    {
+        for (auto* item : addList)
+        {
+            if (item)
+            {
+                tripleList_.push_back(new TripleType(item));
+            }
+        }
+        tripleList_.sort(TripleType::compare);
+    }
+
+    void insert(std::list<TripleType*>& addList)
+    {
+        addList.sort(TripleType::compare);
+        tripleList_.merge(addList, TripleType::compare);
+    }
+
+    TripleType* get()
+    {
+        auto* result = tripleList_.back();
+        tripleList_.pop_back();
+        return result;
+    }
+
+    void clear()
+    {
+        for (auto* item : tripleList_)
+        {
+            delete item;
+        }
+        tripleList_.clear();
+    }
+
+    bool empty() const
+    {
+        return tripleList_.empty();
+    }
+
+    std::size_t size() const
+    {
+        return tripleList_.size();
+    }
+
+    void deleteDescendants(const TripleType* ancestor)
+    {
+        if (!ancestor)
+        {
+            return;
+        }
+
+        for (auto it = tripleList_.begin(); it != tripleList_.end();)
+        {
+            if ((**it).ancestor() == ancestor || (**it).weakAncestor() == ancestor)
+            {
+                delete *it;
+                it = tripleList_.erase(it);
+            }
+            else
+            {
+                ++it;
+            }
+        }
+    }
+
+private:
+    std::list<TripleType*> tripleList_;
 };
-
-template <typename MonomType>
-QSet<MonomType>::QSet()
-    : TripleList()
-{
-}
-
-template <typename MonomType>
-QSet<MonomType>::QSet(const std::list<Polynom<MonomType>*>& basis)
-    : TripleList()
-{
-    typename std::list<Polynom<MonomType>*>::const_iterator itBasis(basis.begin());
-    while (itBasis != basis.end())
-    {
-        if (*itBasis)
-        {
-            TripleList.push_back(new Triple<MonomType>(*itBasis));
-        }
-        ++itBasis;
-    }
-    TripleList.sort(Triple<MonomType>::Compare);
-}
-
-template <typename MonomType>
-QSet<MonomType>::~QSet()
-{
-    Clear();
-}
-
-template <typename MonomType>
-inline void QSet<MonomType>::Insert(std::list<Polynom<MonomType>*>& addList)
-{
-    typename std::list<Polynom<MonomType>*>::const_iterator itBasis(addList.begin());
-    while ( itBasis != addList.end() )
-    {
-        if (*itBasis)
-        {
-            TripleList.push_back(new Triple<MonomType>(*itBasis));
-        }
-        ++itBasis;
-    }
-    TripleList.sort(Triple<MonomType>::Compare);
-}
-
-template <typename MonomType>
-inline void QSet<MonomType>::Insert(std::list<Triple<MonomType>*>& addList)
-{
-    addList.sort(Triple<MonomType>::Compare);
-    TripleList.merge(addList, Triple<MonomType>::Compare);
-}
-
-template <typename MonomType>
-inline Triple<MonomType>* QSet<MonomType>::Get()
-{
-    Triple<MonomType>* result = TripleList.back();
-    TripleList.pop_back();
-    return result;
-}
-
-template <typename MonomType>
-void QSet<MonomType>::Clear()
-{
-    typename std::list<Triple<MonomType>*>::iterator it(TripleList.begin());
-    while (it != TripleList.end())
-    {
-        delete *it;
-        ++it;
-    }
-    TripleList.clear();
-}
-
-template <typename MonomType>
-inline bool QSet<MonomType>::Empty() const
-{
-    return TripleList.empty();
-}
-
-template <typename MonomType>
-inline std::size_t QSet<MonomType>::Size() const
-{
-    return TripleList.size();
-}
-
-template <typename MonomType>
-void QSet<MonomType>::DeleteDescendants(const Triple<MonomType>* ancestor)
-{
-    if (!ancestor)
-    {
-        return;
-    }
-
-    typename std::list<Triple<MonomType>*>::iterator it(TripleList.begin());
-    while ( it != TripleList.end() )
-    {
-        if ((**it).GetAncestor() == ancestor || (**it).GetWeakAncestor() == ancestor)
-        {
-            delete *it;
-            it = TripleList.erase(it);
-        }
-        else
-        {
-            ++it;
-        }
-    }
-}
-
-#endif // QSET_H

@@ -1,16 +1,18 @@
-#include <iostream>
 #include "launcher.h"
 
-int main(int argc, char *argv[])
+#include <cstdlib>
+
+
+int main(int argc, char* argv[])
 {
     Launcher launcher;
 
-    if (!launcher.Init(argc, argv))
+    if (!launcher.init(argc, argv))
     {
         return EXIT_FAILURE;
     }
 
-    if (!launcher.Run())
+    if (!launcher.run())
     {
         return EXIT_FAILURE;
     }

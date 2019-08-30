@@ -1,31 +1,31 @@
-#ifndef RESOURCE_COUNTER_H
-#define RESOURCE_COUNTER_H
+#pragma once
 
 #include "timer.h"
+
 
 class ResourceCounter
 {
 public:
-    Timer GroebnerBasisTimer;
-    Timer AutoReductionTimer;
-    unsigned long NonMultiProlongations;
-    unsigned long NonMultiProlongationsLength;
-    unsigned long NonZeroReductions;
-    unsigned long NonZeroReductionsLength;
+    Timer groebnerBasisTimer;
+    Timer autoReductionTimer;
+
+    unsigned long nonMultiProlongations = 0;
+    unsigned long nonMultiProlongationsLength = 0;
+    unsigned long nonZeroReductions = 0;
+    unsigned long nonZeroReductionsLength = 0;
 
 public:
-   ~ResourceCounter();
-    void PrintFullStatistics(std::ostream& out) const;
-    void PrintBriefStatistics(std::ostream& out) const;
+    ResourceCounter(const ResourceCounter&) = delete;
+    ResourceCounter& operator=(const ResourceCounter&) = delete;
+
+    void printFullStatistics(std::ostream& out) const;
+    void printBriefStatistics(std::ostream& out) const;
 
 private:
-    ResourceCounter();
-    ResourceCounter(const ResourceCounter&);
-    ResourceCounter& operator=(const ResourceCounter&);
+    ResourceCounter() = default;
 
-friend ResourceCounter& GetResourceCounter();
+    friend ResourceCounter& resourceCounter();
 };
 
-ResourceCounter& GetResourceCounter();
+ResourceCounter& resourceCounter();
 
-#endif // RESOURCE_COUNTER_H

@@ -1,46 +1,53 @@
-#include <sstream>
 #include "monom.h"
 
-std::string Monom::ToString() const
+#include <sstream>
+
+
+FastAllocator Monom::VarsListNode::allocator(sizeof(Monom::VarsListNode));
+Variables Monom::independVariables_;
+Monom::Integer Monom::dimIndepend_ = 0;
+
+
+std::string Monom::toString() const
 {
     std::stringstream tmpStream;
     tmpStream << *this;
     return tmpStream.str();
 }
 
-std::string Monom::GetInnerStructure() const
+std::string Monom::innerStructure() const
 {
     std::stringstream tmpStream;
-    tmpStream << TotalDegree << "(";
+    tmpStream << totalDegree_ << "(";
 
-    VarsListNode* iterator = ListHead;
+    VarsListNode* iterator = listHead_;
     while (iterator)
     {
-        tmpStream << iterator->Value << "->";
-        iterator = iterator->Next;
+        tmpStream << iterator->value << "->";
+        iterator = iterator->next;
     }
     tmpStream << ")";
 
     return tmpStream.str();
 }
 
-void Monom::AddVariable(const std::string& var)
+void Monom::addVariable(const std::string& var)
 {
-    if (IndependVariables.Add(var))
+    if (independVariables_.add(var))
     {
-        ++DimIndepend;
+        ++dimIndepend_;
     }
 }
 
-const std::string& Monom::GetVariable(Monom::Integer var)
+const std::string& Monom::variable(Integer var)
 {
-    return IndependVariables.Variable(var);
+    return independVariables_.variable(var);
 }
 
 std::istream& operator>>(std::istream& in, Monom& monom)
 {
     std::streampos posbeg = in.tellg();
-    int var = monom.IndependVariables.Read(in);
+    int var = monom.independVariables_.read(in);
     if (var < 0)
     {
         in.clear();
@@ -48,7 +55,7 @@ std::istream& operator>>(std::istream& in, Monom& monom)
     }
     else
     {
-        monom.SetOne();
+        monom.setOne();
         int deg;
         do
         {
@@ -63,7 +70,7 @@ std::istream& operator>>(std::istream& in, Monom& monom)
                     in.setstate(std::ios::failbit);
                 }
             }
-            monom.MultiplyBy(var);
+            monom.multiplyBy(var);
             posbeg = in.tellg();
             if (in.peek() != '*')
             {
@@ -72,14 +79,14 @@ std::istream& operator>>(std::istream& in, Monom& monom)
             else
             {
                 in.get();
-                var = monom.IndependVariables.Read(in);
+                var = monom.independVariables_.read(in);
                 if (var < 0)
                 {
                     in.clear();
                     in.seekg(posbeg);
                 }
             }
-        } while(var >= 0);
+        } while (var >= 0);
         if (in.eof() && deg >= 0)
         {
             in.clear();
@@ -90,15 +97,15 @@ std::istream& operator>>(std::istream& in, Monom& monom)
 
 std::ostream& operator<<(std::ostream& out, const Monom& monom)
 {
-    if (!monom.Degree())
+    if (!monom.degree())
     {
         out << '1';
     }
     else
     {
         int i = 0;
-        Variables::ConstIterator j(monom.IndependVariables.Begin());
-        while(monom[i] == 0)
+        Variables::ConstIterator j(monom.independVariables_.begin());
+        while (monom[i] == 0)
         {
             ++i;
             ++j;
@@ -110,7 +117,7 @@ std::ostream& operator<<(std::ostream& out, const Monom& monom)
         }
         ++i;
         ++j;
-        while(j != monom.IndependVariables.End())
+        while (j != monom.independVariables_.end())
         {
             if (monom[i])
             {
@@ -126,7 +133,3 @@ std::ostream& operator<<(std::ostream& out, const Monom& monom)
     }
     return out;
 }
-
-FastAllocator Monom::VarsListNode::Allocator(sizeof(Monom::VarsListNode));
-Variables Monom::IndependVariables;
-Monom::Integer Monom::DimIndepend = 0;

@@ -1,87 +1,73 @@
 #include "settings_manager.h"
 
-SettingsManager::SettingsManager()
-    : CollectStatistics(false)
-    , UseNovaInvolution(false)
-    , PrintAnswer(false)
-    , PrintVersion(false)
-    , PrintHelp(false)
-    , MonomialOrder(Monom::DegRevLex)
+
+void SettingsManager::setCollectStatisticsEnabled()
 {
+    collectStatistics_ = true;
 }
 
-SettingsManager::~SettingsManager()
+void SettingsManager::setCollectStatisticsDisabled()
 {
+    collectStatistics_ = false;
 }
 
-void SettingsManager::SetCollectStatisticsEnabled()
+void SettingsManager::setUseNovaInvolutionEnabled()
 {
-    CollectStatistics = true;
+    useNovaInvolution_ = true;
 }
 
-void SettingsManager::SetCollectStatisticsDisabled()
+void SettingsManager::setUseNovaInvolutionDisabled()
 {
-    CollectStatistics = false;
+    useNovaInvolution_ = false;
 }
 
-void SettingsManager::SetUseNovaInvolutionEnabled()
+void SettingsManager::setPrintAnswerEnabled()
 {
-    UseNovaInvolution = true;
+    printAnswer_ = true;
 }
 
-void SettingsManager::SetUseNovaInvolutionDisabled()
+void SettingsManager::setPrintAnswerDisabled()
 {
-    UseNovaInvolution = false;
+    printAnswer_ = false;
 }
 
-void SettingsManager::SetPrintAnswerEnabled()
+void SettingsManager::setPrintVersionEnabled()
 {
-    PrintAnswer = true;
+    printVersion_ = true;
 }
 
-void SettingsManager::SetPrintAnswerDisabled()
+void SettingsManager::setPrintVersionDisabled()
 {
-    PrintAnswer = false;
+    printVersion_ = false;
 }
 
-void SettingsManager::SetPrintVersionEnabled()
+void SettingsManager::setPrintHelpEnabled()
 {
-    PrintVersion = true;
+    printHelp_ = true;
 }
 
-void SettingsManager::SetPrintVersionDisabled()
+void SettingsManager::setPrintHelpDisabled()
 {
-    PrintVersion = false;
+    printHelp_ = false;
 }
 
-void SettingsManager::SetPrintHelpEnabled()
+void SettingsManager::setMonomialOrderLex()
 {
-    PrintHelp = true;
+    monomialOrder_ = Monom::Lex;
 }
 
-void SettingsManager::SetPrintHelpDisabled()
+void SettingsManager::setMonomialOrderDegLex()
 {
-    PrintHelp = false;
+    monomialOrder_ = Monom::DegLex;
 }
 
-void SettingsManager::SetMonomialOrderLex()
+void SettingsManager::setMonomialOrderDegRevLex()
 {
-    MonomialOrder = Monom::Lex;
+    monomialOrder_ = Monom::DegRevLex;
 }
 
-void SettingsManager::SetMonomialOrderDegLex()
+SettingsManager& settingsManager()
 {
-    MonomialOrder = Monom::DegLex;
-}
-
-void SettingsManager::SetMonomialOrderDegRevLex()
-{
-    MonomialOrder = Monom::DegRevLex;
-}
-
-
-SettingsManager& GetSettingsManager()
-{
-    static SettingsManager manager = SettingsManager();
+    static SettingsManager manager;
     return manager;
 }

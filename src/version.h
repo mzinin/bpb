@@ -1,19 +1,27 @@
-#ifndef VERSION_H
-#define VERSION_H
+#pragma once
+
+#ifdef major
+#undef major
+#endif
+
+#ifdef minor
+#undef minor
+#endif
+
 
 class VersionInfo
 {
-private:
-    unsigned major;
-    unsigned minor;
-    unsigned revision;
-
 public:
-    VersionInfo(unsigned initialMajor, unsigned initialMinor, unsigned initialRevision);
-    unsigned GetMajor() const;
-    unsigned GetMinor() const;
-    unsigned GetRevision() const;
+    VersionInfo(unsigned major, unsigned minor, unsigned revision);
+
+    unsigned major() const;
+    unsigned minor() const;
+    unsigned revision() const;
+
+private:
+    const unsigned major_;
+    const unsigned minor_;
+    const unsigned revision_;
 };
 
-const VersionInfo& GetVersion();
-#endif
+const VersionInfo& currentVersion();

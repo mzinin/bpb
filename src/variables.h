@@ -1,57 +1,49 @@
-#ifndef VARIABLES_H
-#define VARIABLES_H
+#pragma once
 
-#include <cstring>
 #include <deque>
-#include <iostream>
 #include <string>
+
 
 class Variables
 {
 public:
-    typedef std::deque<std::string> Vector;
-    typedef std::deque<std::string>::const_iterator ConstIterator;
+    using ConstIterator = std::deque<std::string>::const_iterator;
 
 public:
-    Variables();
-    ~Variables();
+    bool add(const std::string& var);
+    int find(const std::string& var) const;
+    int read(std::istream& in) const;
 
-    bool Add(const std::string& var);
-    int Find(const std::string& var) const;
-    int Read(std::istream& in) const;
-
-    int Size() const;
-    ConstIterator Begin() const;
-    ConstIterator End() const;
-    const std::string& Variable(int variableNumber) const;
+    int size() const;
+    ConstIterator begin() const;
+    ConstIterator end() const;
+    const std::string& variable(int variableNumber) const;
 
 private:
-    Vector VariablesNames;
+    std::deque<std::string> variablesNames_;
 };
 
 
-inline int Variables::Size() const
+inline int Variables::size() const
 {
-    return VariablesNames.size();
+    return variablesNames_.size();
 }
 
-inline Variables::ConstIterator Variables::Begin() const
+inline Variables::ConstIterator Variables::begin() const
 {
-    return VariablesNames.begin();
+    return variablesNames_.begin();
 }
 
-inline Variables::ConstIterator Variables::End() const
+inline Variables::ConstIterator Variables::end() const
 {
-    return VariablesNames.end();
+    return variablesNames_.end();
 }
 
-inline const std::string& Variables::Variable(int variableNumber) const
+inline const std::string& Variables::variable(int variableNumber) const
 {
-    if (variableNumber >= Size())
+    if (variableNumber >= size())
     {
         variableNumber = 0;
     }
-    return VariablesNames[variableNumber];
+    return variablesNames_[variableNumber];
 }
-
-#endif // IVARIABLES_H

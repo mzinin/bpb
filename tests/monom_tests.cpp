@@ -5,17 +5,18 @@
 #include <cstdlib>
 #include <iostream>
 
-void SetVariables()
+
+void setVariables()
 {
-    MonomDRL::AddVariable("x0");
-    MonomDRL::AddVariable("x1");
-    MonomDRL::AddVariable("x2");
-    MonomDRL::AddVariable("x3");
-    MonomDRL::AddVariable("x4");
-    MonomDRL::AddVariable("x5");
+    MonomDRL::addVariable("x0");
+    MonomDRL::addVariable("x1");
+    MonomDRL::addVariable("x2");
+    MonomDRL::addVariable("x3");
+    MonomDRL::addVariable("x4");
+    MonomDRL::addVariable("x5");
 }
 
-bool RunTestGroup1()
+bool runTestGroup1()
 {
     const int groupNumber = 1;
     bool result = true, currentResult = false;
@@ -28,7 +29,7 @@ bool RunTestGroup1()
         {
             ++currentTestNumber;
             MonomDL m1("x1");
-            currentResult = m1.ToString() == "x1";
+            currentResult = m1.toString() == "x1";
             if (currentResult)
             {
                 std::cout << "\tTest " << groupNumber << "-" << currentTestNumber << " succeded." << std::endl;
@@ -44,7 +45,7 @@ bool RunTestGroup1()
         {
             ++currentTestNumber;
             MonomDL m1("x1*x2");
-            currentResult = m1.ToString() == "x1*x2";
+            currentResult = m1.toString() == "x1*x2";
             if (currentResult)
             {
                 std::cout << "\tTest " << groupNumber << "-" << currentTestNumber << " succeded." << std::endl;
@@ -60,7 +61,7 @@ bool RunTestGroup1()
         {
             ++currentTestNumber;
             MonomDL m1("x2*x1");
-            currentResult = m1.ToString() == "x1*x2";
+            currentResult = m1.toString() == "x1*x2";
             if (currentResult)
             {
                 std::cout << "\tTest " << groupNumber << "-" << currentTestNumber << " succeded." << std::endl;
@@ -76,7 +77,7 @@ bool RunTestGroup1()
         {
             ++currentTestNumber;
             MonomDL m1;
-            currentResult = m1.ToString() == "1";
+            currentResult = m1.toString() == "1";
             if (currentResult)
             {
                 std::cout << "\tTest " << groupNumber << "-" << currentTestNumber << " succeded." << std::endl;
@@ -93,7 +94,7 @@ bool RunTestGroup1()
             ++currentTestNumber;
             MonomDL m1("x1*x2");
             MonomDL m2(m1);
-            currentResult = m2.ToString() == "x1*x2";
+            currentResult = m2.toString() == "x1*x2";
             if (currentResult)
             {
                 std::cout << "\tTest " << groupNumber << "-" << currentTestNumber << " succeded." << std::endl;
@@ -113,7 +114,7 @@ bool RunTestGroup1()
         {
             ++currentTestNumber;
             MonomDRL m1("x1");
-            currentResult = m1.ToString() == "x1";
+            currentResult = m1.toString() == "x1";
             if (currentResult)
             {
                 std::cout << "\tTest " << groupNumber << "-" << currentTestNumber << " succeded." << std::endl;
@@ -129,7 +130,7 @@ bool RunTestGroup1()
         {
             ++currentTestNumber;
             MonomDRL m1("x1*x2");
-            currentResult = m1.ToString() == "x1*x2";
+            currentResult = m1.toString() == "x1*x2";
             if (currentResult)
             {
                 std::cout << "\tTest " << groupNumber << "-" << currentTestNumber << " succeded." << std::endl;
@@ -145,7 +146,7 @@ bool RunTestGroup1()
         {
             ++currentTestNumber;
             MonomDRL m1("x2*x1");
-            currentResult = m1.ToString() == "x1*x2";
+            currentResult = m1.toString() == "x1*x2";
             if (currentResult)
             {
                 std::cout << "\tTest " << groupNumber << "-" << currentTestNumber << " succeded." << std::endl;
@@ -161,7 +162,7 @@ bool RunTestGroup1()
         {
             ++currentTestNumber;
             MonomDRL m1;
-            currentResult = m1.ToString() == "1";
+            currentResult = m1.toString() == "1";
             if (currentResult)
             {
                 std::cout << "\tTest " << groupNumber << "-" << currentTestNumber << " succeded." << std::endl;
@@ -178,7 +179,7 @@ bool RunTestGroup1()
             ++currentTestNumber;
             MonomDRL m1("x1*x2");
             MonomDRL m2(m1);
-            currentResult = m2.ToString() == "x1*x2";
+            currentResult = m2.toString() == "x1*x2";
             if (currentResult)
             {
                 std::cout << "\tTest " << groupNumber << "-" << currentTestNumber << " succeded." << std::endl;
@@ -198,7 +199,7 @@ bool RunTestGroup1()
         {
             ++currentTestNumber;
             MonomLex m1("x1");
-            currentResult = m1.ToString() == "x1";
+            currentResult = m1.toString() == "x1";
             if (currentResult)
             {
                 std::cout << "\tTest " << groupNumber << "-" << currentTestNumber << " succeded." << std::endl;
@@ -214,7 +215,7 @@ bool RunTestGroup1()
         {
             ++currentTestNumber;
             MonomLex m1("x1*x2");
-            currentResult = m1.ToString() == "x1*x2";
+            currentResult = m1.toString() == "x1*x2";
             if (currentResult)
             {
                 std::cout << "\tTest " << groupNumber << "-" << currentTestNumber << " succeded." << std::endl;
@@ -230,7 +231,7 @@ bool RunTestGroup1()
         {
             ++currentTestNumber;
             MonomLex m1("x2*x1");
-            currentResult = m1.ToString() == "x1*x2";
+            currentResult = m1.toString() == "x1*x2";
             if (currentResult)
             {
                 std::cout << "\tTest " << groupNumber << "-" << currentTestNumber << " succeded." << std::endl;
@@ -246,7 +247,7 @@ bool RunTestGroup1()
         {
             ++currentTestNumber;
             MonomLex m1;
-            currentResult = m1.ToString() == "1";
+            currentResult = m1.toString() == "1";
             if (currentResult)
             {
                 std::cout << "\tTest " << groupNumber << "-" << currentTestNumber << " succeded." << std::endl;
@@ -263,7 +264,7 @@ bool RunTestGroup1()
             ++currentTestNumber;
             MonomLex m1("x1*x2");
             MonomLex m2(m1);
-            currentResult = m2.ToString() == "x1*x2";
+            currentResult = m2.toString() == "x1*x2";
             if (currentResult)
             {
                 std::cout << "\tTest " << groupNumber << "-" << currentTestNumber << " succeded." << std::endl;
@@ -288,7 +289,7 @@ bool RunTestGroup1()
     return result;
 }
 
-bool RunTestGroup2()
+bool runTestGroup2()
 {
     const int groupNumber = 2;
     bool result = true, currentResult = false;
@@ -301,7 +302,7 @@ bool RunTestGroup2()
         {
             ++currentTestNumber;
             MonomDL* m1 = new MonomDL("x1*x2*x3*x4");
-            currentResult = m1 && m1->ToString() == "x1*x2*x3*x4";
+            currentResult = m1 && m1->toString() == "x1*x2*x3*x4";
             if (currentResult)
             {
                 std::cout << "\tTest " << groupNumber << "-" << currentTestNumber << " succeded." << std::endl;
@@ -317,8 +318,8 @@ bool RunTestGroup2()
         {
             ++currentTestNumber;
             MonomDL m1("x1*x2");
-            m1.SetOne();
-            currentResult = m1.ToString() == "1";
+            m1.setOne();
+            currentResult = m1.toString() == "1";
             if (currentResult)
             {
                 std::cout << "\tTest " << groupNumber << "-" << currentTestNumber << " succeded." << std::endl;
@@ -334,7 +335,7 @@ bool RunTestGroup2()
         {
             ++currentTestNumber;
             MonomDL m1("x2*x3*x4*x5"), m2("x2*x3*x5");
-            currentResult = m1.Degree() == 4 && m2.Degree() == 3;
+            currentResult = m1.degree() == 4 && m2.degree() == 3;
             if (currentResult)
             {
                 std::cout << "\tTest " << groupNumber << "-" << currentTestNumber << " succeded." << std::endl;
@@ -342,7 +343,7 @@ bool RunTestGroup2()
             else
             {
                 std::cerr << "\t\tTest " << groupNumber << "-" << currentTestNumber << " failed." << std::endl;
-                std::cerr << "\t\tm1.Degree() = " << m1.Degree() << "; m2.Degree() = " << m2.Degree() << std::endl;
+                std::cerr << "\t\tm1.degree() = " << m1.degree() << "; m2.degree() = " << m2.degree() << std::endl;
             }
             result = result && currentResult;
         }
@@ -402,7 +403,7 @@ bool RunTestGroup2()
         {
             ++currentTestNumber;
             MonomDRL* m1 = new MonomDRL("x1*x2*x3*x4");
-            currentResult = m1 && m1->ToString() == "x1*x2*x3*x4";
+            currentResult = m1 && m1->toString() == "x1*x2*x3*x4";
             if (currentResult)
             {
                 std::cout << "\tTest " << groupNumber << "-" << currentTestNumber << " succeded." << std::endl;
@@ -418,8 +419,8 @@ bool RunTestGroup2()
         {
             ++currentTestNumber;
             MonomDRL m1("x1*x2");
-            m1.SetOne();
-            currentResult = m1.ToString() == "1";
+            m1.setOne();
+            currentResult = m1.toString() == "1";
             if (currentResult)
             {
                 std::cout << "\tTest " << groupNumber << "-" << currentTestNumber << " succeded." << std::endl;
@@ -435,7 +436,7 @@ bool RunTestGroup2()
         {
             ++currentTestNumber;
             MonomDRL m1("x2*x3*x4*x5"), m2("x2*x3*x5");
-            currentResult = m1.Degree() == 4 && m2.Degree() == 3;
+            currentResult = m1.degree() == 4 && m2.degree() == 3;
             if (currentResult)
             {
                 std::cout << "\tTest " << groupNumber << "-" << currentTestNumber << " succeded." << std::endl;
@@ -443,7 +444,7 @@ bool RunTestGroup2()
             else
             {
                 std::cerr << "\t\tTest " << groupNumber << "-" << currentTestNumber << " failed." << std::endl;
-                std::cerr << "\t\tm1.Degree() = " << m1.Degree() << "; m2.Degree() = " << m2.Degree() << std::endl;
+                std::cerr << "\t\tm1.degree() = " << m1.degree() << "; m2.degree() = " << m2.degree() << std::endl;
             }
             result = result && currentResult;
         }
@@ -503,7 +504,7 @@ bool RunTestGroup2()
         {
             ++currentTestNumber;
             MonomLex* m1 = new MonomLex("x1*x2*x3*x4");
-            currentResult = m1 && m1->ToString() == "x1*x2*x3*x4";
+            currentResult = m1 && m1->toString() == "x1*x2*x3*x4";
             if (currentResult)
             {
                 std::cout << "\tTest " << groupNumber << "-" << currentTestNumber << " succeded." << std::endl;
@@ -519,8 +520,8 @@ bool RunTestGroup2()
         {
             ++currentTestNumber;
             MonomLex m1("x1*x2");
-            m1.SetOne();
-            currentResult = m1.ToString() == "1";
+            m1.setOne();
+            currentResult = m1.toString() == "1";
             if (currentResult)
             {
                 std::cout << "\tTest " << groupNumber << "-" << currentTestNumber << " succeded." << std::endl;
@@ -536,7 +537,7 @@ bool RunTestGroup2()
         {
             ++currentTestNumber;
             MonomLex m1("x2*x3*x4*x5"), m2("x2*x3*x5");
-            currentResult = m1.Degree() == 4 && m2.Degree() == 3;
+            currentResult = m1.degree() == 4 && m2.degree() == 3;
             if (currentResult)
             {
                 std::cout << "\tTest " << groupNumber << "-" << currentTestNumber << " succeded." << std::endl;
@@ -544,7 +545,7 @@ bool RunTestGroup2()
             else
             {
                 std::cerr << "\t\tTest " << groupNumber << "-" << currentTestNumber << " failed." << std::endl;
-                std::cerr << "\t\tm1.Degree() = " << m1.Degree() << "; m2.Degree() = " << m2.Degree() << std::endl;
+                std::cerr << "\t\tm1.degree() = " << m1.degree() << "; m2.degree() = " << m2.degree() << std::endl;
             }
             result = result && currentResult;
         }
@@ -609,7 +610,7 @@ bool RunTestGroup2()
     return result;
 }
 
-bool RunTestGroup3()
+bool runTestGroup3()
 {
     const int groupNumber = 3;
     int currentTestNumber = 0;
@@ -624,7 +625,7 @@ bool RunTestGroup3()
             ++currentTestNumber;
             MonomDL m1("x1*x2*x3*x4"), m2("x1*x2");
             m1 = m2;
-            currentResult = m1.ToString() == "x1*x2";
+            currentResult = m1.toString() == "x1*x2";
             if (currentResult)
             {
                 std::cout << "\tTest " << groupNumber << "-" << currentTestNumber << " succeded." << std::endl;
@@ -632,7 +633,7 @@ bool RunTestGroup3()
             else
             {
                 std::cerr << "\t\tTest " << groupNumber << "-" << currentTestNumber << " failed." << std::endl;
-                std::cerr << "\t\tm1 = " << m1 << "; m1.Degree() = " << m1.Degree() << "; Inner structure = " << m1.GetInnerStructure() << std::endl;
+                std::cerr << "\t\tm1 = " << m1 << "; m1.degree() = " << m1.degree() << "; Inner structure = " << m1.innerStructure() << std::endl;
             }
             result = result && currentResult;
         }
@@ -709,7 +710,7 @@ bool RunTestGroup3()
             ++currentTestNumber;
             MonomDRL m1("x1*x2*x3*x4"), m2("x1*x2");
             m1 = m2;
-            currentResult = m1.ToString() == "x1*x2";
+            currentResult = m1.toString() == "x1*x2";
             if (currentResult)
             {
                 std::cout << "\tTest " << groupNumber << "-" << currentTestNumber << " succeded." << std::endl;
@@ -717,7 +718,7 @@ bool RunTestGroup3()
             else
             {
                 std::cerr << "\t\tTest " << groupNumber << "-" << currentTestNumber << " failed." << std::endl;
-                std::cerr << "\t\tm1 = " << m1 << "; m1.Degree() = " << m1.Degree() << "; Inner structure = " << m1.GetInnerStructure() << std::endl;
+                std::cerr << "\t\tm1 = " << m1 << "; m1.degree() = " << m1.degree() << "; Inner structure = " << m1.innerStructure() << std::endl;
             }
             result = result && currentResult;
         }
@@ -794,7 +795,7 @@ bool RunTestGroup3()
             ++currentTestNumber;
             MonomLex m1("x1*x2*x3*x4"), m2("x1*x2");
             m1 = m2;
-            currentResult = m1.ToString() == "x1*x2";
+            currentResult = m1.toString() == "x1*x2";
             if (currentResult)
             {
                 std::cout << "\tTest " << groupNumber << "-" << currentTestNumber << " succeded." << std::endl;
@@ -802,7 +803,7 @@ bool RunTestGroup3()
             else
             {
                 std::cerr << "\t\tTest " << groupNumber << "-" << currentTestNumber << " failed." << std::endl;
-                std::cerr << "\t\tm1 = " << m1 << "; m1.Degree() = " << m1.Degree() << "; Inner structure = " << m1.GetInnerStructure() << std::endl;
+                std::cerr << "\t\tm1 = " << m1 << "; m1.degree() = " << m1.degree() << "; Inner structure = " << m1.innerStructure() << std::endl;
             }
             result = result && currentResult;
         }
@@ -883,7 +884,7 @@ bool RunTestGroup3()
     return result;
 }
 
-bool RunTestGroup4()
+bool runTestGroup4()
 {
     const int groupNumber = 4;
     int currentTestNumber = 0;
@@ -898,7 +899,7 @@ bool RunTestGroup4()
             ++currentTestNumber;
             MonomDL m1("x1*x4");
             m1 *= 1;
-            currentResult = m1.ToString() == "x1*x4" && m1.Degree() == 2;
+            currentResult = m1.toString() == "x1*x4" && m1.degree() == 2;
             if (currentResult)
             {
                 std::cout << "\tTest " << groupNumber << "-" << currentTestNumber << " succeded." << std::endl;
@@ -906,7 +907,7 @@ bool RunTestGroup4()
             else
             {
                 std::cerr << "\t\tTest " << groupNumber << "-" << currentTestNumber << " failed." << std::endl;
-                std::cerr << "\t\tm1 = " << m1 << "; m1.Degree() = " << m1.Degree() << std::endl;
+                std::cerr << "\t\tm1 = " << m1 << "; m1.degree() = " << m1.degree() << std::endl;
             }
             result = result && currentResult;
         }
@@ -915,7 +916,7 @@ bool RunTestGroup4()
             ++currentTestNumber;
             MonomDL m1("x1*x4");
             m1 *= 2;
-            currentResult = m1.ToString() == "x1*x2*x4" && m1.Degree() == 3;
+            currentResult = m1.toString() == "x1*x2*x4" && m1.degree() == 3;
             if (currentResult)
             {
                 std::cout << "\tTest " << groupNumber << "-" << currentTestNumber << " succeded." << std::endl;
@@ -923,7 +924,7 @@ bool RunTestGroup4()
             else
             {
                 std::cerr << "\t\tTest " << groupNumber << "-" << currentTestNumber << " failed." << std::endl;
-                std::cerr << "\t\tm1 = " << m1 << "; m1.Degree() = " << m1.Degree() << std::endl;
+                std::cerr << "\t\tm1 = " << m1 << "; m1.degree() = " << m1.degree() << std::endl;
             }
             result = result && currentResult;
         }
@@ -932,7 +933,7 @@ bool RunTestGroup4()
             ++currentTestNumber;
             MonomDL m1("x1*x4");
             m1 *= 4;
-            currentResult = m1.ToString() == "x1*x4" && m1.Degree() == 2;
+            currentResult = m1.toString() == "x1*x4" && m1.degree() == 2;
             if (currentResult)
             {
                 std::cout << "\tTest " << groupNumber << "-" << currentTestNumber << " succeded." << std::endl;
@@ -940,7 +941,7 @@ bool RunTestGroup4()
             else
             {
                 std::cerr << "\t\tTest " << groupNumber << "-" << currentTestNumber << " failed." << std::endl;
-                std::cerr << "\t\tm1 = " << m1 << "; m1.Degree() = " << m1.Degree() << std::endl;
+                std::cerr << "\t\tm1 = " << m1 << "; m1.degree() = " << m1.degree() << std::endl;
             }
             result = result && currentResult;
         }
@@ -953,7 +954,7 @@ bool RunTestGroup4()
             ++currentTestNumber;
             MonomDRL m1("x1*x4");
             m1 *= 1;
-            currentResult = m1.ToString() == "x1*x4" && m1.Degree() == 2;
+            currentResult = m1.toString() == "x1*x4" && m1.degree() == 2;
             if (currentResult)
             {
                 std::cout << "\tTest " << groupNumber << "-" << currentTestNumber << " succeded." << std::endl;
@@ -961,7 +962,7 @@ bool RunTestGroup4()
             else
             {
                 std::cerr << "\t\tTest " << groupNumber << "-" << currentTestNumber << " failed." << std::endl;
-                std::cerr << "\t\tm1 = " << m1 << "; m1.Degree() = " << m1.Degree() << std::endl;
+                std::cerr << "\t\tm1 = " << m1 << "; m1.degree() = " << m1.degree() << std::endl;
             }
             result = result && currentResult;
         }
@@ -970,7 +971,7 @@ bool RunTestGroup4()
             ++currentTestNumber;
             MonomDRL m1("x1*x4");
             m1 *= 2;
-            currentResult = m1.ToString() == "x1*x2*x4" && m1.Degree() == 3;
+            currentResult = m1.toString() == "x1*x2*x4" && m1.degree() == 3;
             if (currentResult)
             {
                 std::cout << "\tTest " << groupNumber << "-" << currentTestNumber << " succeded." << std::endl;
@@ -978,7 +979,7 @@ bool RunTestGroup4()
             else
             {
                 std::cerr << "\t\tTest " << groupNumber << "-" << currentTestNumber << " failed." << std::endl;
-                std::cerr << "\t\tm1 = " << m1 << "; m1.Degree() = " << m1.Degree() << std::endl;
+                std::cerr << "\t\tm1 = " << m1 << "; m1.degree() = " << m1.degree() << std::endl;
             }
             result = result && currentResult;
         }
@@ -987,7 +988,7 @@ bool RunTestGroup4()
             ++currentTestNumber;
             MonomDRL m1("x1*x4");
             m1 *= 4;
-            currentResult = m1.ToString() == "x1*x4" && m1.Degree() == 2;
+            currentResult = m1.toString() == "x1*x4" && m1.degree() == 2;
             if (currentResult)
             {
                 std::cout << "\tTest " << groupNumber << "-" << currentTestNumber << " succeded." << std::endl;
@@ -995,7 +996,7 @@ bool RunTestGroup4()
             else
             {
                 std::cerr << "\t\tTest " << groupNumber << "-" << currentTestNumber << " failed." << std::endl;
-                std::cerr << "\t\tm1 = " << m1 << "; m1.Degree() = " << m1.Degree() << std::endl;
+                std::cerr << "\t\tm1 = " << m1 << "; m1.degree() = " << m1.degree() << std::endl;
             }
             result = result && currentResult;
         }
@@ -1008,7 +1009,7 @@ bool RunTestGroup4()
             ++currentTestNumber;
             MonomLex m1("x1*x4");
             m1 *= 1;
-            currentResult = m1.ToString() == "x1*x4" && m1.Degree() == 2;
+            currentResult = m1.toString() == "x1*x4" && m1.degree() == 2;
             if (currentResult)
             {
                 std::cout << "\tTest " << groupNumber << "-" << currentTestNumber << " succeded." << std::endl;
@@ -1016,7 +1017,7 @@ bool RunTestGroup4()
             else
             {
                 std::cerr << "\t\tTest " << groupNumber << "-" << currentTestNumber << " failed." << std::endl;
-                std::cerr << "\t\tm1 = " << m1 << "; m1.Degree() = " << m1.Degree() << std::endl;
+                std::cerr << "\t\tm1 = " << m1 << "; m1.degree() = " << m1.degree() << std::endl;
             }
             result = result && currentResult;
         }
@@ -1025,7 +1026,7 @@ bool RunTestGroup4()
             ++currentTestNumber;
             MonomLex m1("x1*x4");
             m1 *= 2;
-            currentResult = m1.ToString() == "x1*x2*x4" && m1.Degree() == 3;
+            currentResult = m1.toString() == "x1*x2*x4" && m1.degree() == 3;
             if (currentResult)
             {
                 std::cout << "\tTest " << groupNumber << "-" << currentTestNumber << " succeded." << std::endl;
@@ -1033,7 +1034,7 @@ bool RunTestGroup4()
             else
             {
                 std::cerr << "\t\tTest " << groupNumber << "-" << currentTestNumber << " failed." << std::endl;
-                std::cerr << "\t\tm1 = " << m1 << "; m1.Degree() = " << m1.Degree() << std::endl;
+                std::cerr << "\t\tm1 = " << m1 << "; m1.degree() = " << m1.degree() << std::endl;
             }
             result = result && currentResult;
         }
@@ -1042,7 +1043,7 @@ bool RunTestGroup4()
             ++currentTestNumber;
             MonomLex m1("x1*x4");
             m1 *= 4;
-            currentResult = m1.ToString() == "x1*x4" && m1.Degree() == 2;
+            currentResult = m1.toString() == "x1*x4" && m1.degree() == 2;
             if (currentResult)
             {
                 std::cout << "\tTest " << groupNumber << "-" << currentTestNumber << " succeded." << std::endl;
@@ -1050,7 +1051,7 @@ bool RunTestGroup4()
             else
             {
                 std::cerr << "\t\tTest " << groupNumber << "-" << currentTestNumber << " failed." << std::endl;
-                std::cerr << "\t\tm1 = " << m1 << "; m1.Degree() = " << m1.Degree() << std::endl;
+                std::cerr << "\t\tm1 = " << m1 << "; m1.degree() = " << m1.degree() << std::endl;
             }
             result = result && currentResult;
         }
@@ -1067,7 +1068,7 @@ bool RunTestGroup4()
     return result;
 }
 
-bool RunTestGroup5()
+bool runTestGroup5()
 {
     const int groupNumber = 5;
     bool result = true, currentResult = false;
@@ -1081,7 +1082,7 @@ bool RunTestGroup5()
             ++currentTestNumber;
             MonomDL m1("x1*x4"), m2("x2*x3");
             m1 *= m2;
-            currentResult = m1.ToString() == "x1*x2*x3*x4" && m1.Degree() == 4;
+            currentResult = m1.toString() == "x1*x2*x3*x4" && m1.degree() == 4;
             if (currentResult)
             {
                 std::cout << "\tTest " << groupNumber << "-" << currentTestNumber << " succeded." << std::endl;
@@ -1089,7 +1090,7 @@ bool RunTestGroup5()
             else
             {
                 std::cerr << "\t\tTest " << groupNumber << "-" << currentTestNumber << " failed." << std::endl;
-                std::cerr << "\t\tm1 = " << m1 << "; m1.Degree() = " << m1.Degree() << std::endl;
+                std::cerr << "\t\tm1 = " << m1 << "; m1.degree() = " << m1.degree() << std::endl;
             }
             result = result && currentResult;
         }
@@ -1098,7 +1099,7 @@ bool RunTestGroup5()
             ++currentTestNumber;
             MonomDL m1("x1*x4"), m2("x1*x3");
             m1 *= m2;
-            currentResult = m1.ToString() == "x1*x3*x4" && m1.Degree() == 3;
+            currentResult = m1.toString() == "x1*x3*x4" && m1.degree() == 3;
             if (currentResult)
             {
                 std::cout << "\tTest " << groupNumber << "-" << currentTestNumber << " succeded." << std::endl;
@@ -1106,7 +1107,7 @@ bool RunTestGroup5()
             else
             {
                 std::cerr << "\t\tTest " << groupNumber << "-" << currentTestNumber << " failed." << std::endl;
-                std::cerr << "\t\tm1 = " << m1 << "; m1.Degree() = " << m1.Degree() << std::endl;
+                std::cerr << "\t\tm1 = " << m1 << "; m1.degree() = " << m1.degree() << std::endl;
             }
             result = result && currentResult;
         }
@@ -1115,7 +1116,7 @@ bool RunTestGroup5()
             ++currentTestNumber;
             MonomDL m1("x1*x4"), m2;
             m1 *= m2;
-            currentResult = m1.ToString() == "x1*x4" && m1.Degree() == 2;
+            currentResult = m1.toString() == "x1*x4" && m1.degree() == 2;
             if (currentResult)
             {
                 std::cout << "\tTest " << groupNumber << "-" << currentTestNumber << " succeded." << std::endl;
@@ -1123,7 +1124,7 @@ bool RunTestGroup5()
             else
             {
                 std::cerr << "\t\tTest " << groupNumber << "-" << currentTestNumber << " failed." << std::endl;
-                std::cerr << "\t\tm1 = " << m1 << "; m1.Degree() = " << m1.Degree() << std::endl;
+                std::cerr << "\t\tm1 = " << m1 << "; m1.degree() = " << m1.degree() << std::endl;
             }
             result = result && currentResult;
         }
@@ -1136,7 +1137,7 @@ bool RunTestGroup5()
             ++currentTestNumber;
             MonomDRL m1("x1*x4"), m2("x2*x3");
             m1 *= m2;
-            currentResult = m1.ToString() == "x1*x2*x3*x4" && m1.Degree() == 4;
+            currentResult = m1.toString() == "x1*x2*x3*x4" && m1.degree() == 4;
             if (currentResult)
             {
                 std::cout << "\tTest " << groupNumber << "-" << currentTestNumber << " succeded." << std::endl;
@@ -1144,7 +1145,7 @@ bool RunTestGroup5()
             else
             {
                 std::cerr << "\t\tTest " << groupNumber << "-" << currentTestNumber << " failed." << std::endl;
-                std::cerr << "\t\tm1 = " << m1 << "; m1.Degree() = " << m1.Degree() << std::endl;
+                std::cerr << "\t\tm1 = " << m1 << "; m1.degree() = " << m1.degree() << std::endl;
             }
             result = result && currentResult;
         }
@@ -1153,7 +1154,7 @@ bool RunTestGroup5()
             ++currentTestNumber;
             MonomDRL m1("x1*x4"), m2("x1*x3");
             m1 *= m2;
-            currentResult = m1.ToString() == "x1*x3*x4" && m1.Degree() == 3;
+            currentResult = m1.toString() == "x1*x3*x4" && m1.degree() == 3;
             if (currentResult)
             {
                 std::cout << "\tTest " << groupNumber << "-" << currentTestNumber << " succeded." << std::endl;
@@ -1161,7 +1162,7 @@ bool RunTestGroup5()
             else
             {
                 std::cerr << "\t\tTest " << groupNumber << "-" << currentTestNumber << " failed." << std::endl;
-                std::cerr << "\t\tm1 = " << m1 << "; m1.Degree() = " << m1.Degree() << std::endl;
+                std::cerr << "\t\tm1 = " << m1 << "; m1.degree() = " << m1.degree() << std::endl;
             }
             result = result && currentResult;
         }
@@ -1170,7 +1171,7 @@ bool RunTestGroup5()
             ++currentTestNumber;
             MonomDRL m1("x1*x4"), m2;
             m1 *= m2;
-            currentResult = m1.ToString() == "x1*x4" && m1.Degree() == 2;
+            currentResult = m1.toString() == "x1*x4" && m1.degree() == 2;
             if (currentResult)
             {
                 std::cout << "\tTest " << groupNumber << "-" << currentTestNumber << " succeded." << std::endl;
@@ -1178,7 +1179,7 @@ bool RunTestGroup5()
             else
             {
                 std::cerr << "\t\tTest " << groupNumber << "-" << currentTestNumber << " failed." << std::endl;
-                std::cerr << "\t\tm1 = " << m1 << "; m1.Degree() = " << m1.Degree() << std::endl;
+                std::cerr << "\t\tm1 = " << m1 << "; m1.degree() = " << m1.degree() << std::endl;
             }
             result = result && currentResult;
         }
@@ -1191,7 +1192,7 @@ bool RunTestGroup5()
             ++currentTestNumber;
             MonomLex m1("x1*x4"), m2("x2*x3");
             m1 *= m2;
-            currentResult = m1.ToString() == "x1*x2*x3*x4" && m1.Degree() == 4;
+            currentResult = m1.toString() == "x1*x2*x3*x4" && m1.degree() == 4;
             if (currentResult)
             {
                 std::cout << "\tTest " << groupNumber << "-" << currentTestNumber << " succeded." << std::endl;
@@ -1199,7 +1200,7 @@ bool RunTestGroup5()
             else
             {
                 std::cerr << "\t\tTest " << groupNumber << "-" << currentTestNumber << " failed." << std::endl;
-                std::cerr << "\t\tm1 = " << m1 << "; m1.Degree() = " << m1.Degree() << std::endl;
+                std::cerr << "\t\tm1 = " << m1 << "; m1.degree() = " << m1.degree() << std::endl;
             }
             result = result && currentResult;
         }
@@ -1208,7 +1209,7 @@ bool RunTestGroup5()
             ++currentTestNumber;
             MonomLex m1("x1*x4"), m2("x1*x3");
             m1 *= m2;
-            currentResult = m1.ToString() == "x1*x3*x4" && m1.Degree() == 3;
+            currentResult = m1.toString() == "x1*x3*x4" && m1.degree() == 3;
             if (currentResult)
             {
                 std::cout << "\tTest " << groupNumber << "-" << currentTestNumber << " succeded." << std::endl;
@@ -1216,7 +1217,7 @@ bool RunTestGroup5()
             else
             {
                 std::cerr << "\t\tTest " << groupNumber << "-" << currentTestNumber << " failed." << std::endl;
-                std::cerr << "\t\tm1 = " << m1 << "; m1.Degree() = " << m1.Degree() << std::endl;
+                std::cerr << "\t\tm1 = " << m1 << "; m1.degree() = " << m1.degree() << std::endl;
             }
             result = result && currentResult;
         }
@@ -1225,7 +1226,7 @@ bool RunTestGroup5()
             ++currentTestNumber;
             MonomLex m1("x1*x4"), m2;
             m1 *= m2;
-            currentResult = m1.ToString() == "x1*x4" && m1.Degree() == 2;
+            currentResult = m1.toString() == "x1*x4" && m1.degree() == 2;
             if (currentResult)
             {
                 std::cout << "\tTest " << groupNumber << "-" << currentTestNumber << " succeded." << std::endl;
@@ -1233,7 +1234,7 @@ bool RunTestGroup5()
             else
             {
                 std::cerr << "\t\tTest " << groupNumber << "-" << currentTestNumber << " failed." << std::endl;
-                std::cerr << "\t\tm1 = " << m1 << "; m1.Degree() = " << m1.Degree() << std::endl;
+                std::cerr << "\t\tm1 = " << m1 << "; m1.degree() = " << m1.degree() << std::endl;
             }
             result = result && currentResult;
         }
@@ -1250,7 +1251,7 @@ bool RunTestGroup5()
     return result;
 }
 
-bool RunTestGroup6()
+bool runTestGroup6()
 {
     const int groupNumber = 6;
     bool result = true, currentResult = false;
@@ -1264,7 +1265,7 @@ bool RunTestGroup6()
             ++currentTestNumber;
             MonomDL m1("x1*x3*x4"), m2("x1");
             m1 /= m2;
-            currentResult = m1.ToString() == "x3*x4" && m1.Degree() == 2;
+            currentResult = m1.toString() == "x3*x4" && m1.degree() == 2;
             if (currentResult)
             {
                 std::cout << "\tTest " << groupNumber << "-" << currentTestNumber << " succeded." << std::endl;
@@ -1272,7 +1273,7 @@ bool RunTestGroup6()
             else
             {
                 std::cerr << "\t\tTest " << groupNumber << "-" << currentTestNumber << " failed." << std::endl;
-                std::cerr << "\t\tm1 = " << m1 << "; m1.Degree() = " << m1.Degree() << std::endl;
+                std::cerr << "\t\tm1 = " << m1 << "; m1.degree() = " << m1.degree() << std::endl;
             }
             result = result && currentResult;
         }
@@ -1281,7 +1282,7 @@ bool RunTestGroup6()
             ++currentTestNumber;
             MonomDL m1("x1*x3*x4"), m2("x3*x4");
             m1 /= m2;
-            currentResult = m1.ToString() == "x1" && m1.Degree() == 1;
+            currentResult = m1.toString() == "x1" && m1.degree() == 1;
             if (currentResult)
             {
                 std::cout << "\tTest " << groupNumber << "-" << currentTestNumber << " succeded." << std::endl;
@@ -1289,7 +1290,7 @@ bool RunTestGroup6()
             else
             {
                 std::cerr << "\t\tTest " << groupNumber << "-" << currentTestNumber << " failed." << std::endl;
-                std::cerr << "\t\tm1 = " << m1 << "; m1.Degree() = " << m1.Degree() << std::endl;
+                std::cerr << "\t\tm1 = " << m1 << "; m1.degree() = " << m1.degree() << std::endl;
             }
             result = result && currentResult;
         }
@@ -1297,8 +1298,8 @@ bool RunTestGroup6()
         {
             ++currentTestNumber;
             MonomDL m1("x1*x3*x4"), m2("x1*x3"), m3;
-            m3.SetQuotientOf(m1, m2);
-            currentResult = m3.ToString() == "x4" && m3.Degree() == 1;
+            m3.setQuotientOf(m1, m2);
+            currentResult = m3.toString() == "x4" && m3.degree() == 1;
             if (currentResult)
             {
                 std::cout << "\tTest " << groupNumber << "-" << currentTestNumber << " succeded." << std::endl;
@@ -1306,7 +1307,7 @@ bool RunTestGroup6()
             else
             {
                 std::cerr << "\t\tTest " << groupNumber << "-" << currentTestNumber << " failed." << std::endl;
-                std::cerr << "\t\tm3 = " << m3 << "; m3.Degree() = " << m3.Degree() << std::endl;
+                std::cerr << "\t\tm3 = " << m3 << "; m3.degree() = " << m3.degree() << std::endl;
             }
             result = result && currentResult;
         }
@@ -1319,7 +1320,7 @@ bool RunTestGroup6()
             ++currentTestNumber;
             MonomDRL m1("x1*x3*x4"), m2("x1");
             m1 /= m2;
-            currentResult = m1.ToString() == "x3*x4" && m1.Degree() == 2;
+            currentResult = m1.toString() == "x3*x4" && m1.degree() == 2;
             if (currentResult)
             {
                 std::cout << "\tTest " << groupNumber << "-" << currentTestNumber << " succeded." << std::endl;
@@ -1327,7 +1328,7 @@ bool RunTestGroup6()
             else
             {
                 std::cerr << "\t\tTest " << groupNumber << "-" << currentTestNumber << " failed." << std::endl;
-                std::cerr << "\t\tm1 = " << m1 << "; m1.Degree() = " << m1.Degree() << std::endl;
+                std::cerr << "\t\tm1 = " << m1 << "; m1.degree() = " << m1.degree() << std::endl;
             }
             result = result && currentResult;
         }
@@ -1336,7 +1337,7 @@ bool RunTestGroup6()
             ++currentTestNumber;
             MonomDRL m1("x1*x3*x4"), m2("x3*x4");
             m1 /= m2;
-            currentResult = m1.ToString() == "x1" && m1.Degree() == 1;
+            currentResult = m1.toString() == "x1" && m1.degree() == 1;
             if (currentResult)
             {
                 std::cout << "\tTest " << groupNumber << "-" << currentTestNumber << " succeded." << std::endl;
@@ -1344,7 +1345,7 @@ bool RunTestGroup6()
             else
             {
                 std::cerr << "\t\tTest " << groupNumber << "-" << currentTestNumber << " failed." << std::endl;
-                std::cerr << "\t\tm1 = " << m1 << "; m1.Degree() = " << m1.Degree() << std::endl;
+                std::cerr << "\t\tm1 = " << m1 << "; m1.degree() = " << m1.degree() << std::endl;
             }
             result = result && currentResult;
         }
@@ -1352,8 +1353,8 @@ bool RunTestGroup6()
         {
             ++currentTestNumber;
             MonomDRL m1("x1*x3*x4"), m2("x1*x3"), m3;
-            m3.SetQuotientOf(m1, m2);
-            currentResult = m3.ToString() == "x4" && m3.Degree() == 1;
+            m3.setQuotientOf(m1, m2);
+            currentResult = m3.toString() == "x4" && m3.degree() == 1;
             if (currentResult)
             {
                 std::cout << "\tTest " << groupNumber << "-" << currentTestNumber << " succeded." << std::endl;
@@ -1361,7 +1362,7 @@ bool RunTestGroup6()
             else
             {
                 std::cerr << "\t\tTest " << groupNumber << "-" << currentTestNumber << " failed." << std::endl;
-                std::cerr << "\t\tm3 = " << m3 << "; m3.Degree() = " << m3.Degree() << std::endl;
+                std::cerr << "\t\tm3 = " << m3 << "; m3.degree() = " << m3.degree() << std::endl;
             }
             result = result && currentResult;
         }
@@ -1374,7 +1375,7 @@ bool RunTestGroup6()
             ++currentTestNumber;
             MonomLex m1("x1*x3*x4"), m2("x1");
             m1 /= m2;
-            currentResult = m1.ToString() == "x3*x4" && m1.Degree() == 2;
+            currentResult = m1.toString() == "x3*x4" && m1.degree() == 2;
             if (currentResult)
             {
                 std::cout << "\tTest " << groupNumber << "-" << currentTestNumber << " succeded." << std::endl;
@@ -1382,7 +1383,7 @@ bool RunTestGroup6()
             else
             {
                 std::cerr << "\t\tTest " << groupNumber << "-" << currentTestNumber << " failed." << std::endl;
-                std::cerr << "\t\tm1 = " << m1 << "; m1.Degree() = " << m1.Degree() << std::endl;
+                std::cerr << "\t\tm1 = " << m1 << "; m1.degree() = " << m1.degree() << std::endl;
             }
             result = result && currentResult;
         }
@@ -1391,7 +1392,7 @@ bool RunTestGroup6()
             ++currentTestNumber;
             MonomLex m1("x1*x3*x4"), m2("x3*x4");
             m1 /= m2;
-            currentResult = m1.ToString() == "x1" && m1.Degree() == 1;
+            currentResult = m1.toString() == "x1" && m1.degree() == 1;
             if (currentResult)
             {
                 std::cout << "\tTest " << groupNumber << "-" << currentTestNumber << " succeded." << std::endl;
@@ -1399,7 +1400,7 @@ bool RunTestGroup6()
             else
             {
                 std::cerr << "\t\tTest " << groupNumber << "-" << currentTestNumber << " failed." << std::endl;
-                std::cerr << "\t\tm1 = " << m1 << "; m1.Degree() = " << m1.Degree() << std::endl;
+                std::cerr << "\t\tm1 = " << m1 << "; m1.degree() = " << m1.degree() << std::endl;
             }
             result = result && currentResult;
         }
@@ -1407,8 +1408,8 @@ bool RunTestGroup6()
         {
             ++currentTestNumber;
             MonomLex m1("x1*x3*x4"), m2("x1*x3"), m3;
-            m3.SetQuotientOf(m1, m2);
-            currentResult = m3.ToString() == "x4" && m3.Degree() == 1;
+            m3.setQuotientOf(m1, m2);
+            currentResult = m3.toString() == "x4" && m3.degree() == 1;
             if (currentResult)
             {
                 std::cout << "\tTest " << groupNumber << "-" << currentTestNumber << " succeded." << std::endl;
@@ -1416,7 +1417,7 @@ bool RunTestGroup6()
             else
             {
                 std::cerr << "\t\tTest " << groupNumber << "-" << currentTestNumber << " failed." << std::endl;
-                std::cerr << "\t\tm3 = " << m3 << "; m3.Degree() = " << m3.Degree() << std::endl;
+                std::cerr << "\t\tm3 = " << m3 << "; m3.degree() = " << m3.degree() << std::endl;
             }
             result = result && currentResult;
         }
@@ -1433,7 +1434,7 @@ bool RunTestGroup6()
     return result;
 }
 
-bool RunTestGroup7()
+bool runTestGroup7()
 {
     const int groupNumber = 7;
     bool result = true, currentResult = false;
@@ -1476,7 +1477,7 @@ bool RunTestGroup7()
         {
             ++currentTestNumber;
             MonomDL m1("x1*x3*x5"), m2("x1*x3*x4");
-            currentResult = m1.Compare(m2) == -1;
+            currentResult = m1.compare(m2) == -1;
             if (currentResult)
             {
                 std::cout << "\tTest " << groupNumber << "-" << currentTestNumber << " succeded." << std::endl;
@@ -1484,7 +1485,7 @@ bool RunTestGroup7()
             else
             {
                 std::cerr << "\t\tTest " << groupNumber << "-" << currentTestNumber << " failed." << std::endl;
-                std::cerr << "\t\t" << m1 << " Compare " << m2 << " = " << m1.Compare(m2) << std::endl;
+                std::cerr << "\t\t" << m1 << " compare " << m2 << " = " << m1.compare(m2) << std::endl;
             }
             result = result && currentResult;
         }
@@ -1492,7 +1493,7 @@ bool RunTestGroup7()
         {
             ++currentTestNumber;
             MonomDL m1("x1*x3"), m2("x1*x3");
-            currentResult = m1.Compare(m2) == 0;
+            currentResult = m1.compare(m2) == 0;
             if (currentResult)
             {
                 std::cout << "\tTest " << groupNumber << "-" << currentTestNumber << " succeded." << std::endl;
@@ -1500,7 +1501,7 @@ bool RunTestGroup7()
             else
             {
                 std::cerr << "\t\tTest " << groupNumber << "-" << currentTestNumber << " failed." << std::endl;
-                std::cerr << "\t\t" << m1 << " Compare " << m2 << " = " << m1.Compare(m2) << std::endl;
+                std::cerr << "\t\t" << m1 << " compare " << m2 << " = " << m1.compare(m2) << std::endl;
             }
             result = result && currentResult;
         }
@@ -1542,7 +1543,7 @@ bool RunTestGroup7()
         {
             ++currentTestNumber;
             MonomDRL m1("x1*x3*x5"), m2("x1*x3*x4");
-            currentResult = m1.Compare(m2) == -1;
+            currentResult = m1.compare(m2) == -1;
             if (currentResult)
             {
                 std::cout << "\tTest " << groupNumber << "-" << currentTestNumber << " succeded." << std::endl;
@@ -1550,7 +1551,7 @@ bool RunTestGroup7()
             else
             {
                 std::cerr << "\t\tTest " << groupNumber << "-" << currentTestNumber << " failed." << std::endl;
-                std::cerr << "\t\t" << m1 << " Compare " << m2 << " = " << m1.Compare(m2) << std::endl;
+                std::cerr << "\t\t" << m1 << " compare " << m2 << " = " << m1.compare(m2) << std::endl;
             }
             result = result && currentResult;
         }
@@ -1558,7 +1559,7 @@ bool RunTestGroup7()
         {
             ++currentTestNumber;
             MonomDRL m1("x1*x3"), m2("x1*x3");
-            currentResult = m1.Compare(m2) == 0;
+            currentResult = m1.compare(m2) == 0;
             if (currentResult)
             {
                 std::cout << "\tTest " << groupNumber << "-" << currentTestNumber << " succeded." << std::endl;
@@ -1566,7 +1567,7 @@ bool RunTestGroup7()
             else
             {
                 std::cerr << "\t\tTest " << groupNumber << "-" << currentTestNumber << " failed." << std::endl;
-                std::cerr << "\t\t" << m1 << " Compare " << m2 << " = " << m1.Compare(m2) << std::endl;
+                std::cerr << "\t\t" << m1 << " compare " << m2 << " = " << m1.compare(m2) << std::endl;
             }
             result = result && currentResult;
         }
@@ -1608,7 +1609,7 @@ bool RunTestGroup7()
         {
             ++currentTestNumber;
             MonomLex m1("x1*x3*x5"), m2("x1*x3*x4");
-            currentResult = m1.Compare(m2) == -1;
+            currentResult = m1.compare(m2) == -1;
             if (currentResult)
             {
                 std::cout << "\tTest " << groupNumber << "-" << currentTestNumber << " succeded." << std::endl;
@@ -1616,7 +1617,7 @@ bool RunTestGroup7()
             else
             {
                 std::cerr << "\t\tTest " << groupNumber << "-" << currentTestNumber << " failed." << std::endl;
-                std::cerr << "\t\t" << m1 << " Compare " << m2 << " = " << m1.Compare(m2) << std::endl;
+                std::cerr << "\t\t" << m1 << " compare " << m2 << " = " << m1.compare(m2) << std::endl;
             }
             result = result && currentResult;
         }
@@ -1624,7 +1625,7 @@ bool RunTestGroup7()
         {
             ++currentTestNumber;
             MonomLex m1("x1*x3"), m2("x1*x3");
-            currentResult = m1.Compare(m2) == 0;
+            currentResult = m1.compare(m2) == 0;
             if (currentResult)
             {
                 std::cout << "\tTest " << groupNumber << "-" << currentTestNumber << " succeded." << std::endl;
@@ -1632,7 +1633,7 @@ bool RunTestGroup7()
             else
             {
                 std::cerr << "\t\tTest " << groupNumber << "-" << currentTestNumber << " failed." << std::endl;
-                std::cerr << "\t\t" << m1 << " Compare " << m2 << " = " << m1.Compare(m2) << std::endl;
+                std::cerr << "\t\t" << m1 << " compare " << m2 << " = " << m1.compare(m2) << std::endl;
             }
             result = result && currentResult;
         }
@@ -1649,7 +1650,7 @@ bool RunTestGroup7()
     return result;
 }
 
-bool RunTestGroup8()
+bool runTestGroup8()
 {
     const int groupNumber = 8;
     bool result = true, currentResult = false;
@@ -1662,7 +1663,7 @@ bool RunTestGroup8()
         {
             ++currentTestNumber;
             MonomDL m1("x1*x2*x5"), m2("x2*x5");
-            currentResult = m1.IsDivisibleBy(m2);
+            currentResult = m1.isDivisibleBy(m2);
             if (currentResult)
             {
                 std::cout << "\tTest " << groupNumber << "-" << currentTestNumber << " succeded." << std::endl;
@@ -1677,7 +1678,7 @@ bool RunTestGroup8()
         {
             ++currentTestNumber;
             MonomDL m1("x1*x2*x5"), m2("x1*x4");
-            currentResult = !m1.IsDivisibleBy(m2);
+            currentResult = !m1.isDivisibleBy(m2);
             if (currentResult)
             {
                 std::cout << "\tTest " << groupNumber << "-" << currentTestNumber << " succeded." << std::endl;
@@ -1692,7 +1693,7 @@ bool RunTestGroup8()
         {
             ++currentTestNumber;
             MonomDL m1("x1*x2*x3"), m2("x1*x2*x3*x4");
-            currentResult = !m1.IsDivisibleBy(m2);
+            currentResult = !m1.isDivisibleBy(m2);
             if (currentResult)
             {
                 std::cout << "\tTest " << groupNumber << "-" << currentTestNumber << " succeded." << std::endl;
@@ -1707,7 +1708,7 @@ bool RunTestGroup8()
         {
             ++currentTestNumber;
             MonomDL m1("x1*x2*x3"), m2("x1*x2*x3");
-            currentResult = m1.IsDivisibleBy(m2);
+            currentResult = m1.isDivisibleBy(m2);
             if (currentResult)
             {
                 std::cout << "\tTest " << groupNumber << "-" << currentTestNumber << " succeded." << std::endl;
@@ -1722,7 +1723,7 @@ bool RunTestGroup8()
         {
             ++currentTestNumber;
             MonomDL m1("x1*x2*x3"), m2("x1*x2*x3");
-            currentResult = !m1.IsTrueDivisibleBy(m2);
+            currentResult = !m1.isTrueDivisibleBy(m2);
             if (currentResult)
             {
                 std::cout << "\tTest " << groupNumber << "-" << currentTestNumber << " succeded." << std::endl;
@@ -1741,7 +1742,7 @@ bool RunTestGroup8()
         {
             ++currentTestNumber;
             MonomDRL m1("x1*x2*x5"), m2("x2*x5");
-            currentResult = m1.IsDivisibleBy(m2);
+            currentResult = m1.isDivisibleBy(m2);
             if (currentResult)
             {
                 std::cout << "\tTest " << groupNumber << "-" << currentTestNumber << " succeded." << std::endl;
@@ -1756,7 +1757,7 @@ bool RunTestGroup8()
         {
             ++currentTestNumber;
             MonomDRL m1("x1*x2*x5"), m2("x1*x4");
-            currentResult = !m1.IsDivisibleBy(m2);
+            currentResult = !m1.isDivisibleBy(m2);
             if (currentResult)
             {
                 std::cout << "\tTest " << groupNumber << "-" << currentTestNumber << " succeded." << std::endl;
@@ -1771,7 +1772,7 @@ bool RunTestGroup8()
         {
             ++currentTestNumber;
             MonomDRL m1("x1*x2*x3"), m2("x1*x2*x3*x4");
-            currentResult = !m1.IsDivisibleBy(m2);
+            currentResult = !m1.isDivisibleBy(m2);
             if (currentResult)
             {
                 std::cout << "\tTest " << groupNumber << "-" << currentTestNumber << " succeded." << std::endl;
@@ -1786,7 +1787,7 @@ bool RunTestGroup8()
         {
             ++currentTestNumber;
             MonomDRL m1("x1*x2*x3"), m2("x1*x2*x3");
-            currentResult = m1.IsDivisibleBy(m2);
+            currentResult = m1.isDivisibleBy(m2);
             if (currentResult)
             {
                 std::cout << "\tTest " << groupNumber << "-" << currentTestNumber << " succeded." << std::endl;
@@ -1801,7 +1802,7 @@ bool RunTestGroup8()
         {
             ++currentTestNumber;
             MonomDRL m1("x1*x2*x3"), m2("x1*x2*x3");
-            currentResult = !m1.IsTrueDivisibleBy(m2);
+            currentResult = !m1.isTrueDivisibleBy(m2);
             if (currentResult)
             {
                 std::cout << "\tTest " << groupNumber << "-" << currentTestNumber << " succeded." << std::endl;
@@ -1820,7 +1821,7 @@ bool RunTestGroup8()
         {
             ++currentTestNumber;
             MonomLex m1("x1*x2*x5"), m2("x2*x5");
-            currentResult = m1.IsDivisibleBy(m2);
+            currentResult = m1.isDivisibleBy(m2);
             if (currentResult)
             {
                 std::cout << "\tTest " << groupNumber << "-" << currentTestNumber << " succeded." << std::endl;
@@ -1835,7 +1836,7 @@ bool RunTestGroup8()
         {
             ++currentTestNumber;
             MonomLex m1("x1*x2*x5"), m2("x1*x4");
-            currentResult = !m1.IsDivisibleBy(m2);
+            currentResult = !m1.isDivisibleBy(m2);
             if (currentResult)
             {
                 std::cout << "\tTest " << groupNumber << "-" << currentTestNumber << " succeded." << std::endl;
@@ -1850,7 +1851,7 @@ bool RunTestGroup8()
         {
             ++currentTestNumber;
             MonomLex m1("x1*x2*x3"), m2("x1*x2*x3*x4");
-            currentResult = !m1.IsDivisibleBy(m2);
+            currentResult = !m1.isDivisibleBy(m2);
             if (currentResult)
             {
                 std::cout << "\tTest " << groupNumber << "-" << currentTestNumber << " succeded." << std::endl;
@@ -1865,7 +1866,7 @@ bool RunTestGroup8()
         {
             ++currentTestNumber;
             MonomLex m1("x1*x2*x3"), m2("x1*x2*x3");
-            currentResult = m1.IsDivisibleBy(m2);
+            currentResult = m1.isDivisibleBy(m2);
             if (currentResult)
             {
                 std::cout << "\tTest " << groupNumber << "-" << currentTestNumber << " succeded." << std::endl;
@@ -1880,7 +1881,7 @@ bool RunTestGroup8()
         {
             ++currentTestNumber;
             MonomLex m1("x1*x2*x3"), m2("x1*x2*x3");
-            currentResult = !m1.IsTrueDivisibleBy(m2);
+            currentResult = !m1.isTrueDivisibleBy(m2);
             if (currentResult)
             {
                 std::cout << "\tTest " << groupNumber << "-" << currentTestNumber << " succeded." << std::endl;
@@ -1906,16 +1907,16 @@ bool RunTestGroup8()
 
 int main()
 {
-    SetVariables();
+    setVariables();
 
-    bool result = RunTestGroup1();
-    result = result && RunTestGroup2();
-    result = result && RunTestGroup3();
-    result = result && RunTestGroup4();
-    result = result && RunTestGroup5();
-    result = result && RunTestGroup6();
-    result = result && RunTestGroup7();
-    result = result && RunTestGroup8();
+    bool result = runTestGroup1();
+    result = result && runTestGroup2();
+    result = result && runTestGroup3();
+    result = result && runTestGroup4();
+    result = result && runTestGroup5();
+    result = result && runTestGroup6();
+    result = result && runTestGroup7();
+    result = result && runTestGroup8();
 
     if (result)
     {
