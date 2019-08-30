@@ -639,7 +639,12 @@ private:
             {
                 delete tmpMonom;
                 in.clear();
-                if (in.get() != '1')
+                op = in.get();
+                if (op == '0')
+                {
+                    setZero();
+                }
+                else if (op != '1')
                 {
                     std::cerr << "expected 'monomial'" << std::endl;
                     throw std::invalid_argument("expected monomial while polynom parsing");
