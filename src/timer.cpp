@@ -33,18 +33,6 @@ void Timer::start()
     realTime_ = rTime.QuadPart / Hz_;
 }
 
-void Timer::resume()
-{
-    ULARGE_INTEGER cTime, eTime, kTime, uTime, rTime;
-
-    ::GetProcessTimes(::GetCurrentProcess(), (LPFILETIME)&cTime, (LPFILETIME)&eTime, (LPFILETIME)&kTime, (LPFILETIME)&uTime);
-    ::GetSystemTimeAsFileTime((LPFILETIME)&rTime);
-
-    userTime_ = uTime.QuadPart / Hz_;
-    sysTime_ = kTime.QuadPart / Hz_;
-    realTime_ = rTime.QuadPart / Hz_;
-}
-
 void Timer::stop()
 {
     ULARGE_INTEGER cTime, eTime, kTime, uTime, rTime;
@@ -71,14 +59,6 @@ void Timer::start()
     sysElapsed_ = 0.0;
     realElapsed_ = 0.0;
 
-    tms buffer;
-    realTime_ = times(&buffer) / Hz_;
-    userTime_ = buffer.tms_utime / Hz_;
-    sysTime_ = buffer.tms_stime / Hz_;
-}
-
-void Timer::resume()
-{
     tms buffer;
     realTime_ = times(&buffer) / Hz_;
     userTime_ = buffer.tms_utime / Hz_;

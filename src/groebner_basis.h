@@ -178,7 +178,6 @@ private:
             }
         }
 
-        polynom = result;
         return result;
     }
 

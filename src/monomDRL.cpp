@@ -12,7 +12,7 @@ MonomDRL::MonomDRL(const std::string& str)
     tmpStream >> *this;
 }
 
-int MonomDRL::compare(const MonomDRL& anotherMonom)
+int MonomDRL::compare(const MonomDRL& anotherMonom) const
 {
     if (totalDegree_ < anotherMonom.totalDegree_)
     {

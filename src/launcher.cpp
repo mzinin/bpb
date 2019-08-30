@@ -211,7 +211,7 @@ bool Launcher::init(int argc, char* argv[])
     return result;
 }
 
-bool Launcher::run()
+bool Launcher::run() const
 {
     try
     {

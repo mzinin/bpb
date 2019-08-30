@@ -7,7 +7,6 @@ class Timer
 {
 public:
     void start();
-    void resume();
     void stop();
 
     double userTime() const;

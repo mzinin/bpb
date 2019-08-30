@@ -105,7 +105,7 @@ public:
         allocator_.free(ptr);
     }
 
-    const Polynom& operator=(const Polynom& anotherPolynom)
+    Polynom& operator=(const Polynom& anotherPolynom)
     {
         if (!anotherPolynom.monomListHead_)
         {
@@ -143,7 +143,7 @@ public:
         return *this;
     }
 
-    const Polynom& operator+=(const MonomType& newMonom)
+    Polynom& operator+=(const MonomType& newMonom)
     {
         MonomType** position = find(newMonom);
         MonomType* tmpMonom = nullptr;
@@ -173,7 +173,7 @@ public:
         return *this;
     }
 
-    const Polynom& operator+=(const Polynom& anotherPolynom)
+    Polynom& operator+=(const Polynom& anotherPolynom)
     {
         if (anotherPolynom.monomListHead_)
         {
@@ -216,7 +216,7 @@ public:
         return *this;
     }
 
-    const Polynom& operator*=(Integer var)
+    Polynom& operator*=(Integer var)
     {
         if (monomListHead_)
         {
@@ -251,7 +251,7 @@ public:
         return *this;
     }
 
-    const Polynom& operator*=(const MonomType& anotherMonom)
+    Polynom& operator*=(const MonomType& anotherMonom)
     {
         if (monomListHead_)
         {
@@ -266,7 +266,7 @@ public:
         return *this;
     }
 
-    const Polynom& operator*=(const Polynom& anotherPolynom)
+    Polynom& operator*=(const Polynom& anotherPolynom)
     {
         if (monomListHead_)
         {

@@ -12,7 +12,7 @@ MonomLex::MonomLex(const std::string& str)
     tmpStream >> *this;
 }
 
-int MonomLex::compare(const MonomLex& anotherMonom)
+int MonomLex::compare(const MonomLex& anotherMonom) const
 {
     VarsListNode *iterator = listHead_,
                  *iteratorAnother = anotherMonom.listHead_;

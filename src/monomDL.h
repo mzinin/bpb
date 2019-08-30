@@ -24,10 +24,10 @@ public:
     void setOne() override;
     Integer operator[](Integer var) const override;
 
-    const MonomDL& operator=(const MonomDL& anotherMonom);
-    const MonomDL& operator*=(Integer var);
-    const MonomDL& operator*=(const MonomDL& anotherMonom);
-    const MonomDL& operator/=(const MonomDL& anotherMonom);
+    MonomDL& operator=(const MonomDL& anotherMonom);
+    MonomDL& operator*=(Integer var);
+    MonomDL& operator*=(const MonomDL& anotherMonom);
+    MonomDL& operator/=(const MonomDL& anotherMonom);
 
     void setQuotientOf(const MonomDL& monomA, const MonomDL& monomB);
 
@@ -36,7 +36,7 @@ public:
 
     bool operator<(const MonomDL& anotherMonom) const;
     bool operator>(const MonomDL& anotherMonom) const;
-    int compare(const MonomDL& anotherMonom);
+    int compare(const MonomDL& anotherMonom) const;
 
     bool isDivisibleBy(const MonomDL& anotherMonom) const;
     bool isTrueDivisibleBy(const MonomDL& anotherMonom) const;
@@ -124,7 +124,7 @@ inline MonomDL::Integer MonomDL::operator[](Integer var) const
     return varPosition && varPosition->value == var;
 }
 
-inline const MonomDL& MonomDL::operator=(const MonomDL& anotherMonom)
+inline MonomDL& MonomDL::operator=(const MonomDL& anotherMonom)
 {
     if (this == &anotherMonom)
     {
@@ -205,13 +205,13 @@ inline void MonomDL::multiplyBy(Integer var)
     }
 }
 
-inline const MonomDL& MonomDL::operator*=(Integer var)
+inline MonomDL& MonomDL::operator*=(Integer var)
 {
     multiplyBy(var);
     return *this;
 }
 
-inline const MonomDL& MonomDL::operator*=(const MonomDL& anotherMonom)
+inline MonomDL& MonomDL::operator*=(const MonomDL& anotherMonom)
 {
     if (!listHead_)
     {
@@ -263,7 +263,7 @@ inline const MonomDL& MonomDL::operator*=(const MonomDL& anotherMonom)
     return *this;
 }
 
-inline const MonomDL& MonomDL::operator/=(const MonomDL& anotherMonom)
+inline MonomDL& MonomDL::operator/=(const MonomDL& anotherMonom)
 {
     VarsListNode **iterator = &listHead_,
                  *anotherIterator = anotherMonom.listHead_;

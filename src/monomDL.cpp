@@ -12,7 +12,7 @@ MonomDL::MonomDL(const std::string& str)
     tmpStream >> *this;
 }
 
-int MonomDL::compare(const MonomDL& anotherMonom)
+int MonomDL::compare(const MonomDL& anotherMonom) const
 {
     if (totalDegree_ < anotherMonom.totalDegree_)
     {

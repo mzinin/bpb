@@ -111,11 +111,6 @@ public:
         return jTree_.find(monom);
     }
 
-    const TripleType* back() const
-    {
-        return tripleList_.back();
-    }
-
     void collectNonMultiProlongations(Iterator& iterator, std::list<TripleType*>& set)
     {
         if (iterator == tripleList_.end() || !(*iterator))

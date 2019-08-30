@@ -24,10 +24,10 @@ public:
     void setOne() override;
     Integer operator[](Integer var) const override;
 
-    const MonomLex& operator=(const MonomLex& anotherMonom);
-    const MonomLex& operator*=(Integer var);
-    const MonomLex& operator*=(const MonomLex& anotherMonom);
-    const MonomLex& operator/=(const MonomLex& anotherMonom);
+    MonomLex& operator=(const MonomLex& anotherMonom);
+    MonomLex& operator*=(Integer var);
+    MonomLex& operator*=(const MonomLex& anotherMonom);
+    MonomLex& operator/=(const MonomLex& anotherMonom);
 
     void setQuotientOf(const MonomLex& monomA, const MonomLex& monomB);
 
@@ -36,7 +36,7 @@ public:
 
     bool operator<(const MonomLex& anotherMonom) const;
     bool operator>(const MonomLex& anotherMonom) const;
-    int compare(const MonomLex& anotherMonom);
+    int compare(const MonomLex& anotherMonom) const;
 
     bool isDivisibleBy(const MonomLex& anotherMonom) const;
     bool isTrueDivisibleBy(const MonomLex& anotherMonom) const;
@@ -109,10 +109,9 @@ inline void MonomLex::setOne()
     totalDegree_ = 0;
     if (listHead_)
     {
-        VarsListNode* tmpNode;
         while (listHead_)
         {
-            tmpNode = listHead_;
+            auto tmpNode = listHead_;
             listHead_ = listHead_->next;
             delete tmpNode;
         }
@@ -125,7 +124,7 @@ inline MonomLex::Integer MonomLex::operator[](Integer var) const
     return varPosition && varPosition->value == var;
 }
 
-inline const MonomLex& MonomLex::operator=(const MonomLex& anotherMonom)
+inline MonomLex& MonomLex::operator=(const MonomLex& anotherMonom)
 {
     if (this == &anotherMonom)
     {
@@ -206,13 +205,13 @@ inline void MonomLex::multiplyBy(Integer var)
     }
 }
 
-inline const MonomLex& MonomLex::operator*=(Integer var)
+inline MonomLex& MonomLex::operator*=(Integer var)
 {
     multiplyBy(var);
     return *this;
 }
 
-inline const MonomLex& MonomLex::operator*=(const MonomLex& anotherMonom)
+inline MonomLex& MonomLex::operator*=(const MonomLex& anotherMonom)
 {
     if (!listHead_)
     {
@@ -264,7 +263,7 @@ inline const MonomLex& MonomLex::operator*=(const MonomLex& anotherMonom)
     return *this;
 }
 
-inline const MonomLex& MonomLex::operator/=(const MonomLex& anotherMonom)
+inline MonomLex& MonomLex::operator/=(const MonomLex& anotherMonom)
 {
     VarsListNode **iterator = &listHead_,
                  *anotherIterator = anotherMonom.listHead_;

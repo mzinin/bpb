@@ -14,7 +14,7 @@ public:
     Launcher();
 
     bool init(int argc, char* argv[]);
-    bool run();
+    bool run() const;
 
 private:
     static void fillOptions();

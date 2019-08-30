@@ -24,10 +24,10 @@ public:
     void setOne() override;
     Integer operator[](Integer var) const override;
 
-    const MonomDRL& operator=(const MonomDRL& anotherMonom);
-    const MonomDRL& operator*=(Integer var);
-    const MonomDRL& operator*=(const MonomDRL& anotherMonom);
-    const MonomDRL& operator/=(const MonomDRL& anotherMonom);
+    MonomDRL& operator=(const MonomDRL& anotherMonom);
+    MonomDRL& operator*=(Integer var);
+    MonomDRL& operator*=(const MonomDRL& anotherMonom);
+    MonomDRL& operator/=(const MonomDRL& anotherMonom);
 
     void setQuotientOf(const MonomDRL& monomA, const MonomDRL& monomB);
 
@@ -36,7 +36,7 @@ public:
 
     bool operator<(const MonomDRL& anotherMonom) const;
     bool operator>(const MonomDRL& anotherMonom) const;
-    int compare(const MonomDRL& anotherMonom);
+    int compare(const MonomDRL& anotherMonom) const;
 
     bool isDivisibleBy(const MonomDRL& anotherMonom) const;
     bool isTrueDivisibleBy(const MonomDRL& anotherMonom) const;
@@ -124,7 +124,7 @@ inline MonomDRL::Integer MonomDRL::operator[](Integer var) const
     return varPosition && varPosition->value == var;
 }
 
-inline const MonomDRL& MonomDRL::operator=(const MonomDRL& anotherMonom)
+inline MonomDRL& MonomDRL::operator=(const MonomDRL& anotherMonom)
 {
     if (this == &anotherMonom)
     {
@@ -205,13 +205,13 @@ inline void MonomDRL::multiplyBy(Integer var)
     }
 }
 
-inline const MonomDRL& MonomDRL::operator*=(Integer var)
+inline MonomDRL& MonomDRL::operator*=(Integer var)
 {
     multiplyBy(var);
     return *this;
 }
 
-inline const MonomDRL& MonomDRL::operator*=(const MonomDRL& anotherMonom)
+inline MonomDRL& MonomDRL::operator*=(const MonomDRL& anotherMonom)
 {
     if (!listHead_)
     {
@@ -263,7 +263,7 @@ inline const MonomDRL& MonomDRL::operator*=(const MonomDRL& anotherMonom)
     return *this;
 }
 
-inline const MonomDRL& MonomDRL::operator/=(const MonomDRL& anotherMonom)
+inline MonomDRL& MonomDRL::operator/=(const MonomDRL& anotherMonom)
 {
     VarsListNode **iterator = &listHead_,
                  *anotherIterator = anotherMonom.listHead_;

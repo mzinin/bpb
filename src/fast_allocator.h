@@ -8,7 +8,7 @@
 class FastAllocator
 {
 public:
-    FastAllocator(const uint64_t blockSize);
+    FastAllocator(uint64_t blockSize);
     ~FastAllocator();
 
     // throws std::bad_alloc
